@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
+
+@import "tailwindcss";
+
+/* Define font and color variables */
+:root {
+  --background: #f8fafc;
+  --foreground: #1e293b;
+  --primary: #0ea5e9;
+  --secondary: #10b981;
+  --accent: #64748b;
+  --border: #cbd5e1;
+
+  /* Font family variables */
+  --font-urbanist: 'Urbanist', sans-serif;
+  --font-poppins: 'Poppins', sans-serif;
+  --font-oswald: 'Oswald', sans-serif;
+}
+
+/* Light/Dark mode toggle */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+/* Optional inline theming block */
+@theme inline {
+  --color-background: var(--background);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --color-foreground: var(--foreground);
+
+  --font-sans: var(--font-urbanist);
+  --font-alt: var(--font-poppins);
+  --font-title: var(--font-oswald);
+}
+
+/* Base body style */
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-urbanist);
+}
+/* globals.css or inside a module */
+.scrolling {
+  cursor: grabbing;
+  user-select: none;
+}
+
+/* Prevent scroll bar overflow */
+.slick-slider {
+  overflow-x: clip;
+}
+
+
+.slick-slide > div {
+  margin-right: 0 !important; /* Prevent spacing issues */
+}
+
+/* Fix layout shifting */
+.slick-track {
+  display: flex !important;
+}
+
+/* Optional: Hide arrows if causing overflow */
+.slick-prev, .slick-next {
+  z-index: 10;
+}
+

@@ -1,0 +1,58 @@
+[
+  {
+    "name": "Anita Sharma",
+    "img":"/avat-wom-1.jpg",
+    "location": "Chennai",
+    "rating": 5,
+    "message": "We found our dream home through this platform. The team was helpful and made the entire process smooth and stress-free."
+  },
+  {
+    "name": "Ravi Menon",
+    "location": "Bangalore",
+    "img":"/avat-men-1.jpg",
+    "rating": 4,
+    "message": "Great selection of properties and very professional service. Highly recommend for first-time buyers!"
+  },
+  {
+    "name": "Deepa Nair",
+    "img":"/avat-wom-2.jpg",
+    "location": "Coimbatore",
+    "rating": 5,
+    "message": "Their listings are always updated and accurate. I rented out my property within just a few days!"
+  },
+  {
+    "name": "Karthik Raj",
+    "img":"/avat-men-2.jpg",
+    "location": "Hyderabad",
+    "rating": 4,
+    "message": "Excellent platform with intuitive design. The virtual tours were especially helpful during my house hunt."
+  },
+  {
+    "name": "Sowmya Iyer",
+    "img":"/avat-wom-3.jpg",
+    "location": "Pune",
+    "rating": 5,
+    "message": "They made selling my apartment easy and hassle-free. From documentation to listing, everything was well-managed."
+  },
+  {
+    "name": "Mohammed Faizal",
+    "img":"/avat-men-3.jpg",
+    "location": "Mumbai",
+    "rating": 4,
+    "message": "Customer support was responsive and guided me throughout the process. Great platform for both buyers and sellers."
+  },
+  {
+    "name": "Preeti Deshmukh",
+    "img":"/avat-wom-4.jpg",
+    "location": "Delhi",
+    "rating": 5,
+    "message": "A trustworthy team that delivers what they promise. Got a great deal on a 3BHK villa!"
+  },
+  {
+    "name": "Arun Kumar",
+    "img":"/avat-men-4.jpg",
+    "location": "Trivandrum",
+    "rating": 5,
+    "message": "The user experience on the site is top-notch. Found multiple properties within my budget easily."
+  }
+]

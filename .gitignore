@@ -1,0 +1,11 @@
+# ignore folders
+node_modules/
+.env
+.vscode/
+build/
+dist/
+.next/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
