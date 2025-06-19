@@ -38,7 +38,7 @@ const Testimonials = () => {
                 <h1 className="text-3xl text-slate-600 font-semibold">People Love Living with Realton</h1>
                 <h3 className="text-md text-slate-500">People Love Living with Realton – top-rated homes in the best locations!</h3>
             </GlobalContainer>
-            <SliderCenterMode itemArray={testimonials} RenderItem={RenderItem} />
+            <SliderCenterMode itemArray={testimonials} RenderItem={RenderItem} className='px-2 flex flex-wrap justify-center items-center' />
         </div>
     );
 }

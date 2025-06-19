@@ -7,5 +7,5 @@ export interface slider {
   autoplay?: boolean;
   centerMode?:boolean;
   className?:string;
-  speed?:number
+  speed?:number;
 }

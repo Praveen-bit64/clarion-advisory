@@ -6,28 +6,55 @@ import 'slick-carousel/slick/slick-theme.css';
 import { slider } from '../types/components/slider';
 
 export default function SliderCenterMode(props: slider) {
-    const { RenderItem, itemPerView = 3, dots = true, autoplay = true, itemArray, className = '', centerMode = true, speed = 500 } = props;
+    const {
+        RenderItem,
+        itemArray,
+        className = '',
+        dots = true,
+        autoplay = true,
+        centerMode = true,
+        speed = 500,
+        itemPerView = 3,
+    } = props;
 
     const settings = {
         className: 'center',
-        centerMode: centerMode,
+        centerMode,
         infinite: true,
         centerPadding: '50px',
         arrows: true,
         slidesToShow: itemPerView,
-        autoplay,
         dots,
-        speed: speed,
+        speed,
+        // autoplay,
+        responsive: [
+            {
+                breakpoint: 1024, // <1024px
+                settings: {
+                    slidesToShow: 3,
+                },
+            },
+            {
+                breakpoint: 768, // <768px
+                settings: {
+                    slidesToShow: 2,
+                },
+            },
+            {
+                breakpoint: 480, // <480px
+                settings: {
+                    slidesToShow: 1,
+                },
+            },
+        ],
     };
 
     return (
         <div className="w-full">
             <Slider {...settings}>
                 {itemArray.map((item, ndx) => (
-                    <div key={ndx} className="px-2">
-                        <div className={`${className}`}>
-                            <RenderItem item={item} />
-                        </div>
+                    <div key={ndx} className={className}>
+                        <RenderItem item={item} />
                     </div>
                 ))}
             </Slider>
