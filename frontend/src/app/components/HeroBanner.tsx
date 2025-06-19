@@ -1,11 +1,28 @@
+'use client'
 import { MdOutlineMyLocation } from "react-icons/md";
 import Filter from "../icons/Filter";
+import SliderCenterMode from "./SliderCenterMode";
 const HeroBanner = () => {
+    const bgImage = [
+        { img: '/hero-banner-home.jpg', place: 'home' },
+        { img: '/hero-bg-villa.jpg', place: 'villa' },
+        { img: '/hero-bg-office.jpg', place: 'office' },
+        { img: '/hero-bg-apartment.jpg', place: 'apartment' },
+        { img: '/hero-bg-apartment-2.jpg', place: 'apartment' }
+    ]
+    const RenderItem = (props: { item: any }) => {
+        const { img, place } = props.item
+        return (
+            <div className="w-full h-[700px]">
+                <img src={img} className="w-full h-full object-cover" alt={place} />
+            </div>
+        )
+    }
     return (
-        <div className="w-full h-[700px] relative">
+        <div className="w-full h-[700px] relative ">
             {/* Enter */}
             <div className="w-full h-full absolute bg-primary/20 top-0 left-0 z-10"></div>
-            <img src="/hero-banner-home.jpg" className="w-full h-full object-cover" alt="hero-banner" />
+            <SliderCenterMode itemArray={bgImage} itemPerView={1} centerMode={false} RenderItem={RenderItem} a />
             <div className="w-full absolute top-[100px] left-0  z-99 flex justify-center items-center flex-col gap-3">
                 <p className="captilize text-xl text-white">Best Place to</p>
                 <h1 className="text-5xl text-white font-bold">Find Your Dream Property</h1>

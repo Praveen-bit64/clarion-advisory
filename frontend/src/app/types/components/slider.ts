@@ -5,5 +5,7 @@ export interface slider {
   itemPerView?: number;
   dots?: boolean;
   autoplay?: boolean;
-  className?:string
+  centerMode?:boolean;
+  className?:string;
+  speed?:number
 }

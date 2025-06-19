@@ -1,6 +1,7 @@
 import Counter from "./components/Counter";
 import ExploreCities from "./components/ExploreCities";
 import Featured_Listings from "./components/Featured_Listings";
+import Footer from "./components/Footer";
 import HeroBanner from "./components/HeroBanner";
 import RecentlyAdded from "./components/RecentlyAdded";
 import SimpleSlider from "./components/SimpleSlider";
@@ -17,6 +18,7 @@ const page = () => {
         <Counter />
         <RecentlyAdded />
         <Testimonials />
+        <Footer />
         {/* <SimpleSlider /> */}
         {/* <SliderCenterMode /> */}
         {/* <SliderCenterMode /> */}
