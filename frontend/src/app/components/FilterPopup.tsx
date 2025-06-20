@@ -11,10 +11,8 @@ import { GrClose } from "react-icons/gr";
 import { IoMdDoneAll } from "react-icons/io";
 import { RiListSettingsFill } from "react-icons/ri";
 
-
 type PropertyType = {
     name: string;
-    // Add other properties if they exist in your JSON
 };
 
 type FilterPopupProps = {
@@ -35,7 +33,7 @@ type FilterProps = {
         max: number;
         err: boolean;
     };
-    location?: string[]; // Added as it's used but not in initial state
+    location?: string[];
 };
 
 const FilterPopup = ({ isOpen, onClose }: FilterPopupProps) => {
@@ -50,7 +48,6 @@ const FilterPopup = ({ isOpen, onClose }: FilterPopupProps) => {
     const [selected, setSelected] = useState("rent");
     const locationInputRef = useRef<HTMLInputElement>(null);
 
-    //for filter 
     const [filterprops, setFilterProps] = useState<FilterProps>({
         filterType: "Rent",
         property: "Apartment",
@@ -58,10 +55,6 @@ const FilterPopup = ({ isOpen, onClose }: FilterPopupProps) => {
         size: { minSize: 0, maxSize: 0 },
         budget: { min: 0, max: 0, err: false }
     });
-
-    // useEffect(() => {
-    //     const sugges
-    // } ,[])
 
     const [suggLocation, setSuggLocation] = useState(false);
     const [locationDropDown, setLocationDropDown] = useState<string[]>([]);
@@ -208,141 +201,149 @@ const FilterPopup = ({ isOpen, onClose }: FilterPopupProps) => {
     };
 
     return (
-        <div className="flex items-center justify-center backdrop-blur-sm px-2 overflow-y-auto">
-            {/* <div className="w-full flex justify-center items-center pb-[100px]"> */}
-            <div
-                className="bg-white w-full max-w-3xl rounded-2xl p-8 pb-2 shadow-2xl absolute top-5"
+        <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl relative overflow-y-auto custom-scrollbar max-h-[90vh] p-4 md:p-6"
+        >
+            <button
+                onClick={onClose}
+                className="absolute top-2 right-2 md:top-4 md:right-4 text-gray-500 hover:text-black text-xl font-bold rounded-full hover:bg-red-200 duration-200 p-1 md:p-2 cursor-pointer"
+                aria-label="Close filter popup"
             >
-                <button
-                    onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl font-bold rounded-full hover:bg-red-200 duration-200 p-2 cursor-pointer"
-                >
-                    <GrClose />
-                </button>
+                <GrClose />
+            </button>
 
-                <h2 className="text-xl font-semibold text-gray-800 mb-6 flex justify-start items-center gap-2"><RiListSettingsFill className="inline-block text-3xl" /> Advanced Property Search</h2>
-                <div className="w-full h-[1px] bg-slate-300 mb-4"></div>
-                <div className="flex flex-col justify-start items-start gap-6">
-                    {/* Rent / Buy */}
-                    <div className="relative">
-                        <div className="flex justify-center items-center gap-2">
-                            {filtertypes.map((option) => (
-                                <div key={option} className="relative flex justify-center items-center">
-                                    <input
-                                        type="radio"
-                                        name="rentbuy"
-                                        id={option}
-                                        value={option}
-                                        checked={filterprops.filterType === option}
-                                        onChange={handleFilterType}
-                                        className="hidden"
-                                    />
-                                    <label
-                                        htmlFor={option}
-                                        className={`cursor-pointer w-full px-12 py-2 rounded-md border-2 transition-all duration-300 ${filterprops.filterType === option ? "bg-secondary text-white" : "bg-white"} border-gray-300 text-gray-700 font-medium`}
-                                    >
-                                        {option.charAt(0).toUpperCase() + option.slice(1)}
-                                    </label>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+            <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-4 md:mb-6 flex justify-start items-center gap-2">
+                <RiListSettingsFill className="inline-block text-2xl md:text-3xl" />
+                Advanced Property Search
+            </h2>
 
-                    {/* Property Type */}
-                    <div className="relative">
-                        <label className="block text-md font-semibold text-gray-600 mb-1">Select Property</label>
-                        <div className="w-full h-full flex justify-start items-center gap-2 flex-wrap">
-                            {propertyTypes.map((type) => {
-                                return (
-                                    <React.Fragment key={type.name}>
-                                        <input
-                                            type="radio"
-                                            name="propertyType"
-                                            id={type.name}
-                                            value={type.name}
-                                            className="peer hidden"
-                                            checked={filterprops.property === type.name}
-                                            onChange={() =>
-                                                setFilterProps(prev => ({
-                                                    ...prev,
-                                                    property: type.name,
-                                                }))
-                                            }
-                                        />
-                                        <label
-                                            className={`${filterprops.property === type.name ? "bg-secondary text-white" : "bg-secondary/10 border-1 border-secondary/60"} text-slate-700 text-md cursor-pointer px-3 py-1 rounded`}
-                                            htmlFor={type.name}
-                                        >
-                                            {type.name}
-                                        </label>
-                                    </React.Fragment>
-                                );
-                            })}
-                            {/* <h5
-                                onClick={() => setShowMoreProp(!showMoreProp)}
-                                className="cursor-pointer px-3 py-1 rounded underline text-blue-600"
-                            >
-                                Show {`${showMoreProp ? "Less" : "More"}`}...
-                            </h5> */}
-                        </div>
-                    </div>
+            <div className="w-full h-[1px] bg-slate-300 mb-3 md:mb-4"></div>
 
-                    {/* Locations (multi-select simulation) */}
-                    <div className="relative w-[80%]">
-                        <label className="block text-md font-semibold text-gray-600 mb-2">
-                            Select Location(s)
-                        </label>
-
-                        <div className="w-full border border-slate-300 rounded-sm px-3 py-2 flex flex-wrap gap-2 bg-white">
-                            {/* Selected Locations */}
-                            {locations.map((place) => (
-                                <div
-                                    key={place}
-                                    className="bg-secondary/70 min-w-[100px] text-slate-800 text-sm px-3 py-1 rounded-sm shadow-sm flex justify-between items-center"
-                                    onClick={() => handleRemoveTag(place)}
+            <div className="flex flex-col justify-start items-start gap-4 md:gap-6">
+                {/* Rent / Buy */}
+                <div className="w-full">
+                    <div className="flex flex-col sm:flex-row justify-start sm:justify-center items-start sm:items-center gap-2 w-full">
+                        {filtertypes.map((option) => (
+                            <div key={option} className="relative flex justify-center items-center w-full sm:w-auto">
+                                <input
+                                    type="radio"
+                                    name="rentbuy"
+                                    id={option}
+                                    value={option}
+                                    checked={filterprops.filterType === option}
+                                    onChange={handleFilterType}
+                                    className="hidden"
+                                />
+                                <label
+                                    htmlFor={option}
+                                    className={`cursor-pointer w-full text-center px-4 py-2 md:px-12 md:py-2 rounded-md border-2 transition-all duration-300 ${filterprops.filterType === option
+                                        ? "bg-secondary text-white border-secondary"
+                                        : "bg-white border-gray-300 text-gray-700"
+                                        } font-medium`}
                                 >
-                                    {place} <GrClose className="text-red-400 cursor-pointer ml-2" />
-                                </div>
-                            ))}
-
-                            {/* Input Field */}
-                            <input
-                                type="text"
-                                onChange={handleLocation}
-                                ref={locationInputRef}
-                                placeholder={`${locations.length > 0 ? 'Add More+' : 'Enter locations'}`}
-                                className="flex-grow w-auto border-none outline-none text-md text-gray-700 py-1 bg-transparent placeholder-gray-400"
-                            />
-                        </div>
-
-                        {/* Dropdown Suggestions */}
-                        {suggLocation && (
-                            <div className="absolute w-[70%] max-h-[180px] custom-scrollbar overflow-y-auto bg-white/95 shadow-md rounded-sm mt-1 z-20 border border-gray-300">
-                                {locationDropDown.map((loc) => (
-                                    <h2
-                                        key={loc}
-                                        className="px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 cursor-pointer"
-                                        onClick={() => {
-                                            setLocations(prev => prev.includes(loc) ? prev : [...prev, loc]);
-                                            setLocationDropDown([]);
-                                            if (locationInputRef.current) {
-                                                locationInputRef.current.value = "";
-                                            }
-                                            setSuggLocation(false);
-                                        }}
-                                    >
-                                        {loc}
-                                    </h2>
-                                ))}
+                                    {option.charAt(0).toUpperCase() + option.slice(1)}
+                                </label>
                             </div>
-                        )}
+                        ))}
+                    </div>
+                </div>
+
+                {/* Property Type */}
+                <div className="w-full">
+                    <label className="block text-sm md:text-md font-semibold text-gray-600 mb-1">Select Property</label>
+                    <div className="w-full flex flex-wrap justify-start items-center gap-2">
+                        {propertyTypes.map((type) => (
+                            <React.Fragment key={type.name}>
+                                <input
+                                    type="radio"
+                                    name="propertyType"
+                                    id={type.name}
+                                    value={type.name}
+                                    className="peer hidden"
+                                    checked={filterprops.property === type.name}
+                                    onChange={() =>
+                                        setFilterProps(prev => ({
+                                            ...prev,
+                                            property: type.name,
+                                        }))
+                                    }
+                                />
+                                <label
+                                    className={`${filterprops.property === type.name
+                                        ? "bg-secondary text-white"
+                                        : "bg-secondary/10 border border-secondary/60"
+                                        } text-slate-700 text-sm md:text-md cursor-pointer px-2 py-1 md:px-3 md:py-1 rounded whitespace-nowrap`}
+                                    htmlFor={type.name}
+                                >
+                                    {type.name}
+                                </label>
+                            </React.Fragment>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Locations (multi-select simulation) */}
+                <div className="relative w-full md:w-[80%]">
+                    <label className="block text-sm md:text-md font-semibold text-gray-600 mb-1 md:mb-2">
+                        Select Location(s)
+                    </label>
+
+                    <div className="w-full border border-slate-300 rounded-sm px-2 py-1 md:px-3 md:py-2 flex flex-wrap gap-1 md:gap-2 bg-white min-h-[42px]">
+                        {/* Selected Locations */}
+                        {locations.map((place) => (
+                            <div
+                                key={place}
+                                className="bg-secondary/70 min-w-[80px] md:min-w-[100px] text-slate-800 text-xs md:text-sm px-2 py-0.5 md:px-3 md:py-1 rounded-sm shadow-sm flex justify-between items-center"
+                                onClick={() => handleRemoveTag(place)}
+                            >
+                                <span className="truncate max-w-[70px] md:max-w-none">{place}</span>
+                                <GrClose className="text-red-400 cursor-pointer ml-1 md:ml-2 text-xs md:text-sm" />
+                            </div>
+                        ))}
+
+                        {/* Input Field */}
+                        <input
+                            type="text"
+                            onChange={handleLocation}
+                            ref={locationInputRef}
+                            placeholder={`${locations.length > 0 ? 'Add More+' : 'Enter locations'}`}
+                            className="flex-grow min-w-[100px] border-none outline-none text-sm md:text-md text-gray-700 py-1 bg-transparent placeholder-gray-400"
+                        />
                     </div>
 
-                    {/* Bedrooms */}
-                    {bedrooms.length > 0 && <div className="relative">
-                        <label className="block text-md font-semibold text-gray-600 mb-1">Bedrooms</label>
-                        <div className="w-full flex flex-wrap gap-2">
-                            {bedrooms.length > 0 ? bedrooms.map((item) => {
+                    {/* Dropdown Suggestions */}
+                    {suggLocation && (
+                        <div className="absolute w-full md:w-[70%] max-h-[180px] custom-scrollbar overflow-y-auto bg-white/95 shadow-md rounded-sm mt-1 z-20 border border-gray-300">
+                            {locationDropDown.map((loc) => (
+                                <h2
+                                    key={loc}
+                                    className="px-3 py-1.5 md:px-4 md:py-2 text-sm text-gray-700 hover:bg-blue-100 cursor-pointer truncate"
+                                    onClick={() => {
+                                        setLocations(prev => prev.includes(loc) ? prev : [...prev, loc]);
+                                        setLocationDropDown([]);
+                                        if (locationInputRef.current) {
+                                            locationInputRef.current.value = "";
+                                        }
+                                        setSuggLocation(false);
+                                    }}
+                                >
+                                    {loc}
+                                </h2>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Bedrooms */}
+                {bedrooms.length > 0 && (
+                    <div className="w-full">
+                        <label className="block text-sm md:text-md font-semibold text-gray-600 mb-1">Bedrooms</label>
+                        <div className="w-full flex flex-wrap gap-1 md:gap-2">
+                            {bedrooms.map((item) => {
                                 const isChecked = selectedBedrooms.includes(item);
 
                                 return (
@@ -363,114 +364,28 @@ const FilterPopup = ({ isOpen, onClose }: FilterPopupProps) => {
                                         />
                                         <label
                                             htmlFor={`bedroom-${item}`}
-                                            className={`cursor-pointer px-3 py-1 text-md flex justify-center items-center rounded ${selectedBedrooms.includes(item) ? "bg-secondary text-white " : "border-1 border-secondary/70 bg-secondary/10"}`}
+                                            className={`cursor-pointer px-2 py-0.5 md:px-3 md:py-1 text-sm md:text-md flex justify-center items-center rounded ${selectedBedrooms.includes(item)
+                                                ? "bg-secondary text-white"
+                                                : "border border-secondary/70 bg-secondary/10"
+                                                }`}
                                         >
                                             {item}
                                         </label>
                                     </React.Fragment>
                                 );
-                            }) : <span>Not Applicable for {filterprops.property}.</span>}
-                        </div>
-                    </div>}
-
-                    {/* Size */}
-                    {sizeOptions.length > 0 && <div className="relative ">
-                        <label className="block text-md font-semibold text-gray-600 mb-1">Size (SQM)</label>
-                        <div className="w-full flex justify-center items-center gap-2">
-
-                            <div className="w-full flex justify-start items-start flex-col">
-                                <select
-                                    className="w-full min-w-[200px] bg-secondary/10 text-md text-slate-700 p-3 border border-gray-300 rounded-sm py-2 px-3 outline-none"
-                                    onChange={handleSize}
-                                    name="minSize"
-                                >
-                                    {sizeOptions.map((size) => (
-                                        <option key={size} value={size}>
-                                            {size}
-                                        </option>
-                                    ))}
-                                </select>
-
-                                <span className="ml-1 text-primary font-mono">Min</span>
-                            </div>
-
-                            {maxSizeOptions.length > 0 && (
-                                <div className="w-full flex justify-start items-start flex-col">
-                                    <select
-                                        name="maxSize"
-                                        onChange={handleSize}
-                                        className="w-full min-w-[200px] bg-secondary/10 text-md text-slate-700 p-3 border border-gray-300 rounded-sm py-2 px-3 outline-none"
-                                    >
-                                        {maxSizeOptions.map((size) => (
-                                            <option key={size} value={size}>{size}</option>
-                                        ))}
-                                    </select>
-                                    <span className="ml-1 text-primary font-mono">Max</span>
-                                </div>
-                            )}
-                        </div>
-                    </div>}
-
-                    {/* Furnishing */}
-                    <div className="relative">
-                        <label className="block text-md font-semibold text-gray-600 mb-2">Furnishing</label>
-                        <div className="w-full flex justify-start items-center gap-2 flex-wrap">
-                            {furnishingOptions.map((item) => {
-                                return (
-                                    <div key={item} className="">
-                                        <input
-                                            type="checkbox"
-                                            name="furnished"
-                                            onChange={handleFurnished}
-                                            id={item}
-                                            value={item}
-                                            className="hidden"
-                                        />
-                                        <label
-                                            htmlFor={item}
-                                            className={`cursor-pointer p-2 text-slate-700 rounded ${filterprops.furnished.includes(item) ? "bg-secondary/90 text-white" : "border-1 border-secondary/70 bg-secondary/10"}`}
-                                        >
-                                            {item}
-                                        </label>
-                                    </div>
-                                );
                             })}
                         </div>
                     </div>
+                )}
 
-                    {/* Price / Rent */}
-                    <div className="relative">
-                        <label className="block text-md font-semibold text-gray-600 mb-1">Rent / Price</label>
-                        {/* <div className="w-full flex justify-center items-center gap-1" >
-                            <div className="flex flex-col w-full">
-                                <input
-                                    type="text"
-                                    name="minBudget"
-                                    placeholder="Min amount"
-                                    value={filterprops.budget.min || ''}
-                                    onChange={handleBudget}
-                                    className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:ring-2 focus:ring-blue-500 outline-none"
-                                />
-                                <span className="ml-1 text-red-800">Min</span>
-                            </div>
-                            -
-                            <div className="flex flex-col w-full">
-                                <input
-                                    type="text"
-                                    name="maxBudget"
-                                    value={filterprops.budget.max || ''}
-                                    onChange={handleBudget}
-                                    placeholder="max amount"
-                                    className={`w-full border border-gray-300 rounded-lg py-2 px-3 focus:ring-2 ${!filterprops.budget.err ? 'focus:ring-blue-500' : 'focus:ring-red-500'} outline-none`}
-                                />
-                                <span className="ml-1 text-red-800">Max</span>
-                            </div>
-                        </div> */}
-                        <div className="w-full flex justify-center items-center gap-2">
-
-                            <div className="w-full flex justify-start items-start flex-col">
+                {/* Size */}
+                {sizeOptions.length > 0 && (
+                    <div className="w-full">
+                        <label className="block text-sm md:text-md font-semibold text-gray-600 mb-1">Size (SQM)</label>
+                        <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div className="flex flex-col">
                                 <select
-                                    className="w-full min-w-[200px] bg-secondary/10 text-md text-slate-700 p-3 border border-gray-300 rounded-sm py-2 px-3 outline-none"
+                                    className="w-full bg-secondary/10 text-sm md:text-md text-slate-700 p-2 md:p-3 border border-gray-300 rounded-sm outline-none"
                                     onChange={handleSize}
                                     name="minSize"
                                 >
@@ -480,46 +395,108 @@ const FilterPopup = ({ isOpen, onClose }: FilterPopupProps) => {
                                         </option>
                                     ))}
                                 </select>
-
-                                <span className="ml-1 text-primary font-mono">Min</span>
+                                <span className="ml-1 text-primary font-mono text-xs md:text-sm">Min</span>
                             </div>
 
-                            {(
-                                <div className="w-full flex justify-start items-start flex-col">
+                            {maxSizeOptions.length > 0 && (
+                                <div className="flex flex-col">
                                     <select
                                         name="maxSize"
                                         onChange={handleSize}
-                                        className="w-full min-w-[200px] bg-secondary/10 text-md text-slate-700 p-3 border border-gray-300 rounded-sm py-2 px-3 outline-none"
+                                        className="w-full bg-secondary/10 text-sm md:text-md text-slate-700 p-2 md:p-3 border border-gray-300 rounded-sm outline-none"
                                     >
                                         {maxSizeOptions.map((size) => (
                                             <option key={size} value={size}>{size}</option>
                                         ))}
                                     </select>
-                                    <span className="ml-1 text-primary font-mono">Max</span>
+                                    <span className="ml-1 text-primary font-mono text-xs md:text-sm">Max</span>
                                 </div>
                             )}
                         </div>
                     </div>
-                    <div className="w-full h-[1px] bg-slate-300 mt-4"></div>
-                    {/* Submit Button */}
-                    <div className="w-full flex justify-end mt-0 gap-5">
-                        <div
-                            className="flex justify-center items-center underline text-primary cursor-pointer"
-                            onClick={handleResetFilter}
-                        >
-                            Reset Filters
-                        </div>
-                        <button
-                            onClick={handleRedirect}
-                            className="px-6 py-3 bg-primary text-md font-semibold text-white rounded-md cursor-pointer hover:bg-primary/80"
-                        >
-                            <IoMdDoneAll className="inline-block text-2xl text-white" /> Search Now
-                        </button>
+                )}
+
+                {/* Furnishing */}
+                <div className="w-full">
+                    <label className="block text-sm md:text-md font-semibold text-gray-600 mb-1 md:mb-2">Furnishing</label>
+                    <div className="flex justify-start items-center gap-2 flex-wrap">
+                        {furnishingOptions.map((item) => (
+                            <div key={item} className="">
+                                <input
+                                    type="checkbox"
+                                    name="furnished"
+                                    onChange={handleFurnished}
+                                    id={item}
+                                    value={item}
+                                    className="hidden"
+                                />
+                                <label
+                                    htmlFor={item}
+                                    className={`cursor-pointer p-1 md:p-2 text-xs md:text-sm text-slate-700 rounded text-center ${filterprops.furnished.includes(item)
+                                        ? "bg-secondary/90 text-white"
+                                        : "border border-secondary/70 bg-secondary/10"
+                                        }`}
+                                >
+                                    {item}
+                                </label>
+                            </div>
+                        ))}
                     </div>
                 </div>
+
+                {/* Price / Rent */}
+                <div className="w-full">
+                    <label className="block text-sm md:text-md font-semibold text-gray-600 mb-1">Rent / Price</label>
+                    <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div className="flex flex-col">
+                            <input
+                                type="number"
+                                name="minBudget"
+                                placeholder="Min amount"
+                                value={filterprops.budget.min || ''}
+                                onChange={handleBudget}
+                                className="w-full bg-secondary/10 text-sm md:text-md text-slate-700 p-2 md:p-3 border border-gray-300 rounded-sm outline-none"
+                            />
+                            <span className="ml-1 text-primary font-mono text-xs md:text-sm">Min</span>
+                        </div>
+                        <div className="flex flex-col">
+                            <input
+                                type="number"
+                                name="maxBudget"
+                                value={filterprops.budget.max || ''}
+                                onChange={handleBudget}
+                                placeholder="Max amount"
+                                className={`w-full bg-secondary/10 text-sm md:text-md text-slate-700 p-2 md:p-3 border border-gray-300 rounded-sm outline-none ${filterprops.budget.err ? 'border-red-500' : ''
+                                    }`}
+                            />
+                            <span className="ml-1 text-primary font-mono text-xs md:text-sm">Max</span>
+                        </div>
+                    </div>
+                    {filterprops.budget.err && (
+                        <p className="text-red-500 text-xs mt-1">Max budget must be greater than min budget</p>
+                    )}
+                </div>
+
+                <div className="w-full h-[1px] bg-slate-300 mt-2 md:mt-4"></div>
+
+                {/* Submit Button */}
+                <div className="w-full flex flex-col-reverse sm:flex-row justify-between sm:justify-end gap-3 mt-0">
+                    <button
+                        onClick={handleResetFilter}
+                        className="px-4 py-2 text-sm md:text-md bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
+                    >
+                        Reset Filters
+                    </button>
+                    <button
+                        onClick={handleRedirect}
+                        className="px-4 py-2 md:px-6 md:py-3 bg-primary text-sm md:text-md font-semibold text-white rounded-md hover:bg-primary-dark transition-colors flex items-center justify-center gap-1"
+                    >
+                        <IoMdDoneAll className="text-lg md:text-xl" />
+                        <span>Search Now</span>
+                    </button>
+                </div>
             </div>
-        </div>
-        // </div>
+        </motion.div>
     );
 };
 
