@@ -13,7 +13,7 @@ export default function SliderCenterMode(props: slider) {
         dots = true,
         autoplay = true,
         centerMode = true,
-        speed = 500,
+        speed = 2000,
         itemPerView = 3,
     } = props;
 
@@ -31,7 +31,7 @@ export default function SliderCenterMode(props: slider) {
             {
                 breakpoint: 1024, // <1024px
                 settings: {
-                    slidesToShow: 3,
+                    slidesToShow: itemPerView,
                 },
             },
             {

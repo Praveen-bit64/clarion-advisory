@@ -11,7 +11,7 @@ const Featured_Listings = () => {
     console.log(properties);
 
     return (
-        <div className="w-full h-auto bg-slate-100 flex justify-center items-center">
+        <div className="w-full h-auto bg-slate-200 flex justify-center items-center">
             <GlobalContainer>
                 <div className="w-full h-auto min-h-[200px] py-5">
                     <h1 className="lg:text-3xl text-2xl text-slate-600 font-semibold mt-10">Discover Our Featured Listings</h1>
