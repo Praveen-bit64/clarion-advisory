@@ -1,4 +1,5 @@
 'use client'
+import Link from "next/link";
 import { useState } from "react";
 import { GrClose } from "react-icons/gr";
 import { VscListSelection } from "react-icons/vsc";
@@ -15,9 +16,9 @@ const Header = () => {
                     </div>
                     <div className="lg:w-[70%] lg:block hidden">
                         <ul className="w-full flex justify-center items-center gap-10 text-white text-sm font-semibold" >
-                            <li>Home</li>
+                            <li><Link href={'/'}>Home</Link></li>
                             <li>About us</li>
-                            <li>Properties</li>
+                            <li><Link href={'/properties'}>Properties</Link></li>
                             <li>contact</li>
                         </ul>
                     </div>
