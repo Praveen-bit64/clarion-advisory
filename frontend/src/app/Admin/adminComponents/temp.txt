@@ -1,0 +1,127 @@
+ {/**1st section */}
+                        {/* <div className="w-full flex justify-center items-start gap-5 flex-col ">
+                            <h2 className="text-xl text-slate-700 font-semibold">Property Description</h2>
+                            <div className="w-full flex justify-start items-start flex-col gap-1.5">
+                                <label htmlFor="title" className="text-md font-semibold">Title</label>
+                                <input type="text" placeholder="Property Name" className="w-full p-2 rounded-lg border border-slate-200 outline-slate-400" />
+                            </div>
+                            <div className="w-full flex justify-start items-start flex-col gap-1.5">
+                                <label htmlFor="desc" className="text-md font-semibold">Description</label>
+                                <textarea placeholder="Property Description" className="w-full p-2 rounded-lg border border-slate-200 outline-slate-400 h-[200px]" />
+                            </div>
+                            <div className="w-full flex justify-center items-center flex-wrap gap-2.5">
+                                <div className="w-[48%] flex flex-col justify-start items-start gap-1.5">
+                                    <h5 className="text-md font-semibold">Property Category</h5>
+                                    <select name="" id="" className="w-full p-3 outline-none border border-slate-400 rounded-lg">
+                                        <option value="">Apartment</option>
+                                        <option value="">WareHouse</option>
+                                        <option value="">Villa</option>
+                                        <option value="">Office Space</option>
+                                    </select>
+                                </div>
+                                <div className="w-[48%] flex flex-col justify-start items-start gap-1.5">
+                                    <h5 className="text-md font-semibold">Property Type</h5>
+                                    <select name="" id="" className="w-full p-3 outline-none border border-slate-400 rounded-lg">
+                                        <option value="">For Sale</option>
+                                        <option value="">For Rent</option>
+                                    </select>
+                                </div>
+                                <div className="w-[48%] flex flex-col justify-start items-start gap-1.5">
+                                    <h5 className="text-md font-semibold">Price in BHP</h5>
+                                    <input type="text" className="w-full p-2 border border-slate-400 rounded-lg" placeholder="Enter Price in BHP" />
+                                </div>
+                                <div className="w-[48%] flex flex-col justify-start items-start gap-1.5">
+                                    <h5 className="text-md font-semibold">Property Status</h5>
+                                    <select name="" id="" className="w-full p-3 outline-none border border-slate-400 rounded-lg">
+                                        <option value="">Hold</option>
+                                        <option value="">Publish</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div> */}
+                        
+                        {/**2nd section */}
+                        <div className="w-full flex justify-center items-start gap-5 flex-col">
+                            <h2 className="text-xl text-slate-700 font-semibold">Upload photos of your property</h2>
+                            <div className="w-full flex flex-col gap-6 mt-6">
+
+                                {/* Upload Sections Row */}
+                                <div className="w-full flex flex-col lg:flex-row justify-between items-start gap-6">
+
+                                    {/* Thumbnail Upload */}
+                                    <div className="w-full lg:w-[48%] bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                                        <h5 className="text-md font-semibold text-slate-700 mb-2">
+                                            Upload Thumbnail Image <span className="text-sm text-gray-500">(Single image)</span>
+                                        </h5>
+                                        <label className="block w-full border-2 border-dashed border-gray-300 p-4 text-center rounded-md cursor-pointer hover:border-secondary hover:bg-secondary/5 transition duration-200">
+                                            <input type="file" accept="image/*" className="hidden" />
+                                            <span className="text-sm text-gray-600">Click or drag to upload thumbnail</span>
+                                        </label>
+                                    </div>
+
+                                    {/* Gallery Upload */}
+                                    <div className="w-full lg:w-[48%] bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                                        <h5 className="text-md font-semibold text-slate-700 mb-2">
+                                            Upload Property Gallery Images <span className="text-sm text-gray-500">(Up to 12 images)</span>
+                                        </h5>
+                                        <label className="block w-full border-2 border-dashed border-gray-300 p-4 text-center rounded-md cursor-pointer hover:border-secondary hover:bg-secondary/5 transition duration-200">
+                                            <input type="file" accept="image/*" multiple className="hidden" />
+                                            <span className="text-sm text-gray-600">Click or drag to upload gallery images</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {/* Video Upload Section */}
+                                <div className="w-full bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                                    <h5 className="text-md font-semibold text-slate-700 mb-2">
+                                        Upload Property Walkthrough Video <span className="text-sm text-gray-500">(Single video)</span>
+                                    </h5>
+                                    <label className="block w-full border-2 border-dashed border-gray-300 p-4 text-center rounded-md cursor-pointer hover:border-secondary hover:bg-secondary/5 transition duration-200">
+                                        <input type="file" accept="video/*" className="hidden" />
+                                        <span className="text-sm text-gray-600">Click or drag to upload video</span>
+                                    </label>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        {/**3rd section */}
+                        <div className="w-full flex justify-center items-start flex-col gap-3">
+                            <h2 className="text-xl text-slate-700 font-semibold">Property Location</h2>
+                            <div className="w-full flex justify-start items-start flex-col gap-1.5">
+                                <h5 className="text-md font-semibold">Property Address</h5>
+                                <input type="text" placeholder="Enter Address" className="w-full p-3 rounded-lg outline-none border border-slate-400" />
+                            </div>
+                            <div className="w-full flex justify-center items-start flex-wrap gap-2.5">
+                                <div className="w-[48%] flex flex-col justify-start items-start gap-1.5">
+                                    <h5 className="text-md font-semibold">State</h5>
+                                    <select name="" id="" className="w-full p-3 outline-none border border-slate-400 rounded-lg">
+                                        <option value="">TamilNadu</option>
+                                        <option value="">Kerala</option>
+                                        <option value="">Maharastra</option>
+                                    </select>
+                                </div>
+                                <div className="w-[48%] flex flex-col justify-start items-start gap-1.5">
+                                    <h5 className="text-md font-semibold">City</h5>
+                                    <select name="" id="" className="w-full p-3 outline-none border border-slate-400 rounded-lg">
+                                        <option value="">Chennai</option>
+                                        <option value="">Tiruvannamalai</option>
+                                        <option value="">coimbatore</option>
+                                    </select>
+                                </div>
+                                <div className="w-[48%] flex flex-col justify-start items-start gap-1.5">
+                                    <h5 className="text-md font-semibold">Country</h5>
+                                    <select name="" id="" className="w-full p-3 outline-none border border-slate-400 rounded-lg">
+                                        <option value="">India</option>
+                                        <option value="">Bahrain</option>
+                                        <option value="">Russia</option>
+                                    </select>
+                                </div>
+                                <div className="w-[48%] flex flex-col justify-start items-start gap-1.5">
+                                    <h5 className="text-md font-semibold">ZipCode</h5>
+                                    <input type="text" className="w-full rounded-lg outline-none border border-slate-400 p-2" />
+                                </div>
+                            </div>
+                        </div>
