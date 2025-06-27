@@ -125,3 +125,108 @@
                                 </div>
                             </div>
                         </div>
+
+                                                {/**4th section */}
+                        <div className="w-full flex justify-start flex-wrap items-start gap-2.5">
+                            <h2 className="text-xl text-slate-700 font-semibold w-full">Property Details</h2>
+                            <div className="w-full flex justify-between items-center">
+                                <div className="w-[40%]">
+                                    <h6 className="text-sm font-mono font-semibold">Bedrooms & Baths</h6>
+                                    <Switcher enables={enables} />
+                                </div>
+                                <button 
+  onClick={() => {
+    setIsModalOpen(true);
+    setModalContent('addproperty');
+  }}
+  className="w-[30%] p-2 bg-primary text-lg text-slate-50 cursor-pointer"
+>
+  Add New Field
+</button>
+                            </div>
+                            {isEnabled && <div className="w-[48%] flex justify-start items-start gap-1.5 flex-col">
+                                <h5 className="text-md font-semibold">Bedrooms</h5>
+                                <input type="text" className="w-full p-2 rounded-xl border border-slate-300 outline-none" placeholder="Bedrooms Available" />
+                            </div>}
+                            {isEnabled && <div className="w-[48%] flex justify-start items-start gap-1.5 flex-col">
+                                <h5 className="text-md font-semibold">Baths</h5>
+                                <input type="text" className="w-full p-2 rounded-xl border border-slate-300 outline-none" placeholder="Baths Available" />
+                            </div>}
+                            <div className="w-[48%] flex justify-start items-start gap-1.5 flex-col">
+                                <h5 className="text-md font-semibold">Size (SQM)</h5>
+                                <input type="text" className="w-full p-2 rounded-xl border border-slate-300 outline-none" placeholder="Available size in sqm" />
+                            </div>
+                            <div className="w-[48%] flex justify-start items-start gap-1.5 flex-col">
+                                <h5 className="text-md font-semibold">Furnished</h5>
+                                <select name="" id="" className="w-full p-[10px] border border-slate-300 rounded-xl outline-none">
+                                    <option value="">Fully Furnished</option>
+                                    <option value="">Semi-Furnished</option>
+                                    <option value="">Unfurnished</option>
+                                </select>
+                            </div>
+                            <div className="w-[48%] flex justify-start items-start gap-1.5 flex-col">
+                                <h5 className="text-md font-semibold">Feature Tag</h5>
+                                <select name="" id="" className="w-full p-[10px] border border-slate-300 rounded-xl outline-none">
+                                    <option value="">None</option>
+                                    <option value="">Featured</option>
+                                    <option value="">Newest</option>
+                                    <option value="">Trending</option>
+                                </select>
+                            </div>
+                            {propertyDetailsArr.length > 0 && propertyDetailsArr.map((item, ndx) => {
+                                return (
+                                    <div key={ndx} className="w-[48%] flex justify-start items-start gap-1.5 flex-col">
+                                        <div className="w-full flex justify-between items-center">
+                                            <h5 className="text-md font-semibold">{item.property}</h5>
+                                            <RiDeleteBin6Line onClick={() => handleRemoveCustomProperty(item.property)} className=" text-red-500 cursor-pointer" />
+                                        </div>
+                                        <input type="text" onChange={handleAddInputs} className="w-full p-[10px] border border-slate-300 rounded-xl bg-slate-200 outline-none cursor-not-allowed" name={item.property} disabled id="" value={item.value} />
+                                    </div>
+                                )
+                            })}
+                        </div>
+                                                {/**5th Section */}
+                        <div className="w-full flex justify-start flex-wrap items-start gap-2.5">
+                            <div className="w-full flex justify-between items-center">
+                                <h2 className="text-xl text-slate-700 font-semibold w-full">Select Amenities</h2>
+                                <button onClick={() => {
+                                    setIsModalOpen(true);
+                                    setModalContent('addamenity')
+                                }} className="w-1/6 p-2 bg-primary rounded-lg cursor-pointer text-white text-md">Add New</button>
+                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                {amenities.map((item) => (
+                                    <div key={item}>
+                                        <input
+                                            type="checkbox"
+                                            id={item}
+                                            onChange={() => handleAmenities(item)}
+                                            checked={amenitiesAvail.includes(item)}
+                                            className="hidden peer" // Hide default checkbox
+                                        />
+                                        <label
+                                            htmlFor={item}
+                                            className="flex items-center p-3 border rounded-lg cursor-pointer 
+                   hover:bg-primary/5 peer-checked:border-primary/30 
+                   peer-checked:bg-primary/10 peer-checked:text-primary"
+                                        >
+                                            <span className="mr-2">✓</span> {item}
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+
+
+                                                {/**success status */}
+                        <div className="w-full mx-auto my-10 p-6 bg-green-50 border border-green-200 rounded-lg shadow-md flex flex-col items-center text-center">
+                            <FaCheckCircle className="text-green-500 text-5xl mb-4" />
+                            <h2 className="text-xl font-semibold text-green-800 mb-2">Property Added Successfully!</h2>
+                            <p className="text-green-700 mb-4">Your listing has been published and is now visible to visitors.</p>
+                            <Link href="/admin/listings">
+                                <button className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-md transition duration-200">
+                                    Manage Listings
+                                </button>
+                            </Link>
+                        </div>
