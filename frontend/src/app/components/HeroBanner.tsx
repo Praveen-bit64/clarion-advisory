@@ -7,7 +7,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { GrClose } from "react-icons/gr";
 import GlobalModal from "./GlobalModal";
 import FilterPopup from "./FilterPopup";
+import Switcher from "./Switcher";
+import { CiEdit } from "react-icons/ci";
+import { useEditMode } from "../context/EditModeToggle";
 const HeroBanner = () => {
+    const { isEditMode } = useEditMode();
     const [suggestLocation, setSuggestLocation] = useState(locations)
     const [suggestion, setSuggestion] = useState(false)
     const [suggestionAddMore, setSuggestionAddMore] = useState<boolean>(false)
@@ -18,6 +22,41 @@ const HeroBanner = () => {
 
     const [input, setInput] = useState('')
     console.log(localSearch, 23423);
+
+    //edit section
+    const [isEnabled, setIsEnabled] = useState(true)
+    const enables = (value: boolean) => {
+        setIsEnabled(value)
+    }
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const EditComponent = (props: { isOpen: boolean, setIsOpen: any }) => {
+        const { isOpen, setIsOpen } = props
+        return (
+            <GlobalModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+                <div className="w-full flex justify-start items-start flex-col bg-white py-5 px-2 gap-3">
+                    <div className="w-full flex justify-start items-start flex-col">
+                        <label htmlFor="title" className="text-lg font-semibold">Section Visibility</label>
+                        <Switcher enables={enables} />
+                    </div>
+                    <div className="w-full flex flex-col justify-start items-start gap-2">
+                        <label htmlFor="title" className="text-lg font-semibold">Title</label>
+                        <input type="text" placeholder="Title" className="w-full p-2 outline-none border border-slate-300 bg-white" />
+                    </div>
+                    <div className="w-full flex flex-col justify-start items-start gap-2">
+                        <label htmlFor="title" className="text-lg font-semibold">Description</label>
+                        <input type="text" placeholder="Description" className="w-full p-2 outline-none border border-slate-300 bg-white" />
+                    </div>
+                    <div className="w-full flex justify-end items-end pt-3 gap-2">
+                        <button onClick={() => setIsOpen(false)} className="w-[100px] bg-amber-600 p-2 rounded-md text-white">Cancel</button>
+                        <button className="w-[100px] bg-secondary p-2 rounded-md text-white">Confirm</button>
+                    </div>
+                </div>
+            </GlobalModal>
+        )
+    }
+    const memoModal = useMemo(() => (
+        <EditComponent isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
+    ), [isModalOpen])
 
     useEffect(() => {
         const stored = localStorage.getItem('localsearch');
@@ -131,8 +170,11 @@ const HeroBanner = () => {
             <GlobalModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
                 <FilterPopup isOpen={true} onClose={() => setIsOpen(false)} />
             </GlobalModal>
-            <div className="w-full lg:h-[780px] h-[500px] relative ">
-                {/* Enter */}
+            <div className="w-full lg:h-[780px] h-[500px] relative group">
+                {isModalOpen && memoModal}
+                {isEditMode && <div className="absolute w-full hidden min-h-full bg-primary/30 top-0 left-0 z-9999 group-hover:flex justify-center items-start border-4 border-rose-500">
+                    <CiEdit onClick={() => setIsModalOpen(true)} className="text-7xl text-rose-500 border-2 hover:border-rose-500 bg-white rounded-full p-2 hover:shadow-2xl absolute top-3.5 cursor-pointer" />
+                </div>}
                 <div className="w-full h-full absolute bg-primary/40 top-0 left-0 z-10"></div>
                 <div className="bg-gradient-to-b from-black/70 to-transparent h-[300px] w-full absolute z-11"></div>
                 {memoizedSlider}

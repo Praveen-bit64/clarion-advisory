@@ -12,9 +12,11 @@ import { CiEdit } from "react-icons/ci";
 import GlobalModal from "./GlobalModal";
 import { useMemo, useState } from "react";
 import Switcher from "./Switcher";
+import { useEditMode } from "../context/EditModeToggle";
 
 
 const Featured_Listings = () => {
+    const { isEditMode } = useEditMode();
     const [isEnabled, setIsEnabled] = useState(true)
     const enables = (value: boolean) => {
         setIsEnabled(value)
@@ -52,9 +54,9 @@ const Featured_Listings = () => {
     return (
         <div className="w-full h-auto bg-slate-200 flex justify-center items-center relative group">
             {isOpen && memoModal}
-            <div className="absolute w-full hidden min-h-full bg-primary/30 top-0 left-0 z-9999 group-hover:flex justify-center items-start border-4 border-rose-500">
+            {isEditMode && <div className="absolute w-full hidden min-h-full bg-primary/30 top-0 left-0 z-9999 group-hover:flex justify-center items-start border-4 border-rose-500">
                 <CiEdit onClick={() => setIsOpen(true)} className="text-7xl text-rose-500 border-2 hover:border-rose-500 bg-white rounded-full p-2 hover:shadow-2xl absolute top-3.5 cursor-pointer" />
-            </div>
+            </div>}
             <GlobalContainer>
                 <div className="w-full h-auto min-h-[200px] py-5">
                     <h1 className="lg:text-3xl text-2xl text-slate-600 font-semibold mt-10">Discover Our Featured Listings</h1>

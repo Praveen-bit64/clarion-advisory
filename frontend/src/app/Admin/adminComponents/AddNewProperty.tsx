@@ -1,3 +1,4 @@
+'use client'
 import GlobalModal from "@/app/components/GlobalModal";
 import Switcher from "@/app/components/Switcher";
 import Link from "next/link";
@@ -13,6 +14,8 @@ type modalContent = 'addproperty' | 'addamenity' | ''
 
 const AddNewProperty = () => {
     const [formNav, setFormNav] = useState(0)
+    const [slugInput, setSlugInput] = useState('');
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
     const [isOpen, setIsOpen] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEnabled, setIsEnabled] = useState(true)
@@ -218,9 +221,9 @@ const AddNewProperty = () => {
             {/**Navigation */}
             <div className="w-[500px] flex justify-center items-center my-3 mb-10 relative duration-200 transition-all ease-linear">
                 <span className="w-[30px] h-[30px] p-2 rounded-full bg-green-600 text-xl text-white flex justify-center items-center font-semibold">1</span>
-                <span className={`w-[140px] h-[4px] ${formNav > 0 ? 'bg-green-600' : 'bg-slate-400'} duration-200 transition-all ease-linear`}></span><span className="absolute top-10 left-[-20px] font-mono">Description</span>
+                <span className={`w-[140px] h-[4px] ${formNav > 0 ? 'bg-green-600' : 'bg-slate-400'} duration-200 transition-all ease-linear`}></span><span className="absolute top-10 left-[-35px] font-mono">Description</span>
                 <span className={`w-[30px] h-[30px] p-2 rounded-full ${formNav > 0 ? 'bg-green-600' : 'bg-slate-400'} text-xl text-white flex justify-center items-center font-semibold`}>2</span>
-                <span className={`w-[140px] h-[4px] ${formNav > 1 ? 'bg-green-600' : 'bg-slate-400'} duration-200 transition-all ease-linear`}></span><span className="absolute top-10 left-[110px] font-mono">Media</span>
+                <span className={`w-[140px] h-[4px] ${formNav > 1 ? 'bg-green-600' : 'bg-slate-400'} duration-200 transition-all ease-linear`}></span><span className="absolute top-10 left-[80px] font-mono">Media & SEO</span>
                 <span className={`w-[30px] h-[30px] p-2 rounded-full ${formNav > 1 ? 'bg-green-600' : 'bg-slate-400'} text-xl text-white flex justify-center items-center font-semibold`}>3</span>
                 <span className={`w-[140px] h-[4px] ${formNav > 2 ? 'bg-green-600' : 'bg-slate-400'}`}></span><span className="absolute top-10 left-[220px] font-mono">Location</span>
                 <span className={`w-[30px] h-[30px] p-2 rounded-full ${formNav > 2 ? 'bg-green-600' : 'bg-slate-400'} text-xl text-white flex justify-center items-center font-semibold`}>4</span>
@@ -269,6 +272,31 @@ const AddNewProperty = () => {
                                     <option value="">Publish</option>
                                 </select>
                             </div>
+                            <div className="w-[98%] mb-6">
+                                <label htmlFor="customSlug" className="block text-md font-semibold text-gray-700 mb-2">
+                                    Custom Property Slug(Optional)
+                                </label>
+                                <div className="flex items-center border rounded-md overflow-hidden shadow-sm">
+                                    <span className="bg-gray-100 text-gray-600 px-3 py-2 text-sm">
+                                        {baseUrl}/
+                                    </span>
+                                    <input
+                                        id="customSlug"
+                                        type="text"
+                                        name="slug"
+                                        value={slugInput}
+                                        onChange={(e) => setSlugInput(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
+                                        placeholder="e.g. luxury-villa-doha"
+                                        className="flex-1 px-3 py-2 outline-none text-sm text-gray-800"
+                                    />
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">
+                                    This will be the URL of the property listing.
+                                </p>
+                                <p className="text-xs text-green-600 mt-1">
+                                    Preview: <strong>{baseUrl + `/` + slugInput}</strong>
+                                </p>
+                            </div>
                         </div>
 
                     </div> :
@@ -313,6 +341,24 @@ const AddNewProperty = () => {
                                         <input type="file" accept="video/*" className="hidden" />
                                         <span className="text-sm text-gray-600">Click or drag to upload video</span>
                                     </label>
+                                </div>
+                                {/**SEO */}
+                                <div className="w-full flex justify-start items-center gap-2.5 flex-wrap">
+                                    <div className="w-[48%] flex justify-start items-start flex-col gap-1.5">
+                                        <label htmlFor="title" className="text-sm font-semibold">Alt Tag(Optional)</label>
+                                        <input type="text" placeholder="Alt tag" className="w-full p-2 rounded-lg border border-slate-200 outline-slate-400" />
+
+                                    </div>
+                                    <div className="w-[48%] flex justify-start items-start flex-col gap-1.5">
+                                        <label htmlFor="title" className="text-sm font-semibold">Meta Title(Optional)</label>
+                                        <input type="text" placeholder="Meta Title" className="w-full p-2 rounded-lg border border-slate-200 outline-slate-400" />
+
+                                    </div>
+                                    <div className="w-[98%] flex justify-start items-start flex-col gap-1.5">
+                                        <label htmlFor="title" className="text-sm font-semibold">Meta Description(Optional)</label>
+                                        <input type="text" placeholder="Meta Title" className="w-full p-2 rounded-lg border border-slate-200 outline-slate-400" />
+
+                                    </div>
                                 </div>
 
                             </div>

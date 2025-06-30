@@ -5,6 +5,8 @@ import Header from "./components/Header";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Footer from "./components/Footer";
+import { EditModeToggleProvider } from "./context/EditModeToggle";
+import { ClerkProvider } from "@clerk/nextjs";
 
 
 const geistSans = Geist({
@@ -28,14 +30,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased custom-scrollbar`}
-      >
-        <Header />
-        {children}
-        <Footer />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased custom-scrollbar`}
+        ><EditModeToggleProvider>
+            <Header />
+            {children}
+            <Footer />
+          </EditModeToggleProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

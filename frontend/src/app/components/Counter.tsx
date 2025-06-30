@@ -4,8 +4,10 @@ import { useMemo, useState } from "react"
 import GlobalModal from "./GlobalModal"
 import Switcher from "./Switcher"
 import { CiEdit } from "react-icons/ci"
+import { useEditMode } from "../context/EditModeToggle"
 
 const Counter = () => {
+    const { isEditMode } = useEditMode();
     const [isEnabled, setIsEnabled] = useState(true)
     const enables = (value: boolean) => {
         setIsEnabled(value)
@@ -90,9 +92,9 @@ const Counter = () => {
     return (
         <div className="w-full h-auto py-10 pb-16 relative group">
             {isOpen && memoModal}
-            <div className="absolute w-full min-h-full bg-primary/30 top-0 left-0 z-9999 hidden group-hover:flex justify-center items-start border-4 border-rose-500">
+            {isEditMode && <div className="absolute w-full min-h-full bg-primary/30 top-0 left-0 z-9999 hidden group-hover:flex justify-center items-start border-4 border-rose-500">
                 <CiEdit onClick={() => setIsOpen(true)} className="text-7xl text-rose-500 border-2 hover:border-rose-500 bg-white rounded-full p-2 hover:shadow-2xl absolute top-3.5 cursor-pointer" />
-            </div>
+            </div>}
             <div className="w-full flex flex-col justify-center items-center py-6 pb-10">
                 <h2 className="lg:text-3xl text-2xl text-slate-600 font-semibold text-center">Trusted by Thousands, Growing Every Day</h2>
                 <p className="text-md text-slate-500 text-center">Showcasing premium properties, satisfied clients, and successful deals across every corner of the city.</p>

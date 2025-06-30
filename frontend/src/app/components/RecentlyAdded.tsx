@@ -1,3 +1,4 @@
+'use client'
 import GlobalContainer from "./GlobalContainer";
 import { RiFireLine } from "react-icons/ri";
 import { FaRegHeart } from "react-icons/fa";
@@ -5,10 +6,54 @@ import { IoMdOpen } from "react-icons/io";
 import { BsPatchPlus } from "react-icons/bs";
 import properties from "@/app/data/propertyData.json"
 import { MdArrowOutward } from "react-icons/md";
+import { useMemo, useState } from "react";
+import Switcher from "./Switcher";
+import GlobalModal from "./GlobalModal";
+import { CiEdit } from "react-icons/ci";
+import { useEditMode } from "../context/EditModeToggle";
 
 const RecentlyAdded = () => {
+    const { isEditMode } = useEditMode();
+    const [isEnabled, setIsEnabled] = useState(true)
+    const enables = (value: boolean) => {
+        setIsEnabled(value)
+    }
+    console.log(properties);
+    const [isOpen, setIsOpen] = useState(false)
+    const EditComponent = (props: { isOpen: boolean, setIsOpen: any }) => {
+        const { isOpen, setIsOpen } = props
+        return (
+            <GlobalModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+                <div className="w-full flex justify-start items-start flex-col bg-white py-5 px-2 gap-3">
+                    <div className="w-full flex justify-start items-start flex-col">
+                        <label htmlFor="title" className="text-lg font-semibold">Section Visibility</label>
+                        <Switcher enables={enables} />
+                    </div>
+                    <div className="w-full flex flex-col justify-start items-start gap-2">
+                        <label htmlFor="title" className="text-lg font-semibold">Title</label>
+                        <input type="text" placeholder="Title" className="w-full p-2 outline-none border border-slate-300 bg-white" />
+                    </div>
+                    <div className="w-full flex flex-col justify-start items-start gap-2">
+                        <label htmlFor="title" className="text-lg font-semibold">Description</label>
+                        <input type="text" placeholder="Description" className="w-full p-2 outline-none border border-slate-300 bg-white" />
+                    </div>
+                    <div className="w-full flex justify-end items-end pt-3 gap-2">
+                        <button onClick={() => setIsOpen(false)} className="w-[100px] bg-amber-600 p-2 rounded-md text-white">Cancel</button>
+                        <button className="w-[100px] bg-secondary p-2 rounded-md text-white">Confirm</button>
+                    </div>
+                </div>
+            </GlobalModal>
+        )
+    }
+    const memoModal = useMemo(() => (
+        <EditComponent isOpen={isOpen} setIsOpen={setIsOpen} />
+    ), [isOpen])
     return (
-        <div className="w-full h-auto bg-primary flex justify-center items-center">
+        <div className="w-full h-auto bg-primary flex justify-center items-center relative group">
+            {isOpen && memoModal}
+            {isEditMode && <div className="absolute w-full hidden min-h-full bg-primary/30 top-0 left-0 z-9999 group-hover:flex justify-center items-start border-4 border-rose-500">
+                <CiEdit onClick={() => setIsOpen(true)} className="text-7xl text-rose-500 border-2 hover:border-rose-500 bg-white rounded-full p-2 hover:shadow-2xl absolute top-3.5 cursor-pointer" />
+            </div>}
             <GlobalContainer className=" pb-16">
                 <h1 className="lg:text-3xl text-2xl text-slate-50 font-semibold mt-10">Explore Our Recent Listings</h1>
                 <div className="w-full flex flex-col lg:flex-row justify-between items-center">
