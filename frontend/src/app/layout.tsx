@@ -7,6 +7,8 @@ import 'slick-carousel/slick/slick-theme.css';
 import Footer from "./components/Footer";
 import { EditModeToggleProvider } from "./context/EditModeToggle";
 import { ClerkProvider } from "@clerk/nextjs";
+import { ContactProvider } from "./context/ContactContext";
+import { ToastContainer } from "react-toastify";
 
 
 const geistSans = Geist({
@@ -35,9 +37,12 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased custom-scrollbar`}
         ><EditModeToggleProvider>
-            <Header />
-            {children}
-            <Footer />
+            <ContactProvider>
+              <Header />
+              <ToastContainer position="top-right" autoClose={3000} />
+              {children}
+              <Footer />
+            </ContactProvider>
           </EditModeToggleProvider>
         </body>
       </html>

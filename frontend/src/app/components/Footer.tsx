@@ -3,7 +3,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import { FaFacebookF } from "react-icons/fa";
 import { FaInstagram } from "react-icons/fa6";
 import { FaLinkedin } from "react-icons/fa";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Switcher from "./Switcher";
 import GlobalModal from "./GlobalModal";
 import { CiEdit } from "react-icons/ci";
@@ -11,10 +11,20 @@ import { MdOutlineAdd } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
 import { useEditMode } from "../context/EditModeToggle";
 import Link from "next/link";
+import { useContact } from "../context/ContactContext";
+
+interface getcontact {
+    phone?: string,
+    email?: string,
+    address?: string
+}
 
 const Footer = () => {
     const { isEditMode } = useEditMode();
     const [isEnabled, setIsEnabled] = useState(true);
+    const { contactInfo } = useContact();
+    console.log(contactInfo, "contactInfo");
+
     const [popularSearches, setPopularSearches] = useState<string[]>([
         "Apartment for Rent",
         "Apartment Low to Hide",
@@ -226,14 +236,15 @@ const Footer = () => {
                         alt="clarion advisory logo"
                     />
 
-                    <div className="w-full flex justify-start items-center gap-3 lg:flex-row flex-col">
-                        <div className="rounded-lg p-5 bg-white/10 w-full">
+                    <div className="w-full flex justify-start items-center gap-3 lg:flex-row flex-col flex-wrap">
+                        <div className="rounded-lg p-5 bg-white/10 w-full max-w-[48%]">
                             <p className="text-sm text-slate-300">Toll Free Customer Care</p>
-                            <h4 className="text-md text-slate-50 font-semibold">+(0) 123 050 945 02</h4>
+                            {/* <h4 className="text-md text-slate-50 font-semibold">11</h4> */}
+                            <h4 className="text-md text-slate-50 font-semibold">{contactInfo?.phone}</h4>
                         </div>
-                        <div className="rounded-lg p-5 bg-white/10 w-full">
+                        <div className="rounded-lg p-5 bg-white/10 w-full max-w-[48%]">
                             <p className="text-sm text-slate-300">Need Support?</p>
-                            <h4 className="text-md text-slate-50 font-semibold">hi@homez.com</h4>
+                            <h4 className="text-md text-slate-50 font-semibold w-full flex-wrap break-words">{contactInfo?.email}</h4>
                         </div>
                     </div>
 

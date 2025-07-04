@@ -1,10 +1,22 @@
-import { useState } from "react";
+'use client'
+
+import { useEffect, useState } from "react";
 import { BiAddToQueue, BiCross } from "react-icons/bi";
 import { BsTwitterX } from "react-icons/bs";
 import { FaFacebook, FaFacebookF, FaLinkedinIn } from "react-icons/fa6";
 import { FiInstagram } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 import { MdOutlineAdd } from "react-icons/md";
+import { useAdminContactForm } from "../hooks/useAdminContactForm";
+import { useContact } from "@/app/context/ContactContext";
+import { toast } from "react-toastify";
+import { useAdminGeneralInfo } from "../hooks/useAdminGeneralInfo";
+
+interface getcontact {
+    phone?: string,
+    email?: string,
+    address?: string
+}
 
 const AdminSettings = () => {
     const [propertyDetails, setPropertyDetails] = useState({
@@ -16,6 +28,64 @@ const AdminSettings = () => {
         bathrooms: ["1 Bathroom", "1.5 Bathrooms", "2 Bathrooms", "2.5 Bathrooms", "3 Bathrooms"],
         tags: ['Featured', 'New', 'Trending']
     })
+
+    const { values, error, isSubmitting, handleChange, handleSubmit } = useAdminContactForm() //for contactform
+    const { generalValues, generalErros, isGeneralInfoSubmitting, handleGeneralInfoChange, handleOnGeneralInfoSubmit } = useAdminGeneralInfo() //for general site info
+
+    //contact context handle
+    const { contactInfo, setContactInfo } = useContact();
+
+    //contact info handle
+    const onContactSubmit = async (vals: typeof values) => {
+        const res = await fetch('/api/adminSettings/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contactInfo: {
+                    phone: vals.phone,
+                    email: vals.email,
+                    address: vals.address,
+                },
+            })
+        })
+        const data = await res.json();
+        if (data.error) {
+            toast.error(data.message || 'Something went wrong!');
+        } else {
+            toast.success('Contact info updated!');
+        }
+        getContactDetails()
+    }
+    const getContactDetails = async () => {
+        const res = await fetch('/api/adminSettings/getContact');
+        const data = await res.json();
+        setContactInfo(data.contactInfo)
+
+    }
+
+    //general site info handle
+    const onGeneralInfoSubmit = async (vals: typeof generalValues) => {
+        const formData = new FormData();
+        formData.append('siteName', vals.siteName);
+        if (vals.siteLogo) formData.append('siteLogo', vals.siteLogo);
+
+        const res = await fetch('/api/adminSettings/setgeneralsiteinfo', {
+            method: 'POST',
+            body: formData, // 👈 Don't set Content-Type manually for FormData
+        });
+
+        const data = await res.json();
+        if (data.error) {
+            toast.error(data.message || 'Something went wrong!');
+        } else {
+            toast.success('Site info updated!');
+        }
+    };
+
+
+    useEffect(() => {
+        getContactDetails()
+    }, [])
     const handleAddDetails = () => {
         setPropertyDetails((prev) => {
             const existing = prev[input.name as keyof typeof prev] as string[];
@@ -51,14 +121,20 @@ const AdminSettings = () => {
             };
         });
     };
+    const [contentView, setContentView] = useState('')
+    const handleContactUpdate = () => {
 
+    }
     return (
         <div className="w-full flex justify-start items-start flex-col mt-5 bg-slate-50 rounded-lg p-5">
-            <h1 className="text-xl text-slate-700 text-start font-semibold">General Settings</h1>
-            <div className="w-full flex justify-center items-center flex-wrap gap-2 ">
+            <h1 onClick={() => setContentView('general')} className="text-xl text-slate-700 mt-2 text-start font-semibold w-full p-2 bg-secondary/20 cursor-pointer">General Settings</h1>
+            <div className={`w-full ${contentView === 'general' ? 'flex translate-y-0 h-auto border border-slate-300 border-t-0 rounded-b-lg pb-2' : 'translate-y-[-10px] h-0 '} justify-center items-center flex-wrap gap-2 duration-200 overflow-hidden`}>
                 <div className="w-[48%] flex flex-col justify-start items-start bg-slate-100 rounded-md p-3 m-2">
                     <h4 className="text-lg text-slate-600 font-semibold">Site Name</h4>
-                    <input type="text" value={'Clarion Advisory'} className="w-[80%] outline-neutral-50 p-2 py-3 bg-primary/10" />
+                    <input type="text" name="siteName" value={generalValues.siteName} onChange={handleGeneralInfoChange} className="w-[80%] outline-neutral-50 p-2 py-3 bg-primary/10" required />
+                    {generalErros.siteName && (
+                        <span className="text-red-500 text-sm mt-1">{generalErros.siteName}</span>
+                    )}
                 </div>
                 <div className="w-[48%] flex flex-wrap justify-start items-start gap-2 bg-slate-100 rounded-md p-3 m-2">
                     <div className="flex flex-col justify-center items-start">
@@ -69,28 +145,41 @@ const AdminSettings = () => {
                     </div>
                     <div className="flex flex-col justify-center items-start">
                         <h5 className="text-md font-semibold text-slate-500">Change Logo</h5>
-                        <input type="file" className="border-[2px] border-dashed border-green-300 p-2 my-1 bg-slate-50 hover:bg-green-50 duration-200 cursor-pointer" />
-
+                        <input type="file" name="siteLogo" onChange={handleGeneralInfoChange} className="border-[2px] border-dashed border-green-300 p-2 my-1 bg-slate-50 hover:bg-green-50 duration-200 cursor-pointer" />
+                        {generalErros.siteLogo && (
+                            <span className="text-red-500 text-sm mt-1">{generalErros.siteLogo}</span>
+                        )}
                     </div>
                 </div>
+                <div className="w-[90%] flex justify-end items-end gap-3">
+                    <button className="w-[100px] p-1 bg-rose-400 rounded-md text-lg text-white">Clear</button>
+                    <button onClick={() => handleOnGeneralInfoSubmit(onGeneralInfoSubmit)} className="w-[100px] p-1 bg-secondary rounded-md text-lg text-white">Save</button>
+                </div>
             </div>
-            <h1 className="text-xl text-slate-700 text-start font-semibold">Contact Information</h1>
-            <div className="w-full flex justify-center items-start flex-wrap gap-2.5">
+            <h1 onClick={() => setContentView('contact')} className="text-xl text-slate-700 mt-2 text-start font-semibold w-full p-2 bg-secondary/20 cursor-pointer">Contact Information</h1>
+            <div className={`w-full justify-center   items-start flex-wrap gap-2.5 ${contentView === 'contact' ? 'flex translate-y-0 h-auto border border-slate-300 border-t-0 rounded-b-lg pb-2' : 'translate-y-[-10px] h-0 '}  overflow-hidden`}>
                 <div className="w-[30%] flex flex-col justify-start items-start bg-slate-100 rounded-md p-3 m-2">
                     <h4 className="text-lg text-slate-600 font-semibold">Company Phone</h4>
-                    <input type="text" value={1234567890} className="w-full outline-neutral-50 p-2 py-3 bg-primary/10" />
+                    <input type="text" name="phone" value={values.phone} onChange={handleChange} className="w-full outline-neutral-50 p-2 py-3 bg-primary/10" />
+                    {error.phone && <p className="text-red-500 text-sm">{error.phone}</p>}
                 </div>
                 <div className="w-[30%] flex flex-col justify-start items-start bg-slate-100 rounded-md p-3 m-2">
                     <h4 className="text-lg text-slate-600 font-semibold">Company Email</h4>
-                    <input type="email" value={'company@gmail.com'} className="w-full outline-neutral-50 p-2 py-3 bg-primary/10" />
+                    <input type="email" name="email" value={values.email} onChange={handleChange} className="w-full outline-neutral-50 p-2 py-3 bg-primary/10" />
+                    {error.email && <p className="text-red-500 text-sm">{error.email}</p>}
                 </div>
                 <div className="w-[30%] flex flex-col justify-start items-start bg-slate-100 rounded-md p-3 m-2">
                     <h4 className="text-lg text-slate-600 font-semibold">Address</h4>
-                    <input type="email" value={'123 Realtor Ave, Miami, FL'} className="w-full outline-neutral-50 p-2 py-3 bg-primary/10" />
+                    <input type="text" name="address" value={values.address} onChange={handleChange} className="w-full outline-neutral-50 p-2 py-3 bg-primary/10" />
+                    {error.address && <p className="text-red-500 text-sm">{error.address}</p>}
+                </div>
+                <div className="w-[90%] flex justify-end items-end gap-3">
+                    <button onClick={() => setContentView('')} className="w-[100px] p-1 bg-rose-400 rounded-md text-lg text-white">Close</button>
+                    <button onClick={() => handleSubmit(onContactSubmit)} className="w-[100px] p-1 bg-secondary rounded-md text-lg text-white" disabled={isSubmitting}>{isSubmitting ? 'saving...' : 'Save'}</button>
                 </div>
             </div>
-            <h1 className="text-xl text-slate-700 text-start font-semibold">Social Media</h1>
-            <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-2">
+            <h1 onClick={() => setContentView('social')} className="text-xl text-slate-700 mt-2 text-start font-semibold w-full p-2 bg-secondary/20 cursor-pointer">Social Media</h1>
+            <div className={`w-full flex justify-center items-center flex-wrap gap-3  mt-2 ${contentView === 'social' ? 'flex translate-y-0 h-auto border border-slate-300 border-t-0 rounded-b-lg pb-2' : 'translate-y-[-10px] h-0 '} overflow-hidden`}>
                 {/* Facebook Input */}
                 <div className="relative flex items-center h-14 bg-gray-50 rounded-lg overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors">
                     <div className="absolute left-0 h-full w-12 bg-blue-600 flex items-center justify-center">
@@ -142,9 +231,13 @@ const AdminSettings = () => {
                         aria-label="LinkedIn username"
                     />
                 </div>
+                <div className="w-[90%] flex justify-end items-end gap-3">
+                    <button className="w-[100px] p-1 bg-rose-400 rounded-md text-lg text-white">Clear</button>
+                    <button onClick={handleContactUpdate} className="w-[100px] p-1 bg-secondary rounded-md text-lg text-white">Save</button>
+                </div>
             </div>
-            <h1 className="text-xl text-slate-700 text-start font-semibold mt-2">Property Settings</h1>
-            <div className="w-full flex justify-start items-start flex-wrap gap-2.5">
+            <h1 onClick={() => setContentView('property')} className="text-xl text-slate-700 text-start font-semibold mt-2 w-full p-2 bg-secondary/20 cursor-pointer">Property Settings</h1>
+            <div className={`w-full flex justify-start items-start flex-wrap gap-2.5 ${contentView === 'property' ? 'flex translate-y-0 h-auto border border-slate-300 border-t-0 rounded-b-lg pb-2 pl-2' : 'translate-y-[-10px] h-0 '} overflow-hidden`}>
                 {/**Property Category */}
                 <div className="w-[32%] h-[500px] overflow-y-auto custom-scrollbar p-2 bg-slate-200 rounded-lg mt-2">
                     <ul className="w-full flex justify-start items-start flex-col">
@@ -264,10 +357,14 @@ const AdminSettings = () => {
 
                     </ul>
                 </div> */}
+                <div className="w-[95%] flex justify-end items-end gap-3">
+                    <button className="w-[100px] p-1 bg-rose-400 rounded-md text-lg text-white">Clear</button>
+                    <button className="w-[100px] p-1 bg-secondary rounded-md text-lg text-white">Save</button>
+                </div>
             </div>
-            <div className="w-full flex justify-center items-center my-4">
+            {/* <div className="w-full flex justify-center items-center my-4">
                 <button className="w-[200px] p-2 bg-secondary text-xl text-slate-50 font-semibold rounded-md cursor-pointer hover:bg-secondary/70">Confirm Changes</button>
-            </div>
+            </div> */}
 
         </div>
     );
