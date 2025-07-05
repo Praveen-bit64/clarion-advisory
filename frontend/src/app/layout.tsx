@@ -9,6 +9,10 @@ import { EditModeToggleProvider } from "./context/EditModeToggle";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ContactProvider } from "./context/ContactContext";
 import { ToastContainer } from "react-toastify";
+import { SiteInfoProvider } from "./context/SiteInfoContext";
+import { SocialProvider } from "./context/SocialLinksContext";
+import { PropertySchemaProvider } from "./context/PropertySchema";
+import { TopLoader } from "./components/TopLoader";
 
 
 const geistSans = Geist({
@@ -38,10 +42,17 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased custom-scrollbar`}
         ><EditModeToggleProvider>
             <ContactProvider>
-              <Header />
-              <ToastContainer position="top-right" autoClose={3000} />
-              {children}
-              <Footer />
+              <SiteInfoProvider>
+                <SocialProvider>
+                  <PropertySchemaProvider>
+                    <Header />
+                    <ToastContainer position="top-right" autoClose={3000} />
+                    <TopLoader />
+                    {children}
+                    <Footer />
+                  </PropertySchemaProvider>
+                </SocialProvider>
+              </SiteInfoProvider>
             </ContactProvider>
           </EditModeToggleProvider>
         </body>

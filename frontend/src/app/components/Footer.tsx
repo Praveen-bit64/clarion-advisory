@@ -12,6 +12,8 @@ import { IoClose } from "react-icons/io5";
 import { useEditMode } from "../context/EditModeToggle";
 import Link from "next/link";
 import { useContact } from "../context/ContactContext";
+import { useSiteInfo } from "../context/SiteInfoContext";
+import { useSocialData } from "../context/SocialLinksContext";
 
 interface getcontact {
     phone?: string,
@@ -23,7 +25,9 @@ const Footer = () => {
     const { isEditMode } = useEditMode();
     const [isEnabled, setIsEnabled] = useState(true);
     const { contactInfo } = useContact();
-    console.log(contactInfo, "contactInfo");
+    const { siteInfo } = useSiteInfo()
+    const { socialData } = useSocialData()
+    console.log(socialData, "socialData");
 
     const [popularSearches, setPopularSearches] = useState<string[]>([
         "Apartment for Rent",
@@ -209,10 +213,10 @@ const Footer = () => {
     ), [isOpen, popularSearches, discoverLocations, activeTab]);
 
     const socials = [
-        { icon: FaXTwitter, link: '#', colorCode: 'rgb(206,210,205)' },
-        { icon: FaFacebookF, link: '#', colorCode: 'rgb(24,119,242)' },
-        { icon: FaInstagram, link: '#', colorCode: 'rgb(228,64,95)' },
-        { icon: FaLinkedin, link: '#', colorCode: 'rgb(0,119,181)' },
+        { icon: FaXTwitter, link: socialData?.twitter || '#', colorCode: 'rgb(206,210,205)' },
+        { icon: FaFacebookF, link: socialData?.facebook || '#', colorCode: 'rgb(24,119,242)' },
+        { icon: FaInstagram, link: socialData?.insta || '#', colorCode: 'rgb(228,64,95)' },
+        { icon: FaLinkedin, link: socialData?.linkedin || '#', colorCode: 'rgb(0,119,181)' },
     ];
 
     return (
@@ -230,11 +234,9 @@ const Footer = () => {
 
             <div className="w-full h-full flex justify-center items-center lg:flex-row flex-col">
                 <div className="lg:w-[33%] w-full min-h-[250px] flex justify-start items-start gap-10 flex-col p-4 lg:pl-16 pl-1">
-                    <img
-                        src="/clarion-logo.png"
-                        className="lg:w-[150px] w-[220px] bg-slate-100 rounded-sm"
-                        alt="clarion advisory logo"
-                    />
+                    <div className="lg:w-[200px] w-[150px] h-[70px] overflow-hidden p-1">
+                        <img src={`${siteInfo?.siteLogo}`} className="w-full h-full object-cover bg-slate-100 rounded-md" alt={siteInfo?.siteName} />
+                    </div>
 
                     <div className="w-full flex justify-start items-center gap-3 lg:flex-row flex-col flex-wrap">
                         <div className="rounded-lg p-5 bg-white/10 w-full max-w-[48%]">

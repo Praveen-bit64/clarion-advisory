@@ -1,13 +1,18 @@
 'use client'
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GrClose } from "react-icons/gr";
 import { VscListSelection } from "react-icons/vsc";
 import { useEditMode } from "../context/EditModeToggle";
 import { MdEditNote, MdOutlineEditOff } from "react-icons/md";
+import { useSiteInfo } from "../context/SiteInfoContext";
 const Header = () => {
     const [sidebar, setSidebar] = useState(false)
     const { isEditMode, toggle } = useEditMode();
+
+    const { siteInfo } = useSiteInfo()
+    console.log(siteInfo, 'siteinfofromheader');
+
     return (
         <>
             <div className="w-full h-[90px] flex justify-between items-center bg-black border-b-1 border-b-white relative">
@@ -15,14 +20,16 @@ const Header = () => {
                 <div className="w-full h-full absolute bg-primary/20 top-0 left-0"></div>
                 <div className="absolute w-full h-full flex justify-between items-center z-99">
                     <div className="lg:w-[30%] w-full px-10">
-                        <img src="/clarion-logo.png" className="lg:w-[200px] w-[150px] bg-slate-100 rounded-md" alt="" />
+                        <div className="lg:w-[200px] w-[150px] h-[70px] overflow-hidden p-1">
+                            <img src={`${siteInfo?.siteLogo}`} className="w-full h-full object-cover bg-slate-100 rounded-md" alt={siteInfo?.siteName} />
+                        </div>
                     </div>
                     <div className="lg:w-[70%] lg:flex hidden justify-between items-center gap-1">
                         <ul className="w-full flex justify-center items-center gap-10 text-white text-sm font-semibold" >
                             <li><Link href={'/'}>Home</Link></li>
-                            <li>About us</li>
+                            <li><Link href={'/about-us'}>About us</Link></li>
                             <li><Link href={'/properties'}>Properties</Link></li>
-                            <li>contact</li>
+                            <li><Link href={'/contact'}>contact</Link></li>
                         </ul>
                         <div
                             onClick={toggle}

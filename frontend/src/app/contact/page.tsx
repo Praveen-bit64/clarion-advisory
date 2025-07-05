@@ -3,7 +3,7 @@ import { FaClock, FaEnvelope } from "react-icons/fa6";
 import { IoIosSend } from "react-icons/io";
 import { LuLink2 } from "react-icons/lu";
 
-const Contact = () => {
+const Contact = async () => {
     return (
         <div className="w-full min-h-screen flex justify-center items-center flex-col gap-3.5">
             <div className="w-full min-h-[900px] relative ">

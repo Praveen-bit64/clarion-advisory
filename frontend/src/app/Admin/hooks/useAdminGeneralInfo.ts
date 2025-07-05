@@ -1,3 +1,4 @@
+import { useSiteInfo } from "@/app/context/SiteInfoContext"
 import { useState } from "react"
 
 interface siteInfo {
@@ -9,8 +10,9 @@ interface siteInfoErr {
     siteLogo?:string
 }
 export const useAdminGeneralInfo = () => {
+    const {siteInfo} = useSiteInfo()
     const [generalValues,setGeneralValues] = useState<siteInfo>({
-        siteName:'',
+        siteName:`${siteInfo?.siteName}`,
         siteLogo:null
     })
     const [generalErros,setGeneralErros] = useState<siteInfoErr>({})
