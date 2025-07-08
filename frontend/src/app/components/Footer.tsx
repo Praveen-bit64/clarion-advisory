@@ -235,16 +235,16 @@ const Footer = () => {
             <div className="w-full h-full flex justify-center items-center lg:flex-row flex-col">
                 <div className="lg:w-[33%] w-full min-h-[250px] flex justify-start items-start gap-10 flex-col p-4 lg:pl-16 pl-1">
                     <div className="lg:w-[200px] w-[150px] h-[70px] overflow-hidden p-1">
-                        <img src={`${siteInfo?.siteLogo}`} className="w-full h-full object-cover bg-slate-100 rounded-md" alt={siteInfo?.siteName} />
+                        <img src={`${siteInfo?.siteLogo}`} className="w-full h-full object-contain bg-slate-100 rounded-md" alt={siteInfo?.siteName} />
                     </div>
 
                     <div className="w-full flex justify-start items-center gap-3 lg:flex-row flex-col flex-wrap">
-                        <div className="rounded-lg p-5 bg-white/10 w-full max-w-[48%]">
+                        <div className="rounded-lg p-5 bg-white/10 w-full">
                             <p className="text-sm text-slate-300">Toll Free Customer Care</p>
                             {/* <h4 className="text-md text-slate-50 font-semibold">11</h4> */}
                             <h4 className="text-md text-slate-50 font-semibold">{contactInfo?.phone}</h4>
                         </div>
-                        <div className="rounded-lg p-5 bg-white/10 w-full max-w-[48%]">
+                        <div className="rounded-lg p-5 bg-white/10 w-full">
                             <p className="text-sm text-slate-300">Need Support?</p>
                             <h4 className="text-md text-slate-50 font-semibold w-full flex-wrap break-words">{contactInfo?.email}</h4>
                         </div>

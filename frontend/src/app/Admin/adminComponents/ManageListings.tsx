@@ -1,66 +1,128 @@
-import { BiSearch } from "react-icons/bi";
-import { MdDeleteOutline } from "react-icons/md";
+import { BiSearch, BiPlus } from "react-icons/bi";
+import { MdDeleteOutline, MdOutlineMoreVert } from "react-icons/md";
 import { RiEdit2Line } from "react-icons/ri";
+import { FiFilter } from "react-icons/fi";
 import propertyData from '@/app/data/propertyData.json'
 
 const ManageListings = () => {
     return (
-        <div className="w-full mt-8 pr-4">
-            {/**Title */}
-            <div className="w-full flex justify-between items-center">
-                <h1 className=" w-[38%] text-2xl text-slate-800 font-semibold text-start capitalize">Manage your listings</h1>
-                <div className="w-[60%] flex justify-end items-center gap-4 pr-3">
-                    <div className="w-full py-1 px-2 border bg-white border-slate-200 rounded-xl flex justify-start items-center"><BiSearch className=" text-2xl inline" />
-                        <input type="text" className="p-2 rounded-lg outline-none" placeholder="Search" />
+        <div className="w-full p-6 bg-gray-50 rounded-2xl shadow-sm mt-5 mr-4">
+            {/** Header Section */}
+            <div className="w-full flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <div>
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Manage Your Listings</h1>
+                    <p className="text-gray-500 mt-1">View, edit, and manage your property listings</p>
+                </div>
+
+                <div className="w-full md:w-auto flex flex-col md:flex-row items-end gap-3">
+                    <div className="relative w-full md:w-64">
+                        <BiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl" />
+                        <input
+                            type="text"
+                            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 outline-none"
+                            placeholder="Search listings..."
+                        />
                     </div>
-                    <div className="w-full p-2 border bg-white border-slate-200 rounded-xl flex justify-start items-center"><span className="text-sm text-slate-400 inline">sortby:</span>
-                        <select name="" id="" className="outline-none border-none p-2 w-full">
-                            <option value="">All</option>
-                            <option value="">For Sale</option>
-                            <option value="">For Rent</option>
-                        </select>
+
+                    <div className="flex gap-3 w-full md:w-auto">
+                        <div className="relative">
+                            <select
+                                className="appearance-none pl-3 pr-8 py-2.5 rounded-lg border border-gray-200 bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 outline-none text-gray-700"
+                            >
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="pending">Pending</option>
+                                <option value="sold">Sold</option>
+                            </select>
+                            <FiFilter className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+                        </div>
+
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-dark rounded-lg text-white font-medium transition-colors duration-200">
+                            <BiPlus className="text-xl" />
+                            <span>Add Property</span>
+                        </button>
                     </div>
-                    <button className="w-full p-2 bg-primary rounded-lg font-semibold text-slate-50">Add New Property</button>
                 </div>
             </div>
-            {/**content */}
-            <div className="w-full  h-[500px]  overflow-auto custom-scrollbar mt-5">
-                <table className="w-full text-left border border-gray-200">
-                    <thead className="bg-white text-center">
-                        <tr className="py-5 ">
-                            <th className="w-1/2 px-4 py-3 text-start text-2xl">Listing</th>
-                            <th className="px-4 py-3 text-start text-xl">Date</th>
-                            <th className="px-4 py-3 text-start text-xl">Status</th>
-                            <th className="px-4 py-3 text-start text-xl">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody className="">
-                        {propertyData.slice(0.10).map((item, ndx) => {
-                            return (
-                                <tr key={ndx} className={`border-t border-gray-100 overflow-y-auto custom-scrollbar ${ndx % 2 === 0 ? 'bg-primary/30' : 'bg-primary/10'}`}>
-                                    <td className="w-1/2 px-4 py-3">
-                                        <div className="flex items-center gap-4 flex-row">
-                                            <div className="w-[100px] h-[70px] inline-block">
-                                                <img src={item.image} alt={item.title} className="w-full h-full object-cover rounded" />
+
+            {/** Table Section */}
+            <div className="bg-white rounded-xl border border-gray-100 shadow-xs overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead className="bg-gray-50">
+                            <tr className="border-b border-gray-200">
+                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Listing</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Date Posted</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {propertyData.slice(0, 10).map((item, index) => (
+                                <tr key={index} className="hover:bg-gray-50 transition-colors duration-150">
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden">
+                                                <img
+                                                    src={item.image}
+                                                    alt={item.title}
+                                                    className="w-full h-full object-cover"
+                                                />
                                             </div>
-                                            <div className="w-[250px]">
-                                                <h3 className="text-md font-semibold text-slate-700">{item.title}</h3>
-                                                <p className="text-sm text-slate-700">{item.location}</p>
-                                                <h3 className="text-md text-slate-700">${item.price}</h3>
+                                            <div>
+                                                <h4 className="text-md font-semibold text-gray-900">{item.title}</h4>
+                                                <p className="text-sm text-gray-500 mt-1">{item.location}</p>
+                                                <p className="text-md font-medium text-primary mt-1">${item.price.toLocaleString()}</p>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-4 py-3">02/09/2024</td>
-                                    <td className="px-4 py-3   font-medium"><span className="bg-green-100 text-green-800 p-2 rounded-xl">Active</span></td>
-                                    <td className="w-full flex justify-center items-center gap-2.5 text-2xl text-balance mt-10"><RiEdit2Line /><MdDeleteOutline /></td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        02/09/2024
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${item
+                                            ? 'bg-green-100 text-green-800'
+                                            : item! === 'pending'
+                                                ? 'bg-yellow-100 text-yellow-800'
+                                                : 'bg-red-100 text-red-800'
+                                            }`}>
+                                            {'Active'}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <div className="flex justify-end items-center gap-3">
+                                            <button className="p-2 text-gray-500 hover:text-primary hover:bg-primary/10 rounded-full transition-colors duration-200">
+                                                <RiEdit2Line className="text-lg" />
+                                            </button>
+                                            <button className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-colors duration-200">
+                                                <MdDeleteOutline className="text-lg" />
+                                            </button>
+                                            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors duration-200">
+                                                <MdOutlineMoreVert className="text-lg" />
+                                            </button>
+                                        </div>
+                                    </td>
                                 </tr>
-                            )
-                        })}
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
 
-                    </tbody>
-                </table>
+                {/** Pagination */}
+                <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
+                    <div className="text-sm text-gray-500">
+                        Showing <span className="font-medium">1</span> to <span className="font-medium">10</span> of <span className="font-medium">24</span> results
+                    </div>
+                    <div className="flex gap-2">
+                        <button className="px-3 py-1.5 rounded-md border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Previous
+                        </button>
+                        <button className="px-3 py-1.5 rounded-md border border-gray-200 bg-white text-gray-700 hover:bg-gray-50">
+                            Next
+                        </button>
+                    </div>
+                </div>
             </div>
-
         </div>
     );
 }

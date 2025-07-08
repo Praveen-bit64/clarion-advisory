@@ -31,53 +31,65 @@ const Header = () => {
                             <li><Link href={'/properties'}>Properties</Link></li>
                             <li><Link href={'/contact'}>contact</Link></li>
                         </ul>
-                        <div
-                            onClick={toggle}
-                            className={`relative w-52 h-14 flex items-center rounded-full cursor-pointer transition-all duration-500 shadow-md overflow-hidden
+                        {false ?
+                            <div
+                                onClick={toggle}
+                                className={`relative w-52 h-14 flex items-center rounded-full cursor-pointer transition-all duration-500 shadow-md overflow-hidden
     ${isEditMode ? 'bg-gradient-to-r from-pink-400 to-orange-400' : 'bg-gradient-to-r from-blue-500 to-indigo-700'}
   `}
-                        >
-                            {/* Text Container - Improved Alignment */}
-                            <div className="relative w-full h-full flex items-center">
-                                {/* ON Text */}
-                                <span
-                                    className={`absolute inset-0 flex items-center text-sm ml-[10px] justify-start px-2 text-white font-semibold transition-all duration-500
+                            >
+                                {/* Text Container - Improved Alignment */}
+                                <div className="relative w-full h-full flex items-center">
+                                    {/* ON Text */}
+                                    <span
+                                        className={`absolute inset-0 flex items-center text-sm ml-[10px] justify-start px-2 text-white font-semibold transition-all duration-500
         ${isEditMode ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}
       `}
-                                >
-                                    Edit Mode ON
-                                </span>
+                                    >
+                                        Edit Mode ON
+                                    </span>
 
-                                {/* OFF Text */}
-                                <span
-                                    className={`absolute inset-0 flex items-center text-sm mr-[10px] justify-end px-2 text-white font-semibold transition-all duration-500
+                                    {/* OFF Text */}
+                                    <span
+                                        className={`absolute inset-0 flex items-center text-sm mr-[10px] justify-end px-2 text-white font-semibold transition-all duration-500
         ${isEditMode ? 'translate-y-4 opacity-0' : 'translate-y-0 opacity-100'}
       `}
-                                >
-                                    Edit Mode OFF
-                                </span>
-                            </div>
+                                    >
+                                        Edit Mode OFF
+                                    </span>
+                                </div>
 
-                            {/* Sliding Circle with Icon - Enhanced Visuals */}
-                            <div
-                                className={`absolute w-12 h-12 bg-white rounded-full shadow-xl flex items-center justify-center text-xl
+                                {/* Sliding Circle with Icon - Enhanced Visuals */}
+                                <div
+                                    className={`absolute w-12 h-12 bg-white rounded-full shadow-xl flex items-center justify-center text-xl
       transition-all duration-500 ease-[cubic-bezier(0.68,-0.55,0.27,1.55)]
       ${isEditMode ? 'left-[calc(100%-52px)]' : 'left-1'}
       ${isEditMode ? 'scale-110' : 'scale-100'}
     `}
-                            >
-                                {isEditMode ? (
-                                    <MdEditNote className="text-orange-500 transition-transform duration-300 hover:scale-125" />
-                                ) : (
-                                    <MdOutlineEditOff className="text-blue-600 transition-transform duration-300 hover:scale-125" />
+                                >
+                                    {isEditMode ? (
+                                        <MdEditNote className="text-orange-500 transition-transform duration-300 hover:scale-125" />
+                                    ) : (
+                                        <MdOutlineEditOff className="text-blue-600 transition-transform duration-300 hover:scale-125" />
+                                    )}
+                                </div>
+
+                                {/* Decorative Pulse Effect (Visible on Active State) */}
+                                {isEditMode && (
+                                    <div className="absolute inset-0 rounded-full bg-white opacity-0 animate-ping pointer-events-none"></div>
                                 )}
                             </div>
+                            :
+                            <div className="w-[60%] flex justify-center items-end">
+                                <Link href="/Login">
+                                    <button className="relative px-6 py-2 bg-gradient-to-r from-amber-300 to-amber-500 text-white font-semibold rounded-full shadow-md overflow-hidden group">
+                                        <span className="relative z-10">Login</span>
+                                        <span className="absolute top-0 left-[-75%] w-[50%] h-full bg-white/30 transform skew-x-[-20deg] group-hover:animate-glint" />
+                                    </button>
+                                </Link>
+                            </div>
 
-                            {/* Decorative Pulse Effect (Visible on Active State) */}
-                            {isEditMode && (
-                                <div className="absolute inset-0 rounded-full bg-white opacity-0 animate-ping pointer-events-none"></div>
-                            )}
-                        </div>
+                        }
                     </div>
                     <VscListSelection onClick={() => setSidebar(true)} className="absolute right-6 top-6 text-4xl text-slate-50 lg:hidden" />
                 </div>

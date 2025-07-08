@@ -24,6 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       bedroomSizes: JSON.parse(schemaRow.bedroomSizes || "[]"),
       bathrooms: JSON.parse(schemaRow.bathrooms || "[]"),
       tags: JSON.parse(schemaRow.tags || "[]"),
+      amenities: JSON.parse(schemaRow.amenities || "[]"),
     };
 
     return res.status(200).json({

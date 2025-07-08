@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from "react"
 
 interface PropertySchema {
     propertyType?: string[]
+    amenities?: string[]
     cities?: string[]
     states?: string[]
     countries?: string[]
