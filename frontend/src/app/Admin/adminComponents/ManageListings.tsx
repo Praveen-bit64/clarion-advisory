@@ -3,8 +3,47 @@ import { MdDeleteOutline, MdOutlineMoreVert } from "react-icons/md";
 import { RiEdit2Line } from "react-icons/ri";
 import { FiFilter } from "react-icons/fi";
 import propertyData from '@/app/data/propertyData.json'
+import { useListedProperties } from "@/app/context/ListedProperties";
+import { useState } from "react";
 
 const ManageListings = () => {
+    const { properties } = useListedProperties()
+    console.log(properties, 23523523);
+    const [listedProperties, setListedProperties] = useState(properties)
+    const handleSortBy = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { value } = e.target
+        if (!value) {
+            setListedProperties(properties)
+        } else {
+            setListedProperties(prev => prev.filter(item => item.propertyStatus.toLowerCase() === value.toLowerCase()))
+        }
+    }
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target;
+
+        if (!value.trim()) {
+            setListedProperties(properties);
+            return;
+        }
+
+        const lowerValue = value.toLowerCase();
+
+        const filtered = properties.filter((prop) => {
+            return (
+                prop.description?.toLowerCase().includes(lowerValue) ||
+                // (`${prop.reference}`.toLowerCase().includes(lowerValue)) || // Handles CLR-USR- or custom IDs
+                (`${prop.id}` === value.split("-")[3]) ||
+                prop.propertyCity?.toLowerCase().includes(lowerValue) ||
+                prop.propertyAddress?.toLowerCase().includes(lowerValue) ||
+                prop.title?.toLowerCase().includes(lowerValue) ||
+                `${prop.zipCode}` === value ||
+                prop.listedAt?.toLowerCase()?.includes(lowerValue)
+            );
+        });
+
+        setListedProperties(filtered);
+    };
+
     return (
         <div className="w-full p-6 bg-gray-50 rounded-2xl shadow-sm mt-5 mr-4">
             {/** Header Section */}
@@ -19,6 +58,7 @@ const ManageListings = () => {
                         <BiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl" />
                         <input
                             type="text"
+                            onChange={handleSearch}
                             className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 outline-none"
                             placeholder="Search listings..."
                         />
@@ -27,11 +67,12 @@ const ManageListings = () => {
                     <div className="flex gap-3 w-full md:w-auto">
                         <div className="relative">
                             <select
+                                onChange={handleSortBy}
                                 className="appearance-none pl-3 pr-8 py-2.5 rounded-lg border border-gray-200 bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 outline-none text-gray-700"
                             >
                                 <option value="">All Status</option>
-                                <option value="active">Active</option>
-                                <option value="pending">Pending</option>
+                                <option value="publish">Active</option>
+                                <option value="hold">Pending</option>
                                 <option value="sold">Sold</option>
                             </select>
                             <FiFilter className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
@@ -58,35 +99,35 @@ const ManageListings = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {propertyData.slice(0, 10).map((item, index) => (
+                            {listedProperties.map((item, index) => (
                                 <tr key={index} className="hover:bg-gray-50 transition-colors duration-150">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center gap-4">
                                             <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden">
                                                 <img
-                                                    src={item.image}
+                                                    src={`${item.thumbnailImage}`}
                                                     alt={item.title}
                                                     className="w-full h-full object-cover"
                                                 />
                                             </div>
                                             <div>
                                                 <h4 className="text-md font-semibold text-gray-900">{item.title}</h4>
-                                                <p className="text-sm text-gray-500 mt-1">{item.location}</p>
-                                                <p className="text-md font-medium text-primary mt-1">${item.price.toLocaleString()}</p>
+                                                <p className="text-sm text-gray-500 mt-1">{item.propertyAddress}</p>
+                                                <p className="text-md font-medium text-primary mt-1">{item.propertyPrice.toLocaleString()}<span className="text-sm text-black"> BHD</span></p>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        02/09/2024
+                                        {item.listedAt?.split(' ')[0]}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${item
+                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${item.propertyStatus.toLowerCase() == 'publish'
                                             ? 'bg-green-100 text-green-800'
-                                            : item! === 'pending'
+                                            : item.propertyStatus == 'hold'
                                                 ? 'bg-yellow-100 text-yellow-800'
                                                 : 'bg-red-100 text-red-800'
                                             }`}>
-                                            {'Active'}
+                                            {`${item.propertyStatus.toLowerCase() == 'publish' ? 'Active' : item.propertyStatus == 'hold' ? 'Hold' : 'Sold'}`}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

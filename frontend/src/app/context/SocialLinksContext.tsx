@@ -14,7 +14,7 @@ interface SocialLinksContextType {
     setSocialData: React.Dispatch<React.SetStateAction<SocialLinks | null>>;
 }
 
-// ✅ Provide full context shape
+//  Provide full context shape
 const SocialLinksContext = createContext<SocialLinksContextType | undefined>(undefined);
 export const SocialProvider = ({ children }: { children: React.ReactNode }) => {
     const [socialData, setSocialData] = useState<SocialLinks | null>(null);

@@ -13,6 +13,8 @@ import { SiteInfoProvider } from "./context/SiteInfoContext";
 import { SocialProvider } from "./context/SocialLinksContext";
 import { PropertySchemaProvider } from "./context/PropertySchema";
 import { TopLoader } from "./components/TopLoader";
+import { UserDetailsProvider } from "./context/UserDetails";
+import { ListedPropertyContext, ListedPropertyProvider } from "./context/ListedProperties";
 
 
 const geistSans = Geist({
@@ -41,19 +43,23 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased custom-scrollbar`}
         ><EditModeToggleProvider>
-            <ContactProvider>
-              <SiteInfoProvider>
-                <SocialProvider>
-                  <PropertySchemaProvider>
-                    <Header />
-                    <ToastContainer position="top-right" autoClose={3000} />
-                    <TopLoader />
-                    {children}
-                    <Footer />
-                  </PropertySchemaProvider>
-                </SocialProvider>
-              </SiteInfoProvider>
-            </ContactProvider>
+            <UserDetailsProvider>
+              <ContactProvider>
+                <SiteInfoProvider>
+                  <SocialProvider>
+                    <ListedPropertyProvider>
+                      <PropertySchemaProvider>
+                        <Header />
+                        <ToastContainer position="top-right" autoClose={3000} />
+                        <TopLoader />
+                        {children}
+                        <Footer />
+                      </PropertySchemaProvider>
+                    </ListedPropertyProvider>
+                  </SocialProvider>
+                </SiteInfoProvider>
+              </ContactProvider>
+            </UserDetailsProvider>
           </EditModeToggleProvider>
         </body>
       </html>

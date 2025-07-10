@@ -73,6 +73,7 @@ export const useAddNewProperty = (props:{isBetroom:boolean,amenitiesSelected:str
     customFields: false,
     amenities:amenitiesSelected
   })
+console.log(newPropertyValues,"newPropertyValues");
 
     // 🔁 Sync amenities when prop changes
   useEffect(() => {
@@ -180,8 +181,8 @@ const handleOnchangeNewProperty = (
     if (vals.customSlug && vals.customSlug.length > 36) errors.customSlug = 'Slug must be less than 36 characters'
 
     if (!vals.thumbnailImage) errors.thumbnailImage = 'Thumbnail image is required'
-    else if (!['image/jpeg', 'image/png', 'image/webp'].includes(vals.thumbnailImage.type))
-      errors.thumbnailImage = 'Only PNG, JPG, or WEBP formats allowed'
+    else if (!['image/jpeg', 'image/png', 'image/webp', 'image/avif'].includes(vals.thumbnailImage.type))
+      errors.thumbnailImage = 'Only PNG, JPG, avif or WEBP formats allowed'
 
     if (!vals.galleryImage || vals.galleryImage.length === 0) errors.galleryImage = 'Gallery images are required'
     else if (vals.galleryImage.length > 10) errors.galleryImage = 'Maximum 10 images allowed'
@@ -191,19 +192,19 @@ const handleOnchangeNewProperty = (
       if (!vals.propertyState.trim()) errors.propertyState = 'Select property State'
   if (!vals.propertyCity.trim()) errors.propertyCity = 'Select property City'
   if (!vals.propertyCountry.trim()) errors.propertyCountry = 'Select property Country'
-  if (!vals.bedrooms) errors.bedrooms = 'Select number of bedrooms';
-if (!vals.bathrooms) errors.bathrooms = 'Select number of bathrooms';
+  if (!vals.bedrooms && vals.isBedroomAvailable) errors.bedrooms = 'Select number of bedrooms';
+if (!vals.bathrooms && vals.isBedroomAvailable) errors.bathrooms = 'Select number of bathrooms';
 if (!vals.furnished) errors.furnished = 'Select furnished status';
 
 
     
     if (vals.altTag && (vals.altTag.length < 2 || vals.altTag.length > 18)) errors.altTag = 'Alt tag must be 2–18 chars'
     if (vals.metaTitle && (vals.metaTitle.length < 8 || vals.metaTitle.length > 22)) errors.metaTitle = 'Meta title must be 8–22 chars'
-    if (vals.metaDescription && (vals.metaDescription.length < 20 || vals.metaDescription.length > 32)) errors.metaDescription = 'Meta description must be 20–32 chars'
+    if (vals.metaDescription && (vals.metaDescription.length < 20 || vals.metaDescription.length > 52)) errors.metaDescription = 'Meta description must be 20–32 chars'
 
     if (!vals.propertyAddress.trim()) errors.propertyAddress = 'Address is required'
     else if (vals.propertyAddress.length < 7) errors.propertyAddress = 'Address is too short'
-    else if (vals.propertyAddress.length > 38) errors.propertyAddress = 'Address too long'
+    else if (vals.propertyAddress.length > 58) errors.propertyAddress = 'Address too long'
 
     if (vals.propertySize === '' || vals.propertySize === null || isNaN(Number(vals.propertySize))) {
     errors.propertySize = 'Valid Property Size is required';

@@ -1,3 +1,5 @@
+'use client'
+
 import LoginRegUser from "@/app/components/LoginRegUser";
 
 const Page = () => {

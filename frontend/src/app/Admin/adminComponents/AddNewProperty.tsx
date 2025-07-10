@@ -161,7 +161,7 @@ const AddNewProperty = () => {
         formData.append('propertySize', String(vals?.propertySize || ''));
         formData.append('zipCode', String(vals?.zipCode || ''));
         formData.append('propertyPrice', String(vals?.propertyPrice || ''));
-
+        formData.append('furnised', vals.furnished ? vals?.furnished.toString() : '');
         formData.append('featureTag', vals.featureTag.toString());
 
         formData.append('customFields', JSON.stringify(vals.customFields || {}));
@@ -794,11 +794,16 @@ const AddNewProperty = () => {
                                             <FaCheckCircle className="text-green-600 text-6xl mb-4 animate-bounce" />
                                             <h2 className="text-2xl font-bold text-green-800 mb-2">Listing Successful!</h2>
                                             <p className="text-green-700 mb-4 text-base">Your property has been listed and is now live for visitors.</p>
-                                            <Link href="/admin/listings">
-                                                <button className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow transition duration-200">
-                                                    Go to My Listings
+                                            <div className="w-full flex justify-center items-center gap-5">
+                                                <Link href="/admin/listings">
+                                                    <button className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow transition duration-200">
+                                                        Go to My Listings
+                                                    </button>
+                                                </Link>
+                                                <button onClick={() => setFormNav(0)} className="px-6 py-3 bg-primary hover:primary/90 text-white font-semibold rounded-lg shadow transition duration-200">
+                                                    Add New
                                                 </button>
-                                            </Link>
+                                            </div>
                                         </div>
                                     ) : formNav === 5 && !isNewPropertySubmitting && !isListed ? (
                                         // ❌ Error

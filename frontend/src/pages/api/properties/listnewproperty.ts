@@ -44,6 +44,17 @@ const uploadToCloudinary = async (file: File, isVideo = false) => {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.log("📩 Incoming request:", req.method);
+const useStaticGallery = true;
+const staticGalleryUrls: string[] = [
+  "https://res.cloudinary.com/dttvtuiru/image/upload/v1752149394/pae5fvpguxa88k2v5kci.jpg",
+  "https://res.cloudinary.com/dttvtuiru/image/upload/v1752149395/ha7r7lfjh5i5gvosnopo.jpg",
+  "https://res.cloudinary.com/dttvtuiru/image/upload/v1752149396/fpxuctmkwjkheefxlqtk.jpg",
+  "https://res.cloudinary.com/dttvtuiru/image/upload/v1752149397/oxfw0xsmfyozjkdzazmp.jpg",
+  "https://res.cloudinary.com/dttvtuiru/image/upload/v1752149398/nhpzppkdo8hvbhk6hqtn.jpg",
+  "https://res.cloudinary.com/dttvtuiru/image/upload/v1752149399/ivlpmw0uufb9t3deb6my.jpg",
+  "https://res.cloudinary.com/dttvtuiru/image/upload/v1752149401/emfey2dbez4thslc8u5x.jpg",
+  "https://res.cloudinary.com/dttvtuiru/image/upload/v1752149402/tpqcicpeyl13tuppzctw.jpg"
+];
 
   if (req.method !== "POST") {
     return res.status(405).json({ error: true, message: "Method Not Allowed" });
@@ -82,9 +93,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const bedrooms = getField("bedrooms") || null;
     const bathrooms = getField("bathrooms") || null;
     const propertySize = getField("propertySize") || null;
-    const furnished = getField("furnished") || null;
+    const furnised = getField("furnised") || null;
     const isBedroomAvailable = getBoolean("isBedroomAvailable");
-    const featureTag = getBoolean("featureTag");
+    const featureTag = getField("featureTag");
 
     const customFields = getField("customFields");
     const amenities = getField("amenities");
@@ -112,11 +123,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const thumbResult = await uploadToCloudinary(thumbnailImage);
 
     // ✅ Upload gallery images
-    const galleryUrls: string[] = [];
-    for (const img of galleryImage) {
-      const uploaded = await uploadToCloudinary(img as File);
-      galleryUrls.push(uploaded.secure_url);
+    let galleryUrls: string[] = [];
+
+    if (useStaticGallery) {
+      galleryUrls = staticGalleryUrls;
+    } else {
+      const galleryFiles = Array.isArray(files.galleryImage)
+        ? files.galleryImage
+        : files.galleryImage
+        ? [files.galleryImage]
+        : [];
+
+      for (const img of galleryFiles) {
+        const uploaded = await uploadToCloudinary(img as File);
+        galleryUrls.push(uploaded.secure_url);
+      }
     }
+
 
     // ✅ Upload video if exists
     let videoUrl: string | null = null;
@@ -160,7 +183,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       bedrooms,
       bathrooms,
       propertySize,
-      furnished,
+      furnised,
       featureTag,
       customFields ? customFields : null,
       amenities ? amenities : null,

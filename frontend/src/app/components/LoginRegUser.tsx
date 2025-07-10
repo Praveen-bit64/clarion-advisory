@@ -3,12 +3,28 @@ import { useState } from "react";
 import { useRegisterForm } from "../hooks/useRegisterForm";
 import { toast } from "react-toastify";
 import Loader from "./Loader";
+import { IoEye, IoEyeOff } from "react-icons/io5";
+import { useRouter } from 'next/navigation';
+import { useUserDetails } from "../context/UserDetails";
+
+interface loginInputs {
+    user: string,
+    password: string,
+}
 
 const LoginRegUser = () => {
     const [login, setLogin] = useState(true)
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const { registerInputs, inputErrs, registerOnchange, isFormSubmitting, validateForm, handleRegisterFormSubmit } = useRegisterForm()
+    const router = useRouter()
     console.log(inputErrs, 3534535);
+    const { setStoredUserId } = useUserDetails()
+    const [viewPassword, setViewPassword] = useState(false)
+    const [loginInputs, setLoginInputs] = useState<loginInputs>({
+        user: '',
+        password: ''
+    })
+    //Register user handler
     const registerForm = async (vals: typeof registerInputs) => {
         const formData = new FormData();
 
@@ -45,6 +61,43 @@ const LoginRegUser = () => {
             console.error("Register error:", err);
         }
     };
+
+    //login user handler
+
+    const onChangeLogin = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target
+        setLoginInputs((prev) => ({
+            ...prev,
+            [name]: value
+        }))
+    }
+
+    const onSubmitLogin = async () => {
+
+        try {
+            const res = await fetch('/api/authentication/login', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user: loginInputs.user, password: loginInputs.password })
+            })
+            const data = await res.json()
+            if (!data.error) {
+                toast.success(data.message ?? 'Login succesfully')
+                localStorage.setItem('userId', data.userId)
+                setStoredUserId(data.userId)
+                setTimeout(() => {
+                    router.push('/')
+                }, 1000);
+            } else {
+                toast.error(data.message ?? 'Try again')
+            }
+        } catch (err) {
+            console.log("Error login user", err)
+            toast.error("Internal Server Errossr")
+        }
+
+    }
+
     console.log(registerInputs, 452366);
 
     return (
@@ -65,19 +118,27 @@ const LoginRegUser = () => {
                     <img src="/clarion-logo.png" className="w-[180px] place-items-center" alt="clarion log" />
                 </div>
                 <h2 className="text-2xl font-bold text-slate-900 mb-6 text-center">Login to Your Account</h2>
-                <form className="flex flex-col gap-4">
+                <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
                     <input
-                        type="email"
-                        placeholder="Email Address"
+                        type="text"
+                        name="user"
+                        onChange={onChangeLogin}
+                        placeholder="Email / Phone"
                         className="p-3 rounded-sm border text-black border-gray-300 focus:outline-none focus:ring-1 focus:ring-secondary"
                     />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        className="p-3 rounded-sm border border-gray-300 focus:outline-none focus:ring-1 focus:ring-secondary"
-                    />
+                    <div className="w-full flex relative">
+                        <input
+                            type={`${viewPassword ? 'text' : 'password'}`}
+                            name="password"
+                            onChange={onChangeLogin}
+                            placeholder="Password"
+                            className="w-full p-3 rounded-sm border border-gray-300 focus:outline-none focus:ring-1 focus:ring-secondary"
+                        />
+                        <span className="absolute right-2 top-4" onClick={() => setViewPassword(!viewPassword)}>{!viewPassword ? <IoEyeOff className="text-lg cursor-pointer" /> : <IoEye className="text-lg cursor-pointer" />}</span>
+                    </div>
                     <button
-                        type="submit"
+                        // type="submit"
+                        onClick={onSubmitLogin}
                         className="bg-primary hover:bg-primary/90 text-white py-3 rounded-md font-semibold"
                     >
                         Login
@@ -166,14 +227,17 @@ const LoginRegUser = () => {
                     />
                     {inputErrs?.city && <p className="text-sm text-red-500">{inputErrs.city}</p>}
                     {/* 🔐 Password Field */}
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        name="password"
-                        onChange={registerOnchange}
-                        value={registerInputs.password}
-                        className="p-3 rounded-sm border border-gray-300 focus:outline-none focus:ring-1 focus:ring-secondary"
-                    />
+                    <div className="w-full flex relative">
+                        <input
+                            type={`${viewPassword ? 'text' : 'password'}`}
+                            placeholder="Password"
+                            name="password"
+                            onChange={registerOnchange}
+                            value={registerInputs.password}
+                            className="w-full p-3 rounded-sm border border-gray-300 focus:outline-none focus:ring-1 focus:ring-secondary"
+                        />
+                        <span className="absolute right-2 top-4" onClick={() => setViewPassword(!viewPassword)}>{!viewPassword ? <IoEyeOff className="text-lg cursor-pointer" /> : <IoEye className="text-lg cursor-pointer" />}</span>
+                    </div>
                     {inputErrs?.password && <p className="text-sm text-red-500">{inputErrs.password}</p>}
 
                     {!isFormSubmitting ? <button

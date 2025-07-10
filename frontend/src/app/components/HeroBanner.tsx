@@ -10,6 +10,7 @@ import FilterPopup from "./FilterPopup";
 import Switcher from "./Switcher";
 import { CiEdit } from "react-icons/ci";
 import { useEditMode } from "../context/EditModeToggle";
+import { useListedProperties } from "../context/ListedProperties";
 const HeroBanner = () => {
     const { isEditMode } = useEditMode();
     const [suggestLocation, setSuggestLocation] = useState(locations)
@@ -19,9 +20,9 @@ const HeroBanner = () => {
     const suggestionAddMoreRef = useRef<HTMLDivElement>(null)
     const [localSearch, setLocalSearch] = useState<string[]>([]);
     const [isOpen, setIsOpen] = useState(false);
-
+    const { properties, setProperties } = useListedProperties()
     const [input, setInput] = useState('')
-    console.log(localSearch, 23423);
+    console.log(properties, 23423);
 
     //edit section
     const [isEnabled, setIsEnabled] = useState(true)
@@ -170,7 +171,7 @@ const HeroBanner = () => {
             <GlobalModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
                 <FilterPopup isOpen={true} onClose={() => setIsOpen(false)} />
             </GlobalModal>
-            <div className="w-full lg:h-[780px] h-[500px] relative group">
+            <div className="w-full lg:h-[780px] h-[500px] relative z-1 group">
                 {isModalOpen && memoModal}
                 {isEditMode && <div className="absolute w-full hidden min-h-full bg-primary/30 top-0 left-0 z-9999 group-hover:flex justify-center items-start border-4 border-rose-500">
                     <CiEdit onClick={() => setIsModalOpen(true)} className="text-7xl text-rose-500 border-2 hover:border-rose-500 bg-white rounded-full p-2 hover:shadow-2xl absolute top-3.5 cursor-pointer" />

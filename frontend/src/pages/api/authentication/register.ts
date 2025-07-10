@@ -3,6 +3,7 @@ import { db } from "@/app/lib/db";
 import formidable from "formidable";
 import { NextApiRequest, NextApiResponse } from "next";
 import bcrypt from 'bcrypt';
+import { RowDataPacket } from "mysql2";
 
 export const config = {
   api: { bodyParser: false },
@@ -46,6 +47,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       //hashed password 
       const hashedPassword = await bcrypt.hash(password, 10);
 
+      const [rows] = await db.execute<RowDataPacket[]>('SELECT * FROM authentication WHERE Email = ? OR Phone = ?',[email,phone])
+
+      if(rows.length > 0){
+        return res.status(400).json({error:true,message:"Email or Phone Already Exists"})
+      }else{
+        
       //  Insert into DB with null-safe values
       await db.execute(
         'INSERT INTO authentication (Name, Email, City, Profile, Phone, Password) VALUES (?, ?, ?, ?, ?, ?)',
@@ -53,6 +60,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       );
 
       return res.status(200).json({ error: false, message: "User Created Successfully" });
+      }
+
     } catch (err) {
       console.error(" Error Registering Form:", err);
       return res.status(500).json({ error: true, message: "Internal Server Error" });
