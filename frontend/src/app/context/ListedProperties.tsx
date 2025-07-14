@@ -25,7 +25,7 @@ interface Property {
     propertyCity: string
     propertyCountry: string
     zipCode: string | number
-    isBedroomAvailable: boolean
+    isBedroomAvailable: boolean | string
     bedrooms?: string | number
     bathrooms?: string | number
     propertySize?: string | number

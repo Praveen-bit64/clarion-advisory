@@ -93,6 +93,8 @@ const staticGalleryUrls: string[] = [
     const bedrooms = getField("bedrooms") || null;
     const bathrooms = getField("bathrooms") || null;
     const propertySize = getField("propertySize") || null;
+    const propertyPhone = getField("propertyPhone") || null;
+    const propertyWapp = getField("propertyWapp") || null;
     const furnised = getField("furnised") || null;
     const isBedroomAvailable = getBoolean("isBedroomAvailable");
     const featureTag = getField("featureTag");
@@ -155,9 +157,9 @@ const staticGalleryUrls: string[] = [
         propertyStatus, customSlug, thumbnailImage, galleryImage, propertyVideo,
         altTag, metaTitle, metaDescription, propertyAddress, propertyState,
         propertyCity, propertyCountry, zipCode, isBedroomAvailable,
-        bedrooms, bathrooms, propertySize, furnished, featureTag,
+        bedrooms, bathrooms, propertySize, propertyPhone, propertyWapp, furnished, featureTag,
         customFields, amenities
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const values = [
@@ -183,6 +185,8 @@ const staticGalleryUrls: string[] = [
       bedrooms,
       bathrooms,
       propertySize,
+      propertyPhone,
+      propertyWapp,
       furnised,
       featureTag,
       customFields ? customFields : null,

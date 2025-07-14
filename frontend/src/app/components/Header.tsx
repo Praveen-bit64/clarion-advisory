@@ -143,7 +143,7 @@ const Header = () => {
                                 : <div className="w-[60%] flex justify-center items-center gap-1 relative z-999">
                                     {/**Action area */}
                                     <div className={`absolute bg-slate-200 w-[40%] h-[150px]  z-999 ${actionArea ? 'top-14 opacity-100' : 'top-12 opacity-0'} duration-200`}>
-                                        <ul className="w-full h-full flex justify-start items-start px-3 py-5 gap-3 flex-col">
+                                        <ul className={`${actionArea ? 'flex' : 'hidden'} w-full h-full  justify-start items-start px-3 py-5 gap-3 flex-col`}>
                                             <li
                                                 onClick={() => {
                                                     setFavView(true),

@@ -16,7 +16,8 @@ type PropertyDetail = {
 };
 type modalContent = 'addproperty' | 'addamenity' | ''
 
-const AddNewProperty = () => {
+const AddNewProperty = (props: { getViewCallback: (value: string) => void }) => {
+    const { getViewCallback } = props
     const [formNav, setFormNav] = useState(0)
     const [slugInput, setSlugInput] = useState('');
     const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
@@ -123,6 +124,8 @@ const AddNewProperty = () => {
         altTag: null,
         metaTitle: null,
         metaDescription: null,
+        propertyPhone: null,
+        propertyWapp: null,
         propertyAddress: '',
         propertyState: '',
         propertyCity: '',
@@ -159,6 +162,8 @@ const AddNewProperty = () => {
         formData.append('bedrooms', String(vals?.bedrooms || ''));
         formData.append('bathrooms', String(vals?.bathrooms || ''));
         formData.append('propertySize', String(vals?.propertySize || ''));
+        formData.append('propertyPhone', String(vals?.propertyPhone || ''));
+        formData.append('propertyWapp', String(vals?.propertyWapp || ''));
         formData.append('zipCode', String(vals?.zipCode || ''));
         formData.append('propertyPrice', String(vals?.propertyPrice || ''));
         formData.append('furnised', vals.furnished ? vals?.furnished.toString() : '');
@@ -382,27 +387,6 @@ const AddNewProperty = () => {
 
     return (
         <div className=" w-full flex justify-center items-center flex-col">
-            <input
-                type="file"
-                onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-
-                    const formData = new FormData();
-                    formData.append("title", "Test");
-                    formData.append("description", "Testing with real image");
-                    formData.append("thumbnailImage", file); // real file
-
-                    fetch("/api/properties/listnewproperty", {
-                        method: "POST",
-                        body: formData,
-                    })
-                        .then((res) => res.json())
-                        .then(console.log)
-                        .catch(console.error);
-                }}
-            />
-
             {modalContent === 'addproperty' ? memoAddPropertyModal : modalContent === 'addamenity' ? memoAddAmenityModal : null}
             {/**Navigation */}
             <div className="w-[500px] flex justify-center items-center my-3 mb-10 relative duration-200 transition-all ease-linear">
@@ -718,6 +702,16 @@ const AddNewProperty = () => {
                                         {addNewPropertyErrs && addNewPropertyErrs?.bathrooms && <p className="text-red-500 text-sm">{addNewPropertyErrs?.bathrooms}</p>}
                                     </div>}
                                     <div className="w-[48%] flex justify-start items-start gap-1.5 flex-col">
+                                        <h5 className="text-md font-semibold">Phone</h5>
+                                        <input type="number" name="propertyPhone" onChange={handleOnchangeNewProperty} value={newPropertyValues?.propertyPhone || ''} className="w-full p-2 rounded-xl border border-slate-300 outline-none" placeholder="Phone Number(optional)" />
+                                        {addNewPropertyErrs && addNewPropertyErrs?.propertyPhone && <p className="text-red-500 text-sm">{addNewPropertyErrs?.propertyPhone}</p>}
+                                    </div>
+                                    <div className="w-[48%] flex justify-start items-start gap-1.5 flex-col">
+                                        <h5 className="text-md font-semibold">Whatsapp</h5>
+                                        <input type="number" name="propertyWapp" onChange={handleOnchangeNewProperty} value={newPropertyValues?.propertyWapp || ''} className="w-full p-2 rounded-xl border border-slate-300 outline-none" placeholder="Available size in sqm" />
+                                        {addNewPropertyErrs && addNewPropertyErrs?.propertyWapp && <p className="text-red-500 text-sm">{addNewPropertyErrs?.propertyWapp}</p>}
+                                    </div>
+                                    <div className="w-[48%] flex justify-start items-start gap-1.5 flex-col">
                                         <h5 className="text-md font-semibold">Size (SQM)</h5>
                                         <input type="number" name="propertySize" onChange={handleOnchangeNewProperty} value={newPropertyValues.propertySize} className="w-full p-2 rounded-xl border border-slate-300 outline-none" placeholder="Available size in sqm" />
                                         {addNewPropertyErrs && addNewPropertyErrs?.propertySize && <p className="text-red-500 text-sm">{addNewPropertyErrs?.propertySize}</p>}
@@ -796,7 +790,7 @@ const AddNewProperty = () => {
                                             <p className="text-green-700 mb-4 text-base">Your property has been listed and is now live for visitors.</p>
                                             <div className="w-full flex justify-center items-center gap-5">
                                                 <Link href="/admin/listings">
-                                                    <button className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow transition duration-200">
+                                                    <button onClick={() => getViewCallback('managelistings')} className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow transition duration-200">
                                                         Go to My Listings
                                                     </button>
                                                 </Link>

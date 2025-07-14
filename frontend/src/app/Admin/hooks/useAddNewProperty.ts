@@ -15,6 +15,8 @@ interface newPropertyVals {
   propertyVideo: string | File
   altTag?: string | null
   metaTitle?: string | null
+  propertyPhone?:string | number | null,
+  propertyWapp?:string | number | null,
   metaDescription?: string | null
   propertyAddress: string
   propertyState: string
@@ -58,6 +60,8 @@ export const useAddNewProperty = (props:{isBetroom:boolean,amenitiesSelected:str
     propertyVideo: '',
     altTag: null,
     metaTitle: null,
+    propertyPhone:null,
+    propertyWapp:null,
     metaDescription: null,
     propertyAddress: '',
     propertyState: '',

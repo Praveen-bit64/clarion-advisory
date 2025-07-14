@@ -8,15 +8,42 @@ import GlobalModal from "../components/GlobalModal";
 import FilterPopup from "../components/FilterPopup";
 import propertyData from '@/app/data/propertyData.json';
 import { FiExternalLink } from "react-icons/fi";
-import { IoMdHeartEmpty } from "react-icons/io";
+import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
 import { IoImagesSharp } from "react-icons/io5";
 import { IoMdVideocam } from "react-icons/io";
+import { useListedProperties } from "../context/ListedProperties";
+import { useLikes } from "../context/LikeContext";
+import { usePropertyFilter } from "../hooks/usePropertyFilter";
+import { usePropertySchema } from "../context/PropertySchema";
 const page = () => {
     const [dropdown, setDropDown] = useState({
         status: false,
         place: '',
     })
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const { isLiked, toggleLike } = useLikes()
+    const { properties } = useListedProperties()
+    const { filters, manages } = usePropertyFilter()
+    const { propertySchema } = usePropertySchema()
+    const [filteredProperties, setFilteredProperties] = useState(properties)
+
+    useEffect(() => {
+        let filtered = properties;
+
+        if (filters.filterByType) {
+            filtered = filtered.filter(
+                (prop) => prop.propertyType.toLowerCase() === filters.filterByType.toLowerCase()
+            );
+        }
+
+        if (filters.filterByCat) {
+            filtered = filtered.filter(
+                (prop) => prop.propertyCategory.toLowerCase() === filters.filterByCat.toLowerCase()
+            );
+        }
+
+        setFilteredProperties(filtered);
+    }, [filters, properties]);
 
     const handleDropDown = (e: React.MouseEvent<HTMLDivElement>) => {
         const place = e.currentTarget.dataset.place || '';
@@ -31,6 +58,11 @@ const page = () => {
             };
         });
     };
+
+    console.log(filters, "manageFilterView");
+    console.log(filteredProperties, properties, 'filteredproperties');
+
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -52,29 +84,30 @@ const page = () => {
         return (
             <div ref={dropdownRef} className="absolute w-full min-h-[100px] bg-white top-11 left-0 z-99 shadow-lg shadow-secondary/10">
                 {dropdown.place.trim() ? <CompToRender /> : null}
-                <div className="py-2 border-t-[1px] border-slate-200 flex justify-end items-center">
+                {/* <div className="py-2 border-t-[1px] border-slate-200 flex justify-end items-center">
                     <button className="p-1 text-sm text-white bg-secondary mr-2 rounded-sm">Done</button>
-                </div>
+                </div> */}
             </div>
         )
     }
     const sType = () => {
         return (
             <ul className="w-full flex justify-center items-start flex-col">
-                <li className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">All</li>
-                <li className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">Rent</li>
-                <li className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">Sale</li>
+                <li onClick={() => manages.manageRemoveFilter('propType')} value={'all'} className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">All</li>
+                <li onClick={() => manages.manageAddFilter('rent', 'propType')} value={'rent'} className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">Rent</li>
+                <li onClick={() => manages.manageAddFilter('sale', 'propType')} value={'sale'} className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">Sale</li>
             </ul>
         )
     }
     const pType = () => {
         return (
             <ul className="w-full flex justify-center items-start flex-col">
-                <li className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">All</li>
-                <li className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">Houses</li>
-                <li className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">Apartments</li>
-                <li className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">Villas</li>
-                <li className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">Office space</li>
+                <li onClick={() => manages.manageAddFilter('', 'propCat')} className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">All</li>
+                {propertySchema?.propertyType?.map((type, ndx) => {
+                    return (
+                        <li key={ndx} onClick={() => manages.manageAddFilter(`${type}`, 'propCat')} className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">{type}</li>
+                    )
+                })}
             </ul>
         )
     }
@@ -122,15 +155,25 @@ const page = () => {
                                 data-place='sType'
                                 className="relative hidden lg:flex justify-start items-center border p-2 w-full cursor-pointer border-slate-100 bg-white rounded-2xl text-center"
                             >
-                                <input type="text" value={'For Rent'} className=" outline-none cursor-pointer w-full text-center  select-none text-md" readOnly /><RiArrowDownWideFill className="text-2xl" />
+                                <input type="text" value={` ${filters.filterByType ? 'For' + ' ' + filters.filterByType : 'Sale Type'}`} className=" outline-none cursor-pointer w-full text-center  select-none text-md" readOnly /><RiArrowDownWideFill className="text-2xl" />
                                 {dropdown.status && dropdown.place == 'sType' && <DropDown />}
+                                {filters.filterByType &&
+                                    <div className="w-full h-full absolute bg-amber-500/20 z-99 top-0 left-0 rounded-2xl flex justify-start items-center ">
+                                        <span onClick={() => manages.manageRemoveFilter('propType')} className="w-[25px] flex justify-center items-center rounded-full h-[25px] bg-white/70 p-1 hover:bg-amber-600 text-red-500 text-md cursor-pointer">X</span>
+                                    </div>
+                                }
                             </div>
                             <div
                                 onClick={handleDropDown}
                                 data-place='pType'
                                 className="hidden lg:flex justify-start items-center border p-2 w-full cursor-pointer border-slate-100 bg-white rounded-2xl text-center relative">
-                                <input type="text" value={'Property Type'} className=" outline-none cursor-pointer w-full text-center  select-none text-md" readOnly /><RiArrowDownWideFill className="text-2xl" />
+                                <input type="text" value={` ${filters.filterByCat ? 'For' + ' ' + filters.filterByCat : 'Property Type'}`} className=" outline-none cursor-pointer w-full text-center  select-none text-md" readOnly /><RiArrowDownWideFill className="text-2xl" />
                                 {dropdown.status && dropdown.place == 'pType' && <DropDown />}
+                                {filters.filterByCat &&
+                                    <div className="w-full h-full absolute bg-amber-500/20 z-99 top-0 left-0 rounded-2xl flex justify-start items-center ">
+                                        <span onClick={() => manages.manageRemoveFilter('propCat')} className="w-[25px] flex justify-center items-center rounded-full h-[25px] bg-white/70 p-1 hover:bg-amber-600 text-red-500 text-md cursor-pointer">X</span>
+                                    </div>
+                                }
                             </div>
                             {/* <div
                             onClick={handleDropDown}
@@ -163,31 +206,41 @@ const page = () => {
                         </div>
                     </div>
                     <div className="w-full flex justify-center items-center gap-4 flex-wrap mt-10">
-                        {propertyData.length > 0 && propertyData.map((item, ndx) => {
+                        {filteredProperties.length > 0 && filteredProperties.map((item, ndx) => {
                             return (
                                 <div key={ndx} className="group lg:w-[32%] w-full min-h-[400px]">
                                     <div className="w-full h-[250px] relative">
                                         <div className="overflow-hidden w-full h-full">
-                                            <img src={item.image} alt={item.title} className="w-full cursor-pointer group-hover:scale-110 duration-300 group-hover:rotate-2 h-full object-cover" />
+                                            <img src={`${item?.thumbnailImage}`} alt={item.title} className="w-full cursor-pointer group-hover:scale-110 duration-300 group-hover:rotate-2 h-full object-cover" />
                                         </div>
-                                        {(ndx === 4 || ndx === 7 || ndx === 2) && (
-                                            <span className={`absolute group-hover:top-4 group-hover:opacity-0 duration-200 opacity-100 top-2 left-2 py-2 px-4 ${(ndx === 7 || ndx === 2) ? 'bg-amber-400' : 'bg-green-400'} text-md text-black`}>
-                                                {(ndx === 7 || ndx === 2) ? 'Featured' : 'Newly Added'}
+                                        {item?.featureTag && item?.featureTag !== 'false' && (
+                                            <span
+                                                className={`absolute top-3 left-3 px-4 py-1.5 text-sm font-bold rounded-full shadow-lg ring-1 ring-white transition-all duration-300 ease-in-out group-hover:top-5 group-hover:opacity-0 ${item.featureTag === 'Featured'
+                                                    ? 'bg-gradient-to-r from-amber-400 to-yellow-500 text-white'
+                                                    : item.featureTag === 'New'
+                                                        ? 'bg-gradient-to-r from-sky-500 to-cyan-600 text-white'
+                                                        : item.featureTag === 'Trending'
+                                                            ? 'bg-gradient-to-r from-pink-500 to-rose-600 text-white'
+                                                            : 'bg-gray-400 text-white'}`}
+                                            >
+                                                {item.featureTag}
                                             </span>
                                         )}
+
                                         <div className="absolute bottom-0 right-0  flex justify-end items-center p-1 gap-1">
-                                            <span className="text-white text-sm p-[4px] bg-black"> 8 <IoImagesSharp className="text-white text-2xl  inline-block" /></span> <IoMdVideocam className="text-white text-3xl bg-black p-[3px]" />
+                                            <span className="text-white text-sm p-[4px] bg-black"> {JSON.parse(`${item?.galleryImage || '[]'}`).length} <IoImagesSharp className="text-white text-2xl  inline-block" /></span> {item?.propertyVideo && <IoMdVideocam className="text-white text-3xl bg-black p-[3px]" />}
                                         </div>
-                                        <span className="absolute bottom-2 left-2 rounded-sm bg-secondary p-2 font-mono font-semibold text-md text-white px-4 shadow-2xl">${item.price}/Mon</span>
+                                        <span className="absolute bottom-2 left-2 rounded-sm bg-secondary p-2 font-mono font-semibold text-md text-white px-4 shadow-2xl">BHD {item?.propertyPrice}{item?.propertyType == 'rent' ? '/mon' : ''}</span>
                                     </div>
                                     <div className="w-full h-[140px] px-3 py-5 border-[1px] border-slate-300 border-t-none bg-white">
-                                        <Link href={'/properties/propertyDetails'}><h2 className="text-md font-semibold hover:underline text-slate-900 cursor-pointer">{item.title}</h2></Link>
-                                        <p className="text-sm text-slate-600">Los Angeles City, CA, USA</p>
-                                        <span className="mt-3"> 1 bed 1 bath 1000 sqft</span>
+                                        <Link href={`/properties/propertyDetails?pId=${item?.id}`}><h2 className="text-md font-semibold hover:underline text-slate-900 cursor-pointer">{item.title}</h2></Link>
+                                        <p className="text-sm text-slate-600">{item?.propertyCity}</p>
+                                        <span className="mt-3"> {item?.isBedroomAvailable == '1' ? `${item?.bedrooms} ${item?.bathrooms} ${item?.propertySize}` : `${item?.propertySize}`}</span>
                                         <div className="w-full my-2 border-t-[1px] border-slate-300 flex justify-between items-center">
-                                            <h4 className="w-full py-3 flex justify-start items-center text-md text-slate-800 capitalize">for rent</h4>
+                                            <h4 className="w-full py-3 flex justify-start items-center text-md text-slate-800 capitalize">for {item?.propertyType}</h4>
                                             <div className="w-full flex justify-end items-center gap-4">
-                                                <Link href={'/properties/propertyDetails'}><FiExternalLink className="text-2xl hover:scale-110 duration-200 cursor-pointer" /></Link> <IoMdHeartEmpty className="text-2xl hover:scale-110 duration-200 cursor-pointer" />
+                                                <Link href={`/properties/propertyDetails?pId=${item?.id}`}><FiExternalLink className="text-2xl hover:scale-110 duration-200 cursor-pointer" /></Link>  {!isLiked(`${item?.id}`) ? <IoMdHeartEmpty onClick={() => toggleLike(`${item?.id}`)} className={`text-2xl hover:scale-110 duration-200 cursor-pointer`} /> :
+                                                    <IoMdHeart onClick={() => toggleLike(`${item?.id}`)} fill="red" className={`text-2xl hover:scale-110 duration-200 cursor-pointer`} />}
                                             </div>
                                         </div>
                                     </div>

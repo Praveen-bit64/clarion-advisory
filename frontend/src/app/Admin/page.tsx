@@ -12,6 +12,9 @@ import AdminSettings from "./adminComponents/AdminSettings";
 const page = () => {
     const [sidebar, setSidebar] = useState(true)
     const [view, setView] = useState('overview')
+    const getViewCallback = (view: string) => {
+        setView(view)
+    }
     return (
         <div className="w-full min-h-screen flex justify-start items-start bg-primary/10">
 
@@ -39,10 +42,10 @@ const page = () => {
                 {view === 'overview' && <OverView />}
 
                 {/**Add property */}
-                {view === 'newproperty' && <AddNewProperty />}
+                {view === 'newproperty' && <AddNewProperty getViewCallback={getViewCallback} />}
 
                 {/**Manage Listings */}
-                {view === 'managelistings' && <ManageListings />}
+                {view === 'managelistings' && <ManageListings getViewCallback={getViewCallback} />}
 
                 {/**Settings */}
                 {view === 'settings' && <AdminSettings />}

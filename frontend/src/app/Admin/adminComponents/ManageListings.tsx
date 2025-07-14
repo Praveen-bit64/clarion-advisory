@@ -6,7 +6,8 @@ import propertyData from '@/app/data/propertyData.json'
 import { useListedProperties } from "@/app/context/ListedProperties";
 import { useState } from "react";
 
-const ManageListings = () => {
+const ManageListings = (props: { getViewCallback: (value: string) => void }) => {
+    const { getViewCallback } = props
     const { properties } = useListedProperties()
     console.log(properties, 23523523);
     const [listedProperties, setListedProperties] = useState(properties)
@@ -78,7 +79,7 @@ const ManageListings = () => {
                             <FiFilter className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
                         </div>
 
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-dark rounded-lg text-white font-medium transition-colors duration-200">
+                        <button onClick={() => getViewCallback('newproperty')} className="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-dark rounded-lg text-white font-medium transition-colors duration-200">
                             <BiPlus className="text-xl" />
                             <span>Add Property</span>
                         </button>
