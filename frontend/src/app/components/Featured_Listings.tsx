@@ -21,6 +21,7 @@ import { TbRulerMeasure } from "react-icons/tb";
 import { useUserDetails } from "../context/UserDetails";
 import Featured_ListingsEdit from "./EditHomeComponents/Featured_ListingsEdit";
 import { useHomeComponentDetails } from "../context/HomeComponentDetails";
+import { useLikes } from "../context/LikeContext";
 
 
 const Featured_Listings = () => {
@@ -28,12 +29,13 @@ const Featured_Listings = () => {
     const { userDetails } = useUserDetails()
     const [isOpen, setIsOpen] = useState(false)
     const { properties } = useListedProperties()
+    const { isLiked, toggleLike } = useLikes()
     const [featureView, setFeatureView] = useState('rent')
     useEffect(() => {
         if (properties.length > 0) {
-            setFeaturedProperties(properties)
+            setFeaturedProperties(properties.filter(item => item.featureTag === 'Featured' || item.featureTag === "Trending" || item.featureTag === 'New').filter(item => item.propertyType === featureView).slice(0, 6))
         }
-    }, [properties])
+    }, [properties, featureView])
     const [featuredProperties, setFeaturedProperties] = useState(properties)
     const { featured_listings } = useHomeComponentDetails()
     console.log(properties, featuredProperties, 654635);
@@ -41,10 +43,7 @@ const Featured_Listings = () => {
     const memoModal = useMemo(() => (
         <Featured_ListingsEdit isOpen={isOpen} setIsOpen={setIsOpen} />
     ), [isOpen])
-    const filterProperty = (value: string) => {
-        setFeatureView(value.toLowerCase())
-        setFeaturedProperties(() => properties.filter(item => item.propertyType.toLowerCase() === value.toLowerCase()))
-    }
+
     return (
         <div className={`w-full h-auto bg-slate-200 flex justify-center items-center relative ${userDetails.role === 'admin' && isEditMode ? 'group' : ''}`}>
             {isOpen && memoModal}
@@ -57,12 +56,12 @@ const Featured_Listings = () => {
                     <div className="w-full flex flex-wrap lg:flex-row flex-col justify-between items-center gap-4">
                         <h3 className="text-md text-slate-500">{featured_listings.description}</h3>
                         <div className="w-full lg:w-auto flex justify-end items-center gap-3">
-                            <button onClick={() => filterProperty('rent')} className={`w-[80px] p-2 rounded-lg border-1 border-slate-50 ${featureView == 'rent' ? 'bg-slate-800 text-white' : 'bg-slate-50 text-slate-950'}  text-md cursor-pointer`}>For Rent</button>
-                            <button onClick={() => filterProperty('sale')} className={`w-[80px] p-2 rounded-lg border-1 border-slate-950 ${featureView == 'sale' ? 'bg-slate-800 text-white' : 'bg-slate-50 text-slate-950'} text-md cursor-pointer`}>For Sale</button>
+                            <button onClick={() => setFeatureView('rent')} className={`w-[80px] p-2 rounded-lg border-1 border-slate-50 ${featureView == 'rent' ? 'bg-slate-800 text-white' : 'bg-slate-50 text-slate-950'}  text-md cursor-pointer`}>For Rent</button>
+                            <button onClick={() => setFeatureView('sale')} className={`w-[80px] p-2 rounded-lg border-1 border-slate-950 ${featureView == 'sale' ? 'bg-slate-800 text-white' : 'bg-slate-50 text-slate-950'} text-md cursor-pointer`}>For Sale</button>
                         </div>
                     </div>
                     <ul className="w-full flex justify-center items-center gap-10 flex-wrap mt-5">
-                        {featuredProperties?.slice(0, 6).map((item, ndx) => {
+                        {featuredProperties?.map((item, ndx) => {
                             return (
                                 <li key={ndx} className="group lg:w-[30%] w-full lg:h-[480px] h-[420px] bg-white shadow-lg border-1 border-secondary/40 rounded-md hover:shadow-xl relative">
                                     <div className="w-full flex justify-start items-center gap-2 absolute z-99 top-3 left-2 group-hover:top-6 group-hover:opacity-0 duration-300">
@@ -76,13 +75,13 @@ const Featured_Listings = () => {
                                             alt="Property"
                                         />
                                         <div className="absolute w-full z-99 bottom-5 right-5 flex justify-end items-center gap-2 mb-[-20px] opacity-0 group-hover:mb-0 group-hover:opacity-100 duration-300">
-                                            <button className="p-2 bg-slate-950 cursor-pointer"><FaRegHeart className="text-white text-xl" /></button>
-                                            <button className="p-2 bg-slate-950 cursor-pointer"><IoMdOpen className="text-white text-xl" /></button>
+                                            <button onClick={() => toggleLike(String(item.id))} className="p-2 bg-slate-950 cursor-pointer">{isLiked(String(item.id)) ? <FaHeart fill="red" className="text-rose-500  text-xl" /> : <FaRegHeart className="text-white text-xl" />}</button>
+                                            <Link href={item.customSlug ? `/${item.customSlug}?pId=${item?.id}` : `/properties/propertyDetails?pId=${item?.id}`}><button className="p-2 bg-slate-950 cursor-pointer"><IoMdOpen className="text-white text-xl" /></button></Link>
                                         </div>
                                     </div>
 
-                                    <div className=" w-full lg:h-[180px] h-[150px] bg-white flex justify-center items-start flex-col gap-2 px-5">
-                                        <Link href={`/properties/propertyDetails?pId=${item?.id}`}> <h2 className="lg:text-lg text-md lg:h-[50px] h-[40px] font-semibold text-slate-700 cursor-pointer hover:underline overflow-hidden">{item?.title}</h2></Link>
+                                    <div className=" w-full lg:h-[180px] h-[180px] bg-white flex justify-center items-start flex-col gap-2 px-5">
+                                        <Link href={item.customSlug ? `/${item.customSlug}?pId=${item?.id}` : `/properties/propertyDetails?pId=${item?.id}`}> <h2 className="lg:text-lg text-md lg:h-[50px] h-[40px] font-semibold text-slate-700 cursor-pointer hover:underline overflow-hidden">{item?.title}</h2></Link>
                                         <h4 className="text-sm  text-slate-400 overflow-hidden"><IoLocationOutline className="inline text-xl" />{item?.propertyCity}</h4>
                                         <div className="w-full flex justify-between items-center">
                                             <div className="w-full flex justify-start items-center flex-wrap gap-1">
@@ -95,7 +94,7 @@ const Featured_Listings = () => {
                                                 <span><TbRulerMeasure className="inline mr-1" />{item?.propertySize} sqms</span>
                                             </div>
 
-                                            <span className="lg:w-[150px] w-[130px] lg:h-[50px] h-[40px] lg:p-4 p-1 border-2 border-slate-800 group-hover:bg-secondary group-hover:text-white group-hover:border-secondary duration-500 flex justify-center items-center lg:text-mdtext-md font-semibold"><span className="text-sm mr-1 font-thin">BHD</span>{` ${item?.propertyPrice} ${item?.propertyType == 'rent' ? '/Mon' : ''}`}</span>
+                                            <span className="lg:w-[210px] w-[250px] lg:h-[50px] h-[40px] border-2 border-slate-800 group-hover:bg-secondary group-hover:text-white group-hover:border-secondary duration-500 flex justify-center items-center lg:text-md text-sm font-semibold"><span className="text-xs mr-1 font-thin">BHD</span>{` ${item?.propertyPrice} ${item?.propertyType == 'rent' ? '/Mon' : ''}`}</span>
                                         </div>
                                     </div>
 
@@ -103,7 +102,7 @@ const Featured_Listings = () => {
                             )
                         })}
                     </ul>
-                    <div className="w-full flex justify-center items-center lg:py-10 py-6 pb-4">
+                    <div className="w-full flex justify-center items-center lg:py-10 py-12 pb-4">
                         <Link href={'/properties'}> <button className="text-md  text-white duration-200 font-semibold bg-accent lg:p-4 p-2 hover:bg-primary cursor-pointer">See All Properties <MdArrowOutward className=" text-2xl inline-block" /></button></Link>
                     </div>
                 </div>

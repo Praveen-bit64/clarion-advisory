@@ -267,8 +267,8 @@ const page = () => {
                                         </div>
                                         <span className="absolute bottom-2 left-2 rounded-sm bg-secondary p-2 font-mono font-semibold text-md text-white px-4 shadow-2xl">BHD {item?.propertyPrice}{item?.propertyType == 'rent' ? '/mon' : ''}</span>
                                     </div>
-                                    <div className="w-full h-[140px] px-3 py-5 border-[1px] border-slate-300 border-t-none bg-white">
-                                        <Link href={`/properties/propertyDetails?pId=${item?.id}`}><h2 className="text-md font-semibold hover:underline text-slate-900 cursor-pointer">{item.title}</h2></Link>
+                                    <div className="w-full h-[160px] px-3 py-5 border-[1px] border-slate-300 border-t-none bg-white">
+                                        <Link href={item.customSlug ? `/${item.customSlug}?pId=${item?.id}` : `/properties/propertyDetails?pId=${item?.id}`}><h2 className="text-md font-semibold hover:underline text-slate-900 cursor-pointer">{item.title}</h2></Link>
                                         <p className="text-sm text-slate-600">{item?.propertyCity}</p>
                                         {item.isBedroomAvailable === '1' && (
                                             <>
@@ -278,7 +278,7 @@ const page = () => {
                                         )}
                                         <span><TbRulerMeasure className="inline mx-1" />{item?.propertySize} sqms</span>
                                         <div className="w-full my-2 border-t-[1px] border-slate-300 flex justify-between items-center">
-                                            <h4 className="w-full py-3 flex justify-start items-center text-md text-slate-800 capitalize">for {item?.propertyType}</h4>
+                                            <h4 className="w-full py-3 flex justify-start items-center text-md text-slate-800 capitalize font-semibold">for {item?.propertyType}</h4>
                                             <div className="w-full flex justify-end items-center gap-4">
                                                 <Link href={`/properties/propertyDetails?pId=${item?.id}`}><FiExternalLink className="text-2xl hover:scale-110 duration-200 cursor-pointer" /></Link>  {!isLiked(`${item?.id}`) ? <IoMdHeartEmpty onClick={() => toggleLike(`${item?.id}`)} className={`text-2xl hover:scale-110 duration-200 cursor-pointer`} /> :
                                                     <IoMdHeart onClick={() => toggleLike(`${item?.id}`)} fill="red" className={`text-2xl hover:scale-110 duration-200 cursor-pointer`} />}
