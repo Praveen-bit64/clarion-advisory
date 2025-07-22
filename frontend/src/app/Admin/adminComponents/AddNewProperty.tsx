@@ -18,7 +18,7 @@ type modalContent = 'addproperty' | 'addamenity' | ''
 
 const AddNewProperty = (props: { getViewCallback: (value: string) => void }) => {
     const { getViewCallback } = props
-    const [formNav, setFormNav] = useState(0)
+    const [formNav, setFormNav] = useState(3)
     const [slugInput, setSlugInput] = useState('');
     const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
     const [isOpen, setIsOpen] = useState(false)
@@ -683,7 +683,7 @@ const AddNewProperty = (props: { getViewCallback: (value: string) => void }) => 
                                             <option value={`${null}`}>Choose</option>
                                             {propertySchema?.bedroomSizes?.map((bed, ndx) => {
                                                 return (
-                                                    <option key={ndx} value={bed}>{bed}</option>
+                                                    <option key={ndx} value={bed}>{bed}/</option>
                                                 )
                                             })}
                                         </select>

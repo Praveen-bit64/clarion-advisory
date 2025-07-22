@@ -13,7 +13,7 @@ export default async function handler(req:NextApiRequest,res:NextApiResponse){
                     const [rows] = await db.execute<RowDataPacket[]>('SELECT * FROM authentication WHERE id = ?',[id])
                     if(rows.length > 0){
                         const data = rows[0]
-                        return res.status(200).json({error:false,message:"User Details Fetched",name:data.Name,profile:data.Profile,userId:`CLR-USR-${data.id}`})
+                        return res.status(200).json({error:false,message:"User Details Fetched",name:data.Name,profile:data.Profile,userId:`CLR-USR-${data.id}`,role:data.role})
                     }else {
                     return res.status(404).json({ error: true, message: "User not found" });
                     }

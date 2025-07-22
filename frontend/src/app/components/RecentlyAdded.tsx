@@ -11,42 +11,17 @@ import Switcher from "./Switcher";
 import GlobalModal from "./GlobalModal";
 import { CiEdit } from "react-icons/ci";
 import { useEditMode } from "../context/EditModeToggle";
+import RecentlyAddedEdit from "./EditHomeComponents/RecentlyAddedEdit";
+import { useHomeComponentDetails } from "../context/HomeComponentDetails";
 
 const RecentlyAdded = () => {
     const { isEditMode } = useEditMode();
-    const [isEnabled, setIsEnabled] = useState(true)
-    const enables = (value: boolean) => {
-        setIsEnabled(value)
-    }
+    const { recentlyadded } = useHomeComponentDetails()
     console.log(properties);
     const [isOpen, setIsOpen] = useState(false)
-    const EditComponent = (props: { isOpen: boolean, setIsOpen: any }) => {
-        const { isOpen, setIsOpen } = props
-        return (
-            <GlobalModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-                <div className="w-full flex justify-start items-start flex-col bg-white py-5 px-2 gap-3">
-                    <div className="w-full flex justify-start items-start flex-col">
-                        <label htmlFor="title" className="text-lg font-semibold">Section Visibility</label>
-                        <Switcher enables={enables} />
-                    </div>
-                    <div className="w-full flex flex-col justify-start items-start gap-2">
-                        <label htmlFor="title" className="text-lg font-semibold">Title</label>
-                        <input type="text" placeholder="Title" className="w-full p-2 outline-none border border-slate-300 bg-white" />
-                    </div>
-                    <div className="w-full flex flex-col justify-start items-start gap-2">
-                        <label htmlFor="title" className="text-lg font-semibold">Description</label>
-                        <input type="text" placeholder="Description" className="w-full p-2 outline-none border border-slate-300 bg-white" />
-                    </div>
-                    <div className="w-full flex justify-end items-end pt-3 gap-2">
-                        <button onClick={() => setIsOpen(false)} className="w-[100px] bg-amber-600 p-2 rounded-md text-white">Cancel</button>
-                        <button className="w-[100px] bg-secondary p-2 rounded-md text-white">Confirm</button>
-                    </div>
-                </div>
-            </GlobalModal>
-        )
-    }
+
     const memoModal = useMemo(() => (
-        <EditComponent isOpen={isOpen} setIsOpen={setIsOpen} />
+        <RecentlyAddedEdit isOpen={isOpen} setIsOpen={setIsOpen} />
     ), [isOpen])
     return (
         <div className="w-full h-auto bg-primary flex justify-center items-center relative group">
@@ -55,9 +30,9 @@ const RecentlyAdded = () => {
                 <CiEdit onClick={() => setIsOpen(true)} className="text-7xl text-rose-500 border-2 hover:border-rose-500 bg-white rounded-full p-2 hover:shadow-2xl absolute top-3.5 cursor-pointer" />
             </div>}
             <GlobalContainer className=" pb-16">
-                <h1 className="lg:text-3xl text-2xl text-slate-50 font-semibold mt-10">Explore Our Recent Listings</h1>
+                <h1 className="lg:text-3xl text-2xl text-slate-50 font-semibold mt-10">{recentlyadded.title}</h1>
                 <div className="w-full flex flex-col lg:flex-row justify-between items-center">
-                    <h3 className="text-md text-slate-100">Explore our recently added properties – Trending at the moment!</h3>
+                    <h3 className="text-md text-slate-100">{recentlyadded.description}</h3>
                     <div className="flex justify-end items-center gap-3 w-full lg:w-auto py-3 lg:py-0">
                         <button className="w-[80px] p-2 rounded-lg border-1 border-slate-50 bg-slate-50 text-slate-800 text-md cursor-pointer">For Rent</button>
                         <button className="w-[80px] p-2 rounded-lg border-1 border-slate-50 bg-primary text-slate-50 text-md cursor-pointer">For Sale</button>

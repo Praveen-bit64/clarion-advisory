@@ -1,15 +1,22 @@
+'use client'
 import Counter from "./components/Counter";
 import Featured_Listings from "./components/Featured_Listings";
 import HeroBanner from "./components/HeroBanner";
 import RecentlyAdded from "./components/RecentlyAdded";
 import Testimonials from "./components/Testimonials";
+import { useHomeComponentDetails } from "./context/HomeComponentDetails";
+import { useUserDetails } from "./context/UserDetails";
 
 const page = () => {
+  const { userDetails } = useUserDetails()
+  const { heroBanner, featured_listings } = useHomeComponentDetails()
+  console.log(userDetails, heroBanner, 'hokmepagedatas');
+
   return (
     <>
       <div className="w-full min-h-screen flex flex-col items-center">
-        <HeroBanner />
-        <Featured_Listings />
+        {(userDetails.role === 'admin' || heroBanner.isvisible === 'true') && <HeroBanner />}
+        {(userDetails.role === 'admin' || featured_listings.isvisible === 'true') && <Featured_Listings />}
         <Counter />
         <RecentlyAdded />
         <Testimonials />

@@ -14,6 +14,9 @@ import Link from "next/link";
 import { useContact } from "../context/ContactContext";
 import { useSiteInfo } from "../context/SiteInfoContext";
 import { useSocialData } from "../context/SocialLinksContext";
+import FooterEdit from "./EditHomeComponents/FooterEdit";
+import { useHomeComponentDetails } from "../context/HomeComponentDetails";
+import { toast } from "react-toastify";
 
 interface getcontact {
     phone?: string,
@@ -27,24 +30,20 @@ const Footer = () => {
     const { contactInfo } = useContact();
     const { siteInfo } = useSiteInfo()
     const { socialData } = useSocialData()
-    console.log(socialData, "socialData");
-
-    const [popularSearches, setPopularSearches] = useState<string[]>([
-        "Apartment for Rent",
-        "Apartment Low to Hide",
-        "Offices for Buy",
-        "Offices for Rent",
-        "Villas for Rent in Bahrain"
-    ]);
-    const [discoverLocations, setDiscoverLocations] = useState<string[]>([
-        "Bahrain",
-        "Adliya",
-        "Barbar",
-        "Janabia"
-    ]);
+    const [subscribe, setSubscribe] = useState('')
+    const [isSubscribing, setIsSubscribing] = useState(false)
+    const { footer } = useHomeComponentDetails()
+    console.log(footer, "footerfooter");
+    const [popularSearches, setPopularSearches] = useState<string[]>([]);
+    const [discoverLocations, setDiscoverLocations] = useState<string[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<'searches' | 'locations'>('searches');
+    console.log(popularSearches, "popularSearches");
 
+    useEffect(() => {
+        setPopularSearches(footer.popularsearch)
+        setDiscoverLocations(footer.discover)
+    }, [footer])
     // Handlers for popular searches
     const handleAddSearch = (newSearch: string) => {
         if (!newSearch.trim() || popularSearches.includes(newSearch)) return;
@@ -69,136 +68,41 @@ const Footer = () => {
         setIsEnabled(value);
     };
 
-    const EditComponent = ({
-        isOpen,
-        setIsOpen,
-        popularSearches,
-        discoverLocations,
-        onAddSearch,
-        onRemoveSearch,
-        onAddLocation,
-        onRemoveLocation,
-        activeTab,
-        setActiveTab
-    }: {
-        isOpen: boolean;
-        setIsOpen: (value: boolean) => void;
-        popularSearches: string[];
-        discoverLocations: string[];
-        onAddSearch: (search: string) => void;
-        onRemoveSearch: (search: string) => void;
-        onAddLocation: (location: string) => void;
-        onRemoveLocation: (location: string) => void;
-        activeTab: 'searches' | 'locations';
-        setActiveTab: (tab: 'searches' | 'locations') => void;
-    }) => {
-        const [inputValue, setInputValue] = useState('');
+    const handleSubscribe = async () => {
+        setIsSubscribing(true)
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
-        const handleAdd = () => {
-            if (activeTab === 'searches') {
-                onAddSearch(inputValue);
+        if (!emailRegex.test(subscribe)) {
+            toast.info('Enter a valid Email!!')
+            setIsSubscribing(false)
+            return
+        }
+
+        try {
+            const res = await fetch('/api/subscribtion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: subscribe })
+            })
+
+            const data = await res.json()
+            if (!data.error) {
+                toast.success(data?.message || 'Subscribed')
+                setSubscribe('')
             } else {
-                onAddLocation(inputValue);
+                toast.error(data?.message || 'Try again')
             }
-            setInputValue('');
-        };
+        } catch (error) {
+            toast.error('Something went wrong. Please try again.')
+            console.error(error)
+        } finally {
+            setIsSubscribing(false)
+        }
+    }
 
-        return (
-            <GlobalModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-                <div className="w-full flex justify-start items-start flex-col bg-white py-5 px-2 gap-3">
-                    <div className="w-full flex justify-center items-center gap-2">
-                        <div className="w-full h-[500px] overflow-y-auto custom-scrollbar p-2 bg-slate-200 rounded-lg mt-2">
-                            {/* Tab Selector */}
-                            <div className="flex border-b border-gray-300 mb-4">
-                                <button
-                                    className={`py-2 px-4 font-medium ${activeTab === 'searches' ? 'text-secondary border-b-2 border-secondary' : 'text-gray-500'}`}
-                                    onClick={() => setActiveTab('searches')}
-                                >
-                                    Popular Searches
-                                </button>
-                                <button
-                                    className={`py-2 px-4 font-medium ${activeTab === 'locations' ? 'text-secondary border-b-2 border-secondary' : 'text-gray-500'}`}
-                                    onClick={() => setActiveTab('locations')}
-                                >
-                                    Discover Locations
-                                </button>
-                            </div>
-
-                            {/* Content based on active tab */}
-                            {activeTab === 'searches' ? (
-                                <>
-                                    <div className="w-full px-2 border-2 border-slate-50 bg-primary/20 flex justify-center items-center gap-3 my-1">
-                                        <input
-                                            type="text"
-                                            name="newsearch"
-                                            placeholder="Add New Search"
-                                            onChange={(e) => setInputValue(e.target.value)}
-                                            value={inputValue}
-                                            className="w-full p-2 outline-none"
-                                            onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-                                        />
-                                        <MdOutlineAdd
-                                            onClick={handleAdd}
-                                            className="text-3xl h-full font-semibold bg-green-100 p-1 text-secondary cursor-pointer hover:rounded-full hover:bg-green-50 duration-200"
-                                        />
-                                    </div>
-
-                                    {popularSearches.map((item, ndx) => (
-                                        <div key={ndx} className="w-full p-2 bg-primary/10 flex justify-start items-start gap-3 my-1">
-                                            <IoClose
-                                                onClick={() => onRemoveSearch(item)}
-                                                className="text-3xl p-1 text-red-400 cursor-pointer hover:bg-red-200 rounded-full duration-200"
-                                            />
-                                            {item}
-                                        </div>
-                                    ))}
-                                </>
-                            ) : (
-                                <>
-                                    <div className="w-full px-2 border-2 border-slate-50 bg-primary/20 flex justify-center items-center gap-3 my-1">
-                                        <input
-                                            type="text"
-                                            name="newlocation"
-                                            placeholder="Add New Location"
-                                            onChange={(e) => setInputValue(e.target.value)}
-                                            value={inputValue}
-                                            className="w-full p-2 outline-none"
-                                            onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-                                        />
-                                        <MdOutlineAdd
-                                            onClick={handleAdd}
-                                            className="text-3xl h-full font-semibold bg-green-100 p-1 text-secondary cursor-pointer hover:rounded-full hover:bg-green-50 duration-200"
-                                        />
-                                    </div>
-
-                                    {discoverLocations.map((item, ndx) => (
-                                        <div key={ndx} className="w-full p-2 bg-primary/10 flex justify-start items-start gap-3 my-1">
-                                            <IoClose
-                                                onClick={() => onRemoveLocation(item)}
-                                                className="text-3xl p-1 text-red-400 cursor-pointer hover:bg-red-200 rounded-full duration-200"
-                                            />
-                                            {item}
-                                        </div>
-                                    ))}
-                                </>
-                            )}
-                        </div>
-                    </div>
-                    <div className="w-full p-3">
-                        <h4>Edit Copyright Content</h4>
-                        <input type="text" placeholder="Enter Copyright" className="w-full p-2 outline-none border-2 border-slate-100" name="" id="" />
-                    </div>
-                    <div className="w-full flex justify-end items-end pt-3 gap-2">
-                        <button onClick={() => setIsOpen(false)} className="w-[100px] bg-amber-600 p-2 rounded-md text-white">Cancel</button>
-                        <button onClick={() => setIsOpen(false)} className="w-[100px] bg-secondary p-2 rounded-md text-white">Confirm</button>
-                    </div>
-                </div>
-            </GlobalModal>
-        );
-    };
 
     const memoModal = useMemo(() => (
-        <EditComponent
+        <FooterEdit
             isOpen={isOpen}
             setIsOpen={setIsOpen}
             popularSearches={popularSearches}
@@ -283,11 +187,14 @@ const Footer = () => {
                         <h3 className="text-md mb-2 text-slate-100 font-semibold">Keep Yourself Up to Date</h3>
                         <div className="w-full flex justify-start items-center gap-1 bg-white/10 p-3 rounded-lg">
                             <input
-                                type="text"
+                                type="email"
+                                onChange={(e) => setSubscribe(e.target.value)}
+                                value={subscribe}
                                 placeholder="Enter Email"
                                 className="w-full h-full p-3 text-slate-300 outline-none bg-transparent"
+                                required
                             />
-                            <button className="text-md font-semibold cursor-pointer text-secondary inline">Subscribe</button>
+                            <button onClick={handleSubscribe} className="text-md font-semibold cursor-pointer text-secondary inline">{isSubscribing ? 'Sending..' : 'Subscribe'}</button>
                         </div>
                     </div>
 
@@ -295,7 +202,7 @@ const Footer = () => {
                         <div className="min-w-[150px]">
                             <h2 className="text-md text-slate-100 font-semibold">Popular Search</h2>
                             <ul>
-                                {popularSearches.map((search, index) => (
+                                {popularSearches.length > 0 && popularSearches?.map((search, index) => (
                                     <li
                                         key={index}
                                         className="text-slate-400 text-sm py-3 cursor-pointer hover:underline hover:text-secondary duration-200"
@@ -338,7 +245,7 @@ const Footer = () => {
             <div className="w-[90%] h-[1px] bg-slate-600"></div>
 
             <div className="py-4 flex justify-between items-center w-full">
-                <p className="capitalize text-slate-100">©Clarion Advisory WLL - All rights Reserved</p>
+                <p className="capitalize text-slate-100">©{footer?.copyright || ''}</p>
             </div>
         </div>
     );

@@ -5,13 +5,15 @@ export const usePropertyFilter = () => {
 
     const [filterByType, setFilterByType] = useState<string>('')
     const [filterByCat, setFilterByCat] = useState<string>('')
+    const [filterByBeds, setFilterByBeds] = useState<string>('')
 
     const filters = useMemo(() => {
         return {
             filterByType,
-            filterByCat
+            filterByCat,
+            filterByBeds
         }
-    }, [filterByType, filterByCat])
+    }, [filterByType, filterByCat, filterByBeds])
     console.log(filters, filterByType, 3858453);
 
     const manageAddFilter = (value: string, filterField: string) => {
@@ -23,6 +25,9 @@ export const usePropertyFilter = () => {
         if (filterField === 'propCat') {
             setFilterByCat(value)
         }
+        if (filterField === 'byBeds') {
+            setFilterByBeds(value)
+        }
     }
     const manageRemoveFilter = (filterField: string) => {
         if (filterField === 'propType') {
@@ -30,6 +35,9 @@ export const usePropertyFilter = () => {
         }
         if (filterField === 'propCat') {
             setFilterByCat('')
+        }
+        if (filterField === 'byBeds') {
+            setFilterByBeds('')
         }
     }
 

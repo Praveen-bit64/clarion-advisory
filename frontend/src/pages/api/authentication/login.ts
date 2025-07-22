@@ -15,7 +15,7 @@ export default async function handler(req:NextApiRequest,res:NextApiResponse) {
              const users = rows[0]
             const validUser = await bcrypt.compare(password,users.Password)
             if(validUser){
-                return res.status(200).json({error:false,message:`Welcome ${users.Name}`,name:users.Name,userId:`CLR-USR-${users.id}`})
+                return res.status(200).json({error:false,message:`Welcome ${users.Name}`,name:users.Name,userId:`CLR-USR-${users.id}`,role:users.role})
             }else{
                 return res.status(400).json({error:true,message:'Invalid Credentials'})
             }

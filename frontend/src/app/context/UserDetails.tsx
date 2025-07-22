@@ -5,6 +5,7 @@ interface userDetails {
     name: string | null,
     userId: string | null,
     profile: string | null,
+    role: string
 }
 
 interface userDetailsProvider {
@@ -20,7 +21,8 @@ export const UserDetailsProvider = ({ children }: { children: React.ReactNode })
     const [userDetails, setUserDetails] = useState<userDetails>({
         name: '',
         userId: '',
-        profile: null
+        profile: null,
+        role: ''
     });
 
     // Mirror localStorage in a state
@@ -49,7 +51,8 @@ export const UserDetailsProvider = ({ children }: { children: React.ReactNode })
                 setUserDetails({
                     name: data.name,
                     userId: data.userId,
-                    profile: data.profile
+                    profile: data.profile,
+                    role: data.role
                 });
             }
         };

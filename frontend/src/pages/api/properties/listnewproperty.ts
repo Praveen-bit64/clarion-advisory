@@ -7,7 +7,7 @@ export const config = {
   api: { bodyParser: false },
 };
 
-// ✅ Helper: Parse Form
+// Helper: Parse Form
 const parseForm = (
   req: NextApiRequest
 ): Promise<{ fields: formidable.Fields; files: formidable.Files }> => {
@@ -25,11 +25,11 @@ const parseForm = (
   });
 };
 
-// ✅ Helper: Upload to Cloudinary
+// Helper: Upload to Cloudinary
 const uploadToCloudinary = async (file: File, isVideo = false) => {
   try {
     if (!file || !file.filepath) {
-      console.error("❌ Missing file or filepath:", file);
+      console.error(" Missing file or filepath:", file);
       throw new Error("Invalid file upload.");
     }
 
@@ -37,7 +37,7 @@ const uploadToCloudinary = async (file: File, isVideo = false) => {
       resource_type: isVideo ? "video" : "image",
     });
   } catch (err) {
-    console.error("⛔ Cloudinary error:", err);
+    console.error(" Cloudinary error:", err);
     throw new Error("Cloudinary upload failed");
   }
 };
@@ -102,7 +102,7 @@ const staticGalleryUrls: string[] = [
     const customFields = getField("customFields");
     const amenities = getField("amenities");
 
-    // ✅ Files
+    // Files
     const thumbnailImage = Array.isArray(files.thumbnailImage)
       ? files.thumbnailImage[0]
       : files.thumbnailImage;
@@ -121,10 +121,10 @@ const staticGalleryUrls: string[] = [
       throw new Error("Thumbnail image is required.");
     }
 
-    // ✅ Upload thumbnail
+    // Upload thumbnail
     const thumbResult = await uploadToCloudinary(thumbnailImage);
 
-    // ✅ Upload gallery images
+    // Upload gallery images
     let galleryUrls: string[] = [];
 
     if (useStaticGallery) {
@@ -143,14 +143,14 @@ const staticGalleryUrls: string[] = [
     }
 
 
-    // ✅ Upload video if exists
+    // Upload video if exists
     let videoUrl: string | null = null;
     if (propertyVideo) {
       const uploaded = await uploadToCloudinary(propertyVideo, true); // <-- video = true
       videoUrl = uploaded.secure_url;
     }
 
-    // ✅ DB Insert
+    // DB Insert
     const insertQuery = `
       INSERT INTO listedProperties (
         title, description, propertyCategory, propertyType, propertyPrice,

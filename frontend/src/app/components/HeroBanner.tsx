@@ -7,10 +7,19 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { GrClose } from "react-icons/gr";
 import GlobalModal from "./GlobalModal";
 import FilterPopup from "./FilterPopup";
-import Switcher from "./Switcher";
 import { CiEdit } from "react-icons/ci";
 import { useEditMode } from "../context/EditModeToggle";
 import { useListedProperties } from "../context/ListedProperties";
+import { useHomeComponentDetails } from "../context/HomeComponentDetails";
+import { useUserDetails } from "../context/UserDetails";
+import HeroBannerEdit from "./EditHomeComponents/HeroBannerEdit";
+
+interface editHomeComp {
+    title: string,
+    description: string,
+    isvisible: boolean,
+    galleryImg: any
+}
 const HeroBanner = () => {
     const { isEditMode } = useEditMode();
     const [suggestLocation, setSuggestLocation] = useState(locations)
@@ -20,43 +29,15 @@ const HeroBanner = () => {
     const suggestionAddMoreRef = useRef<HTMLDivElement>(null)
     const [localSearch, setLocalSearch] = useState<string[]>([]);
     const [isOpen, setIsOpen] = useState(false);
+    const { heroBanner, featured_listings } = useHomeComponentDetails()
     const { properties, setProperties } = useListedProperties()
+    const { userDetails } = useUserDetails()
     const [input, setInput] = useState('')
-    console.log(properties, 23423);
-
-    //edit section
-    const [isEnabled, setIsEnabled] = useState(true)
-    const enables = (value: boolean) => {
-        setIsEnabled(value)
-    }
+    console.log(heroBanner, featured_listings, 23423);
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const EditComponent = (props: { isOpen: boolean, setIsOpen: any }) => {
-        const { isOpen, setIsOpen } = props
-        return (
-            <GlobalModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-                <div className="w-full flex justify-start items-start flex-col bg-white py-5 px-2 gap-3">
-                    <div className="w-full flex justify-start items-start flex-col">
-                        <label htmlFor="title" className="text-lg font-semibold">Section Visibility</label>
-                        <Switcher enables={enables} />
-                    </div>
-                    <div className="w-full flex flex-col justify-start items-start gap-2">
-                        <label htmlFor="title" className="text-lg font-semibold">Title</label>
-                        <input type="text" placeholder="Title" className="w-full p-2 outline-none border border-slate-300 bg-white" />
-                    </div>
-                    <div className="w-full flex flex-col justify-start items-start gap-2">
-                        <label htmlFor="title" className="text-lg font-semibold">Description</label>
-                        <input type="text" placeholder="Description" className="w-full p-2 outline-none border border-slate-300 bg-white" />
-                    </div>
-                    <div className="w-full flex justify-end items-end pt-3 gap-2">
-                        <button onClick={() => setIsOpen(false)} className="w-[100px] bg-amber-600 p-2 rounded-md text-white">Cancel</button>
-                        <button className="w-[100px] bg-secondary p-2 rounded-md text-white">Confirm</button>
-                    </div>
-                </div>
-            </GlobalModal>
-        )
-    }
+
     const memoModal = useMemo(() => (
-        <EditComponent isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
+        <HeroBannerEdit isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
     ), [isModalOpen])
 
     useEffect(() => {
@@ -171,7 +152,7 @@ const HeroBanner = () => {
             <GlobalModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
                 <FilterPopup isOpen={true} onClose={() => setIsOpen(false)} />
             </GlobalModal>
-            <div className="w-full lg:h-[780px] h-[500px] relative z-1 group">
+            {<div className="w-full lg:h-[780px] h-[500px] relative z-1 group">
                 {isModalOpen && memoModal}
                 {isEditMode && <div className="absolute w-full hidden min-h-full bg-primary/30 top-0 left-0 z-9999 group-hover:flex justify-center items-start border-4 border-rose-500">
                     <CiEdit onClick={() => setIsModalOpen(true)} className="text-7xl text-rose-500 border-2 hover:border-rose-500 bg-white rounded-full p-2 hover:shadow-2xl absolute top-3.5 cursor-pointer" />
@@ -180,9 +161,9 @@ const HeroBanner = () => {
                 <div className="bg-gradient-to-b from-black/70 to-transparent h-[300px] w-full absolute z-11"></div>
                 {memoizedSlider}
                 <div className="w-full absolute lg:top-[100px] top-[50px] left-0  z-99 flex justify-center items-center flex-col gap-3">
-                    <p className="captilize lg:text-xl text-md text-white">Best Place to</p>
-                    <h1 className="lg:text-5xl text-2xl text-white font-bold">Find Your Dream Property</h1>
-                    <p className="lg:text-xl w-[90%] text-md flex justify-center items-center text-center text-white">We’ve more than 745,000 apartments, place & plot.</p>
+                    {/* <p className="captilize lg:text-xl text-md text-white">{heroBanner.title.split('').slice(0,)}</p> */}
+                    <h1 className="lg:text-5xl text-2xl text-white font-bold">{heroBanner.title}</h1>
+                    <p className="lg:text-xl w-[90%] text-md flex justify-center items-center text-center text-white">{heroBanner.description}</p>
                 </div>
                 <div className="w-full h-full flex flex-col justify-center items-center absolute lg:top-10 top-24 z-99">
                     <div className="lg:w-[70%] w-[90%] lg:h-[70px] h-[170px] bg-white rounded-2xl flex flex-col lg:flex-row lg:justify-start justify-center lg:pt-0 pt-5 items-center px-3 relative rounded-tl-none gap-0 lg:gap-1.5">
@@ -266,7 +247,7 @@ const HeroBanner = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>}
         </>
     );
 }

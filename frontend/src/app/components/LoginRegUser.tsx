@@ -84,6 +84,7 @@ const LoginRegUser = () => {
             if (!data.error) {
                 toast.success(data.message ?? 'Login succesfully')
                 localStorage.setItem('userId', data.userId)
+                localStorage.setItem('role', data.role)
                 setStoredUserId(data.userId)
                 setTimeout(() => {
                     router.push('/')

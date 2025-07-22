@@ -4,18 +4,20 @@ import { useEffect, useState } from "react";
 import { GrClose } from "react-icons/gr";
 import { VscListSelection } from "react-icons/vsc";
 import { useEditMode } from "../context/EditModeToggle";
-import { MdCancel, MdEditNote, MdOutlineEditOff } from "react-icons/md";
+import { MdCancel, MdEditNote, MdManageAccounts, MdOutlineEditOff } from "react-icons/md";
 import { useSiteInfo } from "../context/SiteInfoContext";
 import { useUserDetails } from "../context/UserDetails";
 import { LuLogOut, LuOctagon } from "react-icons/lu";
 import { BiCategoryAlt, BiHeart, BiLocationPlus } from "react-icons/bi";
 import { toast } from "react-toastify";
-import properties from '@/app/data/propertyData.json'
 import { FiLogOut } from "react-icons/fi";
 import { CiLocationOn } from "react-icons/ci";
 import { ImPriceTags } from "react-icons/im";
 import { BsChevronDoubleRight, BsTypeH1 } from "react-icons/bs";
 import { PiBuildingOffice } from "react-icons/pi";
+import { useListedProperties } from "../context/ListedProperties";
+import { useLikes } from "../context/LikeContext";
+import EditModeToggle from "./EditModeToggle";
 const Header = () => {
     const [sidebar, setSidebar] = useState(false)
     const { isEditMode, toggle } = useEditMode();
@@ -23,7 +25,18 @@ const Header = () => {
     const [actionArea, setActionArea] = useState(false)
     const [favView, setFavView] = useState(false)
     const { siteInfo } = useSiteInfo()
+    const { properties } = useListedProperties();
+    const { likesArr, toggleLike } = useLikes();
+    const [favoProps, setFavoProps] = useState<typeof properties>();
+
     console.log(userDetails, 'siteinfofromheader');
+
+    useEffect(() => {
+        if (likesArr && properties) {
+            const numericLikesArr = likesArr.map(id => Number(id)); // Convert to numbers
+            setFavoProps(properties.filter(prop => numericLikesArr.includes(Number(prop.id))));
+        }
+    }, [likesArr, properties]);
 
     const logOut = () => {
         toast(
@@ -85,55 +98,9 @@ const Header = () => {
                             <li><Link href={'/properties'}>Properties</Link></li>
                             <li><Link href={'/contact'}>contact</Link></li>
                         </ul>
-                        {false ?
-                            <div
-                                onClick={toggle}
-                                className={`relative w-52 h-14 flex items-center rounded-full cursor-pointer transition-all duration-500 shadow-md overflow-hidden
-    ${isEditMode ? 'bg-gradient-to-r from-pink-400 to-orange-400' : 'bg-gradient-to-r from-blue-500 to-indigo-700'}
-  `}
-                            >
-                                {/* Text Container - Improved Alignment */}
-                                <div className="relative w-full h-full flex items-center">
-                                    {/* ON Text */}
-                                    <span
-                                        className={`absolute inset-0 flex items-center text-sm ml-[10px] justify-start px-2 text-white font-semibold transition-all duration-500
-        ${isEditMode ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}
-      `}
-                                    >
-                                        Edit Mode ON
-                                    </span>
 
-                                    {/* OFF Text */}
-                                    <span
-                                        className={`absolute inset-0 flex items-center text-sm mr-[10px] justify-end px-2 text-white font-semibold transition-all duration-500
-        ${isEditMode ? 'translate-y-4 opacity-0' : 'translate-y-0 opacity-100'}
-      `}
-                                    >
-                                        Edit Mode OFF
-                                    </span>
-                                </div>
 
-                                {/* Sliding Circle with Icon - Enhanced Visuals */}
-                                <div
-                                    className={`absolute w-12 h-12 bg-white rounded-full shadow-xl flex items-center justify-center text-xl
-      transition-all duration-500 ease-[cubic-bezier(0.68,-0.55,0.27,1.55)]
-      ${isEditMode ? 'left-[calc(100%-52px)]' : 'left-1'}
-      ${isEditMode ? 'scale-110' : 'scale-100'}
-    `}
-                                >
-                                    {isEditMode ? (
-                                        <MdEditNote className="text-orange-500 transition-transform duration-300 hover:scale-125" />
-                                    ) : (
-                                        <MdOutlineEditOff className="text-blue-600 transition-transform duration-300 hover:scale-125" />
-                                    )}
-                                </div>
-
-                                {/* Decorative Pulse Effect (Visible on Active State) */}
-                                {isEditMode && (
-                                    <div className="absolute inset-0 rounded-full bg-white opacity-0 animate-ping pointer-events-none"></div>
-                                )}
-                            </div>
-                            :
+                        {
                             !userDetails.userId ? <div className="w-[60%] flex justify-center items-end">
                                 <Link href="/Login">
                                     <button className="w-[120px] p-2 text-md font-mono font-semibold bg-secondary/20 border border-slate-50 text-white cursor-pointer hover:shadow-md duration-200 shadow-white/50">Login</button>
@@ -141,15 +108,18 @@ const Header = () => {
                                 </Link>
                             </div>
                                 : <div className="w-[60%] flex justify-center items-center gap-1 relative z-999">
+                                    {userDetails.role === 'admin' && <EditModeToggle toggle={toggle} isEditMode={isEditMode} />}
                                     {/**Action area */}
-                                    <div className={`absolute bg-slate-200 w-[40%] h-[150px]  z-999 ${actionArea ? 'top-14 opacity-100' : 'top-12 opacity-0'} duration-200`}>
+                                    <div className={`absolute bg-slate-200 w-[40%] h-[150px]  z-999 ${actionArea ? `top-14  ${userDetails.role === 'admin' ? 'right-2' : ''} opacity-100` : `top-12 ${userDetails.role === 'admin' ? 'right-2' : ''} opacity-0`} duration-200`}>
                                         <ul className={`${actionArea ? 'flex' : 'hidden'} w-full h-full  justify-start items-start px-3 py-5 gap-3 flex-col`}>
-                                            <li
+                                            {userDetails.role === 'user' ? <li
                                                 onClick={() => {
                                                     setFavView(true),
                                                         setActionArea(false)
                                                 }}
                                                 className="w-full flex justify-start items-center text-md gap-2 cursor-pointer"><BiHeart className="inline text-2xl text-rose-400" />Favorites</li>
+                                                : <Link href={'/Admin'}> <li className="w-full flex justify-start items-center text-md gap-2 cursor-pointer"><MdManageAccounts className="inline text-2xl text-rose-400" />Manage</li></Link>
+                                            }
                                             <li className="w-full flex justify-start items-center text-md gap-2 cursor-pointer" onClick={logOut}><LuLogOut className="inline text-2xl text-primary " />Logout</li>
                                             <li className="w-full h-full flex justify-center items-center text-sm border border-red-400 bg-red-100 text-red-400 text-center cursor-pointer">Delete Accout</li>
                                         </ul>
@@ -167,22 +137,22 @@ const Header = () => {
                     <VscListSelection onClick={() => setSidebar(true)} className="absolute right-6 top-6 text-4xl text-slate-50 lg:hidden" />
                 </div>
                 {/**favorite area */}
-                <div className={`absolute  ${favView ? 'opacity-100 w-[30%] p-5' : 'w-0'} duration-200 bg-slate-800  border-slate-50 top-23 z-9999 right-0 min-h-screen  `}>
+                <div className={`absolute  ${favView ? 'opacity-100 w-[30%] p-5' : 'w-0'} duration-200 bg-slate-800  border-slate-50 top-23 z-999999 right-0 min-h-screen  `}>
                     <div className={`w-full ${favView ? 'flex' : 'hidden'} justify-between items-center p-2 `}>
                         <BsChevronDoubleRight onClick={() => setFavView(false)} className="text-2xl  text-rose-600" />
                         <h4 className="text-xl text-white uppercase mr-3">Your Favorites</h4>
                     </div>
                     <ul className="w-full flex flex-col justify-start items-start gap-2 h-screen overflow-y-auto custom-scrollbar">
-                        {properties.length > 0 ? properties.slice(0, 7).map((property, ndx) => {
+                        {favoProps && favoProps?.length > 0 ? favoProps.map((property, ndx) => {
                             return (
-                                <li key={ndx} className="w-[99%] flex justify-start items-center gap-2 border border-slate-100 py-3 px-2 bg-slate-600 hover:bg-slate-500 duration-200 cursor-pointer"><img className="w-[30%] min-h-[80px] object-cover rounded-lg" src={property.image} alt={property.title} />
+                                <Link key={ndx} href={`/properties/propertyDetails?pId=${property?.id}`}><li className="w-[99%] flex justify-start items-center gap-2 border border-slate-100 py-3 px-2 bg-slate-600 hover:bg-slate-500 duration-200 cursor-pointer"><img className="w-[30%] min-h-[80px] object-cover rounded-lg" src={`${property?.thumbnailImage}`} alt={property.title} />
                                     <div className="w-[68%]  flex flex-col justify-start items-start gap-2">
                                         <h4 className="w-full text-md text-white">{property.title}</h4>
-                                        <h4 className="w-full text-sm font-mono text-white"><CiLocationOn className="inline text-lg mr-1" />{property.location}</h4>
-                                        <h4 className="w-full text-sm font-mono text-white"><ImPriceTags className="inline text-lg mr-1" />{property.price}</h4>
-                                        <h4 className="w-full text-sm font-mono text-white"><PiBuildingOffice className="inline text-lg mr-1" />{property.propertyType} <span className="w-full p-1 bg-secondary text-xs font-mono">{property.saleType}</span></h4>
+                                        <h4 className="w-full text-sm font-mono text-white"><CiLocationOn className="inline text-lg mr-1" />{property?.propertyCity}</h4>
+                                        <h4 className="w-full text-sm font-mono text-white"><ImPriceTags className="inline text-lg mr-1" />{property.propertyPrice}</h4>
+                                        <h4 className="w-full text-sm font-mono text-white"><PiBuildingOffice className="inline text-lg mr-1" />{property.propertyType} <span className="w-full p-1 bg-secondary text-xs font-mono">{property.propertyType}</span></h4>
                                     </div>
-                                </li>
+                                </li></Link>
                             )
                         }) : <p className="w-full h-full mt-6 text-center text-white font-mono">Nothing in you Wishlist</p>}
                     </ul>

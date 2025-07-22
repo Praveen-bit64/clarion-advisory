@@ -18,14 +18,14 @@ import Link from "next/link";
 import { IoBed, IoLocationOutline } from "react-icons/io5";
 import { FaBath } from "react-icons/fa6";
 import { TbRulerMeasure } from "react-icons/tb";
+import { useUserDetails } from "../context/UserDetails";
+import Featured_ListingsEdit from "./EditHomeComponents/Featured_ListingsEdit";
+import { useHomeComponentDetails } from "../context/HomeComponentDetails";
 
 
 const Featured_Listings = () => {
     const { isEditMode } = useEditMode();
-    const [isEnabled, setIsEnabled] = useState(true)
-    const enables = (value: boolean) => {
-        setIsEnabled(value)
-    }
+    const { userDetails } = useUserDetails()
     const [isOpen, setIsOpen] = useState(false)
     const { properties } = useListedProperties()
     const [featureView, setFeatureView] = useState('rent')
@@ -35,50 +35,27 @@ const Featured_Listings = () => {
         }
     }, [properties])
     const [featuredProperties, setFeaturedProperties] = useState(properties)
+    const { featured_listings } = useHomeComponentDetails()
     console.log(properties, featuredProperties, 654635);
-    const EditComponent = (props: { isOpen: boolean, setIsOpen: any }) => {
-        const { isOpen, setIsOpen } = props
-        return (
-            <GlobalModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-                <div className="w-full flex justify-start items-start flex-col bg-white py-5 px-2 gap-3">
-                    <div className="w-full flex justify-start items-start flex-col">
-                        <label htmlFor="title" className="text-lg font-semibold">Section Visibility</label>
-                        <Switcher enables={enables} />
-                    </div>
-                    <div className="w-full flex flex-col justify-start items-start gap-2">
-                        <label htmlFor="title" className="text-lg font-semibold">Title</label>
-                        <input type="text" placeholder="Title" className="w-full p-2 outline-none border border-slate-300 bg-white" />
-                    </div>
-                    <div className="w-full flex flex-col justify-start items-start gap-2">
-                        <label htmlFor="title" className="text-lg font-semibold">Description</label>
-                        <input type="text" placeholder="Description" className="w-full p-2 outline-none border border-slate-300 bg-white" />
-                    </div>
-                    <div className="w-full flex justify-end items-end pt-3 gap-2">
-                        <button onClick={() => setIsOpen(false)} className="w-[100px] bg-amber-600 p-2 rounded-md text-white">Cancel</button>
-                        <button className="w-[100px] bg-secondary p-2 rounded-md text-white">Confirm</button>
-                    </div>
-                </div>
-            </GlobalModal>
-        )
-    }
+
     const memoModal = useMemo(() => (
-        <EditComponent isOpen={isOpen} setIsOpen={setIsOpen} />
+        <Featured_ListingsEdit isOpen={isOpen} setIsOpen={setIsOpen} />
     ), [isOpen])
     const filterProperty = (value: string) => {
         setFeatureView(value.toLowerCase())
         setFeaturedProperties(() => properties.filter(item => item.propertyType.toLowerCase() === value.toLowerCase()))
     }
     return (
-        <div className="w-full h-auto bg-slate-200 flex justify-center items-center relative groups">
+        <div className={`w-full h-auto bg-slate-200 flex justify-center items-center relative ${userDetails.role === 'admin' && isEditMode ? 'group' : ''}`}>
             {isOpen && memoModal}
-            {isEditMode && <div className="absolute w-full hidden min-h-full bg-primary/30 top-0 left-0 z-9999 groups-hover:flex justify-center items-start border-4 border-rose-500">
+            {isEditMode && <div className={`absolute w-full ${userDetails.role === 'admin' && isEditMode ? 'group-hover:flex' : ''} hidden min-h-full bg-primary/30 top-0 left-0 z-9999  justify-center items-start border-4 border-rose-500`}>
                 <CiEdit onClick={() => setIsOpen(true)} className="text-7xl text-rose-500 border-2 hover:border-rose-500 bg-white rounded-full p-2 hover:shadow-2xl absolute top-3.5 cursor-pointer" />
             </div>}
             <GlobalContainer>
                 <div className="w-full h-auto min-h-[200px] py-5">
-                    <h1 className="lg:text-3xl text-2xl text-slate-600 font-semibold mt-10">Discover Our <span className="text-primary">Featured Listings</span></h1>
+                    <h1 className="lg:text-3xl text-2xl text-slate-600 font-semibold mt-10">{featured_listings.title}</h1>
                     <div className="w-full flex flex-wrap lg:flex-row flex-col justify-between items-center gap-4">
-                        <h3 className="text-md text-slate-500">Explore our handpicked properties – top-rated homes in the best locations!</h3>
+                        <h3 className="text-md text-slate-500">{featured_listings.description}</h3>
                         <div className="w-full lg:w-auto flex justify-end items-center gap-3">
                             <button onClick={() => filterProperty('rent')} className={`w-[80px] p-2 rounded-lg border-1 border-slate-50 ${featureView == 'rent' ? 'bg-slate-800 text-white' : 'bg-slate-50 text-slate-950'}  text-md cursor-pointer`}>For Rent</button>
                             <button onClick={() => filterProperty('sale')} className={`w-[80px] p-2 rounded-lg border-1 border-slate-950 ${featureView == 'sale' ? 'bg-slate-800 text-white' : 'bg-slate-50 text-slate-950'} text-md cursor-pointer`}>For Sale</button>

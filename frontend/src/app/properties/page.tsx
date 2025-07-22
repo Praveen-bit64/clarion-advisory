@@ -9,12 +9,14 @@ import FilterPopup from "../components/FilterPopup";
 import propertyData from '@/app/data/propertyData.json';
 import { FiExternalLink } from "react-icons/fi";
 import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
-import { IoImagesSharp } from "react-icons/io5";
+import { IoBed, IoImagesSharp } from "react-icons/io5";
 import { IoMdVideocam } from "react-icons/io";
 import { useListedProperties } from "../context/ListedProperties";
 import { useLikes } from "../context/LikeContext";
 import { usePropertyFilter } from "../hooks/usePropertyFilter";
 import { usePropertySchema } from "../context/PropertySchema";
+import { FaBath } from "react-icons/fa6";
+import { TbRulerMeasure } from "react-icons/tb";
 const page = () => {
     const [dropdown, setDropDown] = useState({
         status: false,
@@ -28,22 +30,49 @@ const page = () => {
     const [filteredProperties, setFilteredProperties] = useState(properties)
 
     useEffect(() => {
-        let filtered = properties;
+        let filtered = [...properties];
 
         if (filters.filterByType) {
             filtered = filtered.filter(
-                (prop) => prop.propertyType.toLowerCase() === filters.filterByType.toLowerCase()
+                (prop) =>
+                    prop.propertyType?.toLowerCase() === filters.filterByType.toLowerCase()
             );
         }
 
         if (filters.filterByCat) {
             filtered = filtered.filter(
-                (prop) => prop.propertyCategory.toLowerCase() === filters.filterByCat.toLowerCase()
+                (prop) =>
+                    prop.propertyCategory?.toLowerCase() === filters.filterByCat.toLowerCase()
+            );
+        }
+
+        if (filters.filterByBeds) {
+            filtered = filtered.filter(
+                (prop) => String(prop?.bedrooms) === String(filters.filterByBeds)
             );
         }
 
         setFilteredProperties(filtered);
     }, [filters, properties]);
+
+    const handleSortProperties = (value: string) => {
+        if (value === 'all') {
+            console.log('else block executed');
+            setFilteredProperties(properties);
+            return;
+        }
+
+        const sorted = [...filteredProperties];
+
+        if (value === 'lowToHigh') {
+            sorted.sort((a, b) => Number(a.propertyPrice) - Number(b.propertyPrice));
+        } else if (value === 'highToLow') {
+            sorted.sort((a, b) => Number(b.propertyPrice) - Number(a.propertyPrice));
+        }
+
+        setFilteredProperties(sorted);
+    };
+
 
     const handleDropDown = (e: React.MouseEvent<HTMLDivElement>) => {
         const place = e.currentTarget.dataset.place || '';
@@ -60,7 +89,7 @@ const page = () => {
     };
 
     console.log(filters, "manageFilterView");
-    console.log(filteredProperties, properties, 'filteredproperties');
+    console.log(filteredProperties, properties, propertySchema?.bedroomSizes, 'filteredproperties');
 
 
     useEffect(() => {
@@ -122,11 +151,12 @@ const page = () => {
     const bedrooms = () => {
         return (
             <ul className="w-full flex justify-center items-start flex-col">
-                <li className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">All</li>
-                <li className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">1BH</li>
-                <li className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">2BHK</li>
-                <li className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">3BHK</li>
-                <li className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">5BHK</li>
+                <li onClick={() => manages?.manageAddFilter(``, 'byBeds')} className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">All</li>
+                {propertySchema?.bedroomSizes?.map(((beds, ndx) => {
+                    return (
+                        <li key={ndx} onClick={() => manages?.manageAddFilter(`${beds}`, 'byBeds')} className="py-2 px-4 hover:bg-secondary w-full text-start hover:text-white">{beds}</li>
+                    )
+                }))}
             </ul>
         )
     }
@@ -142,7 +172,7 @@ const page = () => {
             <GlobalModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
                 <FilterPopup isOpen={true} onClose={() => setIsOpen(false)} />
             </GlobalModal>
-            <div className="w-full h-auto bg-slate-100 flex justify-center items-start">
+            <div className="w-full h-auto bg-slate-100 flex justify-center items-start pb-14">
                 <GlobalContainer>
                     <div className="w-full flex justify-start items-start flex-col gap-2 mt-10 py-10">
                         <h2 className="text-3xl text-slate-700 font-semibold">New York Homes for Sale</h2>
@@ -167,7 +197,7 @@ const page = () => {
                                 onClick={handleDropDown}
                                 data-place='pType'
                                 className="hidden lg:flex justify-start items-center border p-2 w-full cursor-pointer border-slate-100 bg-white rounded-2xl text-center relative">
-                                <input type="text" value={` ${filters.filterByCat ? 'For' + ' ' + filters.filterByCat : 'Property Type'}`} className=" outline-none cursor-pointer w-full text-center  select-none text-md" readOnly /><RiArrowDownWideFill className="text-2xl" />
+                                <input type="text" value={` ${filters.filterByCat ? filters.filterByCat : 'Property Type'}`} className=" outline-none cursor-pointer w-full text-center  select-none text-md" readOnly /><RiArrowDownWideFill className="text-2xl" />
                                 {dropdown.status && dropdown.place == 'pType' && <DropDown />}
                                 {filters.filterByCat &&
                                     <div className="w-full h-full absolute bg-amber-500/20 z-99 top-0 left-0 rounded-2xl flex justify-start items-center ">
@@ -186,8 +216,13 @@ const page = () => {
                                 onClick={handleDropDown}
                                 data-place='bedrooms'
                                 className="hidden lg:flex justify-start items-center border p-2 w-full cursor-pointer border-slate-100 bg-white rounded-2xl text-center relative">
-                                <input type="text" value={'Bedrooms'} className=" outline-none cursor-pointer w-full text-center  select-none text-md" readOnly /><RiArrowDownWideFill className="text-2xl" />
+                                <input type="text" value={` ${filters.filterByBeds ? filters.filterByBeds : 'Bedrooms'}`} className=" outline-none cursor-pointer w-full text-center  select-none text-md" readOnly /><RiArrowDownWideFill className="text-2xl" />
                                 {dropdown.status && dropdown.place == 'bedrooms' && <DropDown />}
+                                {filters.filterByBeds &&
+                                    <div className="w-full h-full absolute bg-amber-500/20 z-99 top-0 left-0 rounded-2xl flex justify-start items-center ">
+                                        <span onClick={() => manages.manageRemoveFilter('byBeds')} className="w-[25px] flex justify-center items-center rounded-full h-[25px] bg-white/70 p-1 hover:bg-amber-600 text-red-500 text-md cursor-pointer">X</span>
+                                    </div>
+                                }
                             </div>
                             <div
                                 onClick={() => setIsOpen(true)}
@@ -197,12 +232,12 @@ const page = () => {
                         </div>
                         <div className="lg:w-[40%] w-full flex justify-end items-center">
                             <span className="text-sm text-slate-500">Sort by</span>
-                            <select name="" id="" className="p-1  outline-none">
-                                <option value="">Newest</option>
-                                <option value="">Price Low</option>
-                                <option value="">Price High</option>
+                            <select onChange={(e) => handleSortProperties(e.target.value as 'lowToHigh' | 'highToLow' | 'all')} name="" id="" className="p-1  outline-none">
+                                <option value="all">Newest</option>
+                                <option value="lowToHigh">Price: Low to High</option>
+                                <option value="highToLow">Price: High to Low</option>
                             </select>
-                            <button className="ml-2 w-[80px] text-md p-1 border-x-[1px] border-slate-400 text-secondary cursor-pointer">Grid</button><button className="w-[80px] text-md cursor-pointer">List</button>
+                            {/* <button className="ml-2 w-[80px] text-md p-1 border-x-[1px] border-slate-400 text-secondary cursor-pointer">Grid</button><button className="w-[80px] text-md cursor-pointer">List</button> */}
                         </div>
                     </div>
                     <div className="w-full flex justify-center items-center gap-4 flex-wrap mt-10">
@@ -235,7 +270,13 @@ const page = () => {
                                     <div className="w-full h-[140px] px-3 py-5 border-[1px] border-slate-300 border-t-none bg-white">
                                         <Link href={`/properties/propertyDetails?pId=${item?.id}`}><h2 className="text-md font-semibold hover:underline text-slate-900 cursor-pointer">{item.title}</h2></Link>
                                         <p className="text-sm text-slate-600">{item?.propertyCity}</p>
-                                        <span className="mt-3"> {item?.isBedroomAvailable == '1' ? `${item?.bedrooms} ${item?.bathrooms} ${item?.propertySize}` : `${item?.propertySize}`}</span>
+                                        {item.isBedroomAvailable === '1' && (
+                                            <>
+                                                <span><IoBed className="inline mx-1" />{item?.bedrooms}</span>
+                                                <span><FaBath className="inline mx-1" />{item?.bathrooms}</span>
+                                            </>
+                                        )}
+                                        <span><TbRulerMeasure className="inline mx-1" />{item?.propertySize} sqms</span>
                                         <div className="w-full my-2 border-t-[1px] border-slate-300 flex justify-between items-center">
                                             <h4 className="w-full py-3 flex justify-start items-center text-md text-slate-800 capitalize">for {item?.propertyType}</h4>
                                             <div className="w-full flex justify-end items-center gap-4">

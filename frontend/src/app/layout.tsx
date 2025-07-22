@@ -16,6 +16,7 @@ import { TopLoader } from "./components/TopLoader";
 import { UserDetailsProvider } from "./context/UserDetails";
 import { ListedPropertyContext, ListedPropertyProvider } from "./context/ListedProperties";
 import { LikeContextProvider } from "./context/LikeContext";
+import { HomeComponentProvider } from "./context/HomeComponentDetails";
 
 
 const geistSans = Geist({
@@ -51,11 +52,13 @@ export default function RootLayout({
                     <ListedPropertyProvider>
                       <LikeContextProvider>
                         <PropertySchemaProvider>
-                          <Header />
-                          <ToastContainer position="top-right" autoClose={3000} />
-                          <TopLoader />
-                          {children}
-                          <Footer />
+                          <HomeComponentProvider>
+                            <Header />
+                            <ToastContainer position="top-right" autoClose={3000} />
+                            <TopLoader />
+                            {children}
+                            <Footer />
+                          </HomeComponentProvider>
                         </PropertySchemaProvider>
                       </LikeContextProvider>
                     </ListedPropertyProvider>
