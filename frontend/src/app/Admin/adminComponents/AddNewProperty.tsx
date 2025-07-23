@@ -683,7 +683,7 @@ const AddNewProperty = (props: { getViewCallback: (value: string) => void }) => 
                                             <option value={`${null}`}>Choose</option>
                                             {propertySchema?.bedroomSizes?.map((bed, ndx) => {
                                                 return (
-                                                    <option key={ndx} value={bed}>{bed}/</option>
+                                                    <option key={ndx} value={bed}>{bed}</option>
                                                 )
                                             })}
                                         </select>

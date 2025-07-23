@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { GrClose } from "react-icons/gr";
 import { IoMdDoneAll } from "react-icons/io";
 import { RiListSettingsFill } from "react-icons/ri";
+import { usePropertySchema } from "../context/PropertySchema";
 
 type PropertyType = {
     name: string;
@@ -18,6 +19,9 @@ type PropertyType = {
 type FilterPopupProps = {
     isOpen: boolean;
     onClose: () => void;
+    basicFil?: any
+    locationss?: any
+    getIsAdvandedFilterCb: any
 };
 
 type FilterProps = {
@@ -36,25 +40,48 @@ type FilterProps = {
     location?: string[];
 };
 
-const FilterPopup = ({ isOpen, onClose }: FilterPopupProps) => {
+const FilterPopup = ({ isOpen, onClose, basicFil, locationss, getIsAdvandedFilterCb }: FilterPopupProps) => {
     const router = useRouter();
     const [propertyTypes, setPropertyTypes] = useState<PropertyType[]>(getPropertyTypes);
     const [bedrooms, setBedrooms] = useState<string[]>([]);
-    const [filtertypes] = useState<string[]>(["Buy", "Rent"]);
+    const [filtertypes] = useState<string[]>(["sale", "rent"]);
     const [locations, setLocations] = useState<string[]>([]);
     const [sizeOptions, setSizeOptions] = useState<number[]>([]);
     const [maxSizeOptions, setMaxSizeOptions] = useState<number[]>([]);
+    const [getLocation, setGetLocation] = useState<string[]>([])
+    const { propertySchema } = usePropertySchema()
     const furnishingOptions = ["Furnished", "Semi Furnished", "Unfurnished"];
     const [selected, setSelected] = useState("rent");
     const locationInputRef = useRef<HTMLInputElement>(null);
 
     const [filterprops, setFilterProps] = useState<FilterProps>({
-        filterType: "Rent",
+        filterType: "rent",
         property: "Apartment",
         furnished: [],
         size: { minSize: 0, maxSize: 0 },
         budget: { min: 0, max: 0, err: false }
     });
+    useEffect(() => {
+        if (Array.isArray(locationss)) {
+            setGetLocation(locationss?.map(loc => loc.name))
+        }
+    }, [locationss])
+
+
+    useEffect(() => {
+        if (basicFil) {
+            setFilterProps((prev) => ({
+                ...prev,
+                filterType: basicFil?.sType || 'rent',
+                property: basicFil?.pType || 'Apartment'
+            }))
+            setLocations(() => ([
+                ...basicFil.location
+            ]))
+        }
+    }, [basicFil])
+    console.log(filterprops, basicFil, locations, 'filterprops');
+
 
     const [suggLocation, setSuggLocation] = useState(false);
     const [locationDropDown, setLocationDropDown] = useState<string[]>([]);
@@ -198,6 +225,8 @@ const FilterPopup = ({ isOpen, onClose }: FilterPopupProps) => {
         if (max !== 0) queryParams.append('mxbug', max.toString());
 
         router.push(`/properties?${queryParams.toString()}`);
+        getIsAdvandedFilterCb(true)
+        onClose()
     };
 
     return (
@@ -245,7 +274,7 @@ const FilterPopup = ({ isOpen, onClose }: FilterPopupProps) => {
                                         : "bg-white border-gray-300 text-gray-700"
                                         } font-medium`}
                                 >
-                                    {option.charAt(0).toUpperCase() + option.slice(1)}
+                                    {option === 'rent' ? 'Rent' : 'Buy'}
                                 </label>
                             </div>
                         ))}
@@ -256,30 +285,30 @@ const FilterPopup = ({ isOpen, onClose }: FilterPopupProps) => {
                 <div className="w-full">
                     <label className="block text-sm md:text-md font-semibold text-gray-600 mb-1">Select Property</label>
                     <div className="w-full flex flex-wrap justify-start items-center gap-2">
-                        {propertyTypes.map((type) => (
-                            <React.Fragment key={type.name}>
+                        {propertySchema?.propertyType && propertySchema?.propertyType.map((type) => (
+                            <React.Fragment key={type}>
                                 <input
                                     type="radio"
                                     name="propertyType"
-                                    id={type.name}
-                                    value={type.name}
+                                    id={type}
+                                    value={type}
                                     className="peer hidden"
-                                    checked={filterprops.property === type.name}
+                                    checked={filterprops.property === type}
                                     onChange={() =>
                                         setFilterProps(prev => ({
                                             ...prev,
-                                            property: type.name,
+                                            property: type,
                                         }))
                                     }
                                 />
                                 <label
-                                    className={`${filterprops.property === type.name
+                                    className={`${filterprops.property === type
                                         ? "bg-secondary text-white"
                                         : "bg-secondary/10 border border-secondary/60"
                                         } text-slate-700 text-sm md:text-md cursor-pointer px-2 py-1 md:px-3 md:py-1 rounded whitespace-nowrap`}
-                                    htmlFor={type.name}
+                                    htmlFor={type}
                                 >
-                                    {type.name}
+                                    {type}
                                 </label>
                             </React.Fragment>
                         ))}
@@ -287,7 +316,7 @@ const FilterPopup = ({ isOpen, onClose }: FilterPopupProps) => {
                 </div>
 
                 {/* Locations (multi-select simulation) */}
-                <div className="relative w-full md:w-[80%]">
+                <div className="relative w-full md:w-[95%]">
                     <label className="block text-sm md:text-md font-semibold text-gray-600 mb-1 md:mb-2">
                         Select Location(s)
                     </label>
@@ -339,11 +368,11 @@ const FilterPopup = ({ isOpen, onClose }: FilterPopupProps) => {
                 </div>
 
                 {/* Bedrooms */}
-                {bedrooms.length > 0 && (
+                {filterprops.property !== 'Office Space' && filterprops.property !== 'Warehouse' && filterprops.property !== 'Land' && (
                     <div className="w-full">
                         <label className="block text-sm md:text-md font-semibold text-gray-600 mb-1">Bedrooms</label>
                         <div className="w-full flex flex-wrap gap-1 md:gap-2">
-                            {bedrooms.map((item) => {
+                            {propertySchema?.bedroomSizes && propertySchema?.bedroomSizes.map((item) => {
                                 const isChecked = selectedBedrooms.includes(item);
 
                                 return (
@@ -379,7 +408,7 @@ const FilterPopup = ({ isOpen, onClose }: FilterPopupProps) => {
                 )}
 
                 {/* Size */}
-                {sizeOptions.length > 0 && (
+                {(filterprops.property === 'Office Space' || filterprops.property === 'Warehouse' || filterprops.property === 'Land') && (
                     <div className="w-full">
                         <label className="block text-sm md:text-md font-semibold text-gray-600 mb-1">Size (SQM)</label>
                         <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -398,7 +427,7 @@ const FilterPopup = ({ isOpen, onClose }: FilterPopupProps) => {
                                 <span className="ml-1 text-primary font-mono text-xs md:text-sm">Min</span>
                             </div>
 
-                            {maxSizeOptions.length > 0 && (
+                            {true && (
                                 <div className="flex flex-col">
                                     <select
                                         name="maxSize"

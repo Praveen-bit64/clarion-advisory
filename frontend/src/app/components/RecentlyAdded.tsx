@@ -59,7 +59,7 @@ const RecentlyAdded = () => {
                 <ul className="w-full flex justify-center items-center lg:gap-10 gap-1 flex-wrap mt-5">
                     {recentProperties.map((item, ndx) => {
                         return (
-                            <li key={ndx} className="group w-[49%] md:w-[49%] lg:w-[30%] lg:h-[380px] h-[270px] bg-white shadow-lg border-1 border-secondary/40 hover:shadow-xl relative">
+                            <li key={ndx} className="group w-[98%] md:w-[49%] xl:w-[30%] lg:w-[49%] lg:h-[380px] h-[270px] bg-white shadow-lg border-1 border-secondary/40 hover:shadow-xl relative">
                                 <div className="w-full flex flex-col lg:flex-row justify-start items-start gap-2 absolute z-99 top-3 left-2 group-hover:top-6 group-hover:opacity-0 duration-300">
                                     <button className="lg:w-[130px] w-[100px] p-1 text-[12px] lg:font-semibold bg-secondary text-white flex justify-center items-center"><BsPatchPlus className="text-white mr-1" />Newly Added</button>
                                     <button className="lg:w-[100px] w-[70px] lg:p-1 p-0 text-[12px] lg:font-semibold bg-slate-950 text-white capitalize">for {item.propertyType}</button>
@@ -77,7 +77,7 @@ const RecentlyAdded = () => {
                                 </div>
 
                                 <div className=" w-full lg:h-[150px] h-[100px] bg-white flex justify-center items-start flex-col lg:gap-2 gap-0 lg:px-5 px-1">
-                                    <Link href={item.customSlug ? `/${item.customSlug}?pId=${item?.id}` : `/properties/propertyDetails?pId=${item?.id}`}><h2 className="lg:text-lg text-md lg:h-[50px] h-[40px] font-semibold text-slate-700 cursor-pointer hover:underline overflow-hidden">{item?.title}</h2></Link>
+                                    <Link href={item.customSlug ? `/${item.customSlug}?pId=${item?.id}` : `/properties/propertyDetails?pId=${item?.id}`}><h2 className="xl:text-lg lg:text-md text-sm xl:h-[50px] lg:h-[40px] h-[50px] font-semibold text-slate-700 cursor-pointer hover:underline overflow-hidden">{item?.title}</h2></Link>
                                     <h4 className="lg:text-sm text-[10px]  text-slate-400 overflow-hidden"><IoLocationOutline className="inline text-xl" />{item?.propertyCity}</h4>
                                     <div className="w-full flex justify-between items-center gap-1.5">
                                         <div className="lg:text-sm text-[10px]">   {item.isBedroomAvailable === '1' && (
@@ -87,7 +87,7 @@ const RecentlyAdded = () => {
                                             </>
                                         )}
                                             <span><TbRulerMeasure className="inline mr-1" />{item?.propertySize} sqms</span></div>
-                                        <span className="lg:w-[150px] w-[100px] lg:h-[40px] h-[25px]  border-1 lg:border-2 border-slate-800 group-hover:bg-secondary group-hover:text-white group-hover:border-secondary duration-500 flex justify-center items-center lg:text-md text-sm font-semibold"><span className="text-xs mr-1 font-thin">BHD</span>{` ${item?.propertyPrice} ${item?.propertyType == 'rent' ? '/Mon' : ''}`}</span>
+                                        <span className="lg:w-[150px] w-[100px] lg:h-[40px] h-[25px]  border-1 lg:border-2 border-slate-800 group-hover:bg-secondary group-hover:text-white group-hover:border-secondary duration-500 flex justify-center items-center xl:text-md lg:text-sm text-xs font-semibold"><span className="text-xs mr-1 font-thin">BHD</span>{` ${item?.propertyPrice} ${item?.propertyType == 'rent' ? '/Mon' : ''}`}</span>
                                     </div>
                                 </div>
 
