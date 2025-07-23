@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GlobalModal from "../GlobalModal";
 import { MdOutlineAdd } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
@@ -30,8 +30,12 @@ const FooterEdit = ({
 }) => {
     const [inputValue, setInputValue] = useState('');
     const { footer } = useHomeComponentDetails()
-    const [copyright, setCopyright] = useState(footer?.copyright || '')
+    console.log(footer, 785374953);
 
+    const [copyright, setCopyright] = useState(footer?.copyright || '')
+    useEffect(() => {
+        setCopyright(footer.copyright)
+    }, [footer])
     const handleAdd = () => {
         if (activeTab === 'searches') {
             onAddSearch(inputValue);

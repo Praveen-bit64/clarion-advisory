@@ -17,6 +17,7 @@ import { useSocialData } from "../context/SocialLinksContext";
 import FooterEdit from "./EditHomeComponents/FooterEdit";
 import { useHomeComponentDetails } from "../context/HomeComponentDetails";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 interface getcontact {
     phone?: string,
@@ -25,6 +26,7 @@ interface getcontact {
 }
 
 const Footer = () => {
+    const router = useRouter()
     const { isEditMode } = useEditMode();
     const [isEnabled, setIsEnabled] = useState(true);
     const { contactInfo } = useContact();
@@ -123,6 +125,12 @@ const Footer = () => {
         { icon: FaLinkedin, link: socialData?.linkedin || '#', colorCode: 'rgb(0,119,181)' },
     ];
 
+    const handleNavigate = (value: string) => {
+        const queryParams = new URLSearchParams();
+        queryParams.append('search', value);
+        router.push(`/property?${queryParams.toString()}`);
+    }
+
     return (
         <div className="w-full bg-slate-950 flex justify-center items-start p-5 gap-1 flex-wrap relative group">
             {memoModal}
@@ -204,6 +212,7 @@ const Footer = () => {
                             <ul>
                                 {popularSearches.length > 0 && popularSearches?.map((search, index) => (
                                     <li
+                                        onClick={() => handleNavigate(search)}
                                         key={index}
                                         className="text-slate-400 text-sm py-3 cursor-pointer hover:underline hover:text-secondary duration-200"
                                     >
@@ -230,6 +239,7 @@ const Footer = () => {
                             <ul>
                                 {discoverLocations.map((location, index) => (
                                     <li
+                                        onClick={() => handleNavigate(location)}
                                         key={index}
                                         className="text-slate-400 text-sm py-3 cursor-pointer hover:underline hover:text-secondary duration-200"
                                     >

@@ -29,7 +29,7 @@ const Page = () => {
     });
     const dropdownRef = useRef<HTMLDivElement>(null);
     const { properties } = useListedProperties();
-    const [isAdavancedFilter, setIsAdvancedFilter] = useState(true)
+    const [isAdavancedFilter, setIsAdvancedFilter] = useState(false)
     const [filteredProperties, setFilteredProperties] = useState(properties);
     const { isLiked, toggleLike } = useLikes();
     const { filters, manages } = usePropertyFilter();
@@ -49,6 +49,12 @@ const Page = () => {
         minBudget: Number(searchParams?.get('mnbug')) || 0,
         maxBudget: Number(searchParams?.get('mxbug')) || 0,
     }), [searchParams]);
+
+    useEffect(() => {
+        if (searchFilters.propertyType) {
+            setIsAdvancedFilter(true)
+        }
+    }, [searchFilters.propertyType])
 
     // Memoize locations from property schema
     const locations = useMemo(() => {
