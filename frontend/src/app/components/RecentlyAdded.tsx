@@ -57,7 +57,7 @@ const RecentlyAdded = () => {
                     </div>
                 </div>
                 <ul className="w-full flex justify-center items-center lg:gap-10 gap-1 flex-wrap mt-5">
-                    {recentProperties.map((item, ndx) => {
+                    {recentProperties?.filter(item => item.propertyStatus.toLowerCase() === 'publish')?.map((item, ndx) => {
                         return (
                             <li key={ndx} className="group w-[98%] md:w-[49%] xl:w-[30%] lg:w-[49%] lg:h-[380px] h-[270px] bg-white shadow-lg border-1 border-secondary/40 hover:shadow-xl relative">
                                 <div className="w-full flex flex-col lg:flex-row justify-start items-start gap-2 absolute z-99 top-3 left-2 group-hover:top-6 group-hover:opacity-0 duration-300">

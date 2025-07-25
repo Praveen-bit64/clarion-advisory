@@ -1,45 +1,62 @@
 'use client'
-import { useState } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useRegisterForm } from "../hooks/useRegisterForm";
 import { toast } from "react-toastify";
 import Loader from "./Loader";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { useRouter } from 'next/navigation';
 import { useUserDetails } from "../context/UserDetails";
+import Image from "next/image";
 
-interface loginInputs {
-    user: string,
-    password: string,
+interface LoginInputs {
+    user: string;
+    password: string;
 }
 
+type FormMode = 'login' | 'register' | 'reset';
+
 const LoginRegUser = () => {
-    const [login, setLogin] = useState(true)
-    const [previewImage, setPreviewImage] = useState<string | null>(null);
-    const { registerInputs, inputErrs, registerOnchange, isFormSubmitting, validateForm, handleRegisterFormSubmit } = useRegisterForm()
-    const router = useRouter()
-    console.log(inputErrs, 3534535);
-    const { setStoredUserId } = useUserDetails()
-    const [viewPassword, setViewPassword] = useState(false)
-    const [loginInputs, setLoginInputs] = useState<loginInputs>({
-        user: '',
-        password: ''
-    })
-    //Register user handler
-    const registerForm = async (vals: typeof registerInputs) => {
+    const [mode, setMode] = useState<FormMode>('login');
+    const [resetEmail, setResetEmail] = useState('')
+    const [confirmPass, setConfirmPass] = useState('');
+    const [newPass, setNewPass] = useState('');
+    const [resendTimer, setResendTimer] = useState(0);
+    const [resetCode, setResetCode] = useState<number | null>(null);
+    const [generatedCode, setGeneratedCode] = useState<number | null>(null);
+    const [resetStage, setResetStage] = useState<'codesend' | 'codevalid' | 'resetpassword'>('codesend');
+    const [viewPassword, setViewPassword] = useState(false);
+    const [loginInputs, setLoginInputs] = useState<LoginInputs>({ user: '', password: '' });
+
+    const {
+        registerInputs,
+        inputErrs,
+        registerOnchange,
+        isFormSubmitting,
+        validateForm,
+        handleRegisterFormSubmit,
+        resetForm
+    } = useRegisterForm();
+
+    const router = useRouter();
+    const { setStoredUserId } = useUserDetails();
+
+    // Memoized preview image URL
+    const previewImage = useMemo(() => {
+        if (registerInputs.profile instanceof File) {
+            return URL.createObjectURL(registerInputs.profile);
+        }
+        return null;
+    }, [registerInputs.profile]);
+
+    // Register user handler
+    const registerForm = useCallback(async (vals: typeof registerInputs) => {
         const formData = new FormData();
 
-        formData.append("name", vals.name);
-        formData.append("city", vals.city);
-        if (vals.phone !== undefined && vals.phone !== null) {
-            formData.append("phone", vals.phone.toString());
-        }
-
-        formData.append("email", vals.email);
-        formData.append("password", vals.password);
-
-        if (vals.profile instanceof File) {
-            formData.append("profile", vals.profile);
-        }
+        Object.entries(vals).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                formData.append(key, key === 'phone' ? value.toString() : value);
+            }
+        });
 
         try {
             const res = await fetch("/api/authentication/register", {
@@ -51,8 +68,8 @@ const LoginRegUser = () => {
 
             if (!data.error) {
                 toast.success(data?.message || "Registered Successfully");
-                setPreviewImage(null)
-                setLogin(true)
+                resetForm();
+                setMode('login');
             } else {
                 toast.error(data?.message || "There was an Error");
             }
@@ -60,104 +77,199 @@ const LoginRegUser = () => {
             toast.error("Something went wrong!");
             console.error("Register error:", err);
         }
-    };
+    }, [resetForm]);
 
-    //login user handler
-
-    const onChangeLogin = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        setLoginInputs((prev) => ({
-            ...prev,
-            [name]: value
-        }))
-    }
-
-    const onSubmitLogin = async () => {
+    // Login user handler
+    const onSubmitLogin = useCallback(async () => {
+        if (!loginInputs.user || !loginInputs.password) {
+            toast.error("Please fill in all fields");
+            return;
+        }
 
         try {
             const res = await fetch('/api/authentication/login', {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user: loginInputs.user, password: loginInputs.password })
-            })
-            const data = await res.json()
+                body: JSON.stringify(loginInputs)
+            });
+
+            const data = await res.json();
+
             if (!data.error) {
-                toast.success(data.message ?? 'Login succesfully')
-                localStorage.setItem('userId', data.userId)
-                localStorage.setItem('role', data.role)
-                setStoredUserId(data.userId)
-                setTimeout(() => {
-                    router.push('/')
-                }, 1000);
+                toast.success(data.message ?? 'Login successful');
+                localStorage.setItem('userId', data.userId);
+                localStorage.setItem('role', data.role);
+                setStoredUserId(data.userId);
+                setTimeout(() => router.push('/'), 1000);
             } else {
-                toast.error(data.message ?? 'Try again')
+                toast.error(data.message ?? 'Login failed. Please try again.');
             }
         } catch (err) {
-            console.log("Error login user", err)
-            toast.error("Internal Server Errossr")
+            console.error("Error logging in user", err);
+            toast.error("Internal Server Error");
+        }
+    }, [loginInputs, router, setStoredUserId]);
+
+    const onChangeLogin = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setLoginInputs(prev => ({ ...prev, [name]: value }));
+    }, []);
+
+    //reset password
+    // Countdown timer
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (resendTimer > 0) {
+            timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+        }
+        return () => clearTimeout(timer);
+    }, [resendTimer]);
+
+    const sendResetCode = () => {
+        const randCode = Math.floor(1000 + Math.random() * 9000); // 4-digit
+        setGeneratedCode(randCode);
+        setResetStage('codevalid');
+        setResendTimer(60); // lock resend for 60 seconds
+        toast.success(`Reset code sent to your email: ${randCode}`);
+    };
+
+    const handleResetPassword = useCallback(() => {
+        if (!resetEmail) {
+            toast.error("Please enter your email");
+            return;
         }
 
-    }
+        if (resetStage === 'codesend') {
+            sendResetCode();
+        }
 
-    console.log(registerInputs, 452366);
+        else if (resetStage === 'codevalid') {
+            if (resetCode === generatedCode) {
+                toast.success("Code verified!");
+                setResetStage('resetpassword');
+            } else {
+                toast.error("Invalid reset code");
+            }
+        }
+
+        else if (resetStage === 'resetpassword') {
+            if (!newPass || !confirmPass) {
+                toast.error("Please fill in both password fields");
+                return;
+            }
+            if (newPass !== confirmPass) {
+                toast.error("Passwords do not match");
+                return;
+            }
+            toast.success("Password reset successful (mock)");
+            // Optionally reset
+            setResetEmail('');
+            setResetCode(null);
+            setGeneratedCode(null);
+            setNewPass('');
+            setConfirmPass('');
+            setResetStage('codesend');
+        }
+
+    }, [resetEmail, resetCode, generatedCode, newPass, confirmPass, resetStage]);
+
+
+
+    // Shared form container styles
+    const formContainerClasses = "z-20 w-[90%] max-w-sm bg-white/80 p-8 rounded-sm shadow-xl transition-all duration-400";
 
     return (
         <div className="w-full min-h-screen flex justify-center items-center relative overflow-hidden flex-wrap py-5">
             {/* Background Image and Overlay */}
             <div className="absolute w-full h-full top-0 left-0">
                 <div className="absolute w-full h-full bg-gradient-to-r from-primary/30 to-secondary/30 z-10" />
-                <img
+                <Image
                     src="/login-bg.png"
-                    className="w-full h-full object-cover blur-[2px]"
                     alt="Login Background"
+                    fill
+                    className="object-cover blur-[2px]"
+                    priority
                 />
             </div>
 
-            {/* Centered Login Form */}
-            <div className={`z-20 w-[90%] max-w-sm bg-white/80 p-8 rounded-sm shadow-xl border-2 border-l-secondary border-t-secondary border-r-primary border-b-primary transition-all duration-400 ${login ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10 pointer-events-none absolute'}`}>
+            {/* Login Form */}
+            <div className={`${formContainerClasses} border-2 border-l-secondary border-t-secondary border-r-primary border-b-primary ${mode === 'login' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10 pointer-events-none absolute'
+                }`}>
                 <div className="w-full flex justify-center items-center">
-                    <img src="/clarion-logo.png" className="w-[180px] place-items-center" alt="clarion log" />
+                    <Image
+                        src="/clarion-logo.png"
+                        width={180}
+                        height={80}
+                        alt="Clarion logo"
+                        priority
+                    />
                 </div>
                 <h2 className="text-2xl font-bold text-slate-900 mb-6 text-center">Login to Your Account</h2>
                 <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
                     <input
                         type="text"
                         name="user"
+                        value={loginInputs.user}
                         onChange={onChangeLogin}
                         placeholder="Email / Phone"
                         className="p-3 rounded-sm border text-black border-gray-300 focus:outline-none focus:ring-1 focus:ring-secondary"
                     />
                     <div className="w-full flex relative">
                         <input
-                            type={`${viewPassword ? 'text' : 'password'}`}
+                            type={viewPassword ? 'text' : 'password'}
                             name="password"
+                            value={loginInputs.password}
                             onChange={onChangeLogin}
                             placeholder="Password"
                             className="w-full p-3 rounded-sm border border-gray-300 focus:outline-none focus:ring-1 focus:ring-secondary"
                         />
-                        <span className="absolute right-2 top-4" onClick={() => setViewPassword(!viewPassword)}>{!viewPassword ? <IoEyeOff className="text-lg cursor-pointer" /> : <IoEye className="text-lg cursor-pointer" />}</span>
+                        <button
+                            type="button"
+                            className="absolute right-2 top-4"
+                            onClick={() => setViewPassword(!viewPassword)}
+                        >
+                            {viewPassword ? <IoEye className="text-lg" /> : <IoEyeOff className="text-lg" />}
+                        </button>
                     </div>
                     <button
-                        // type="submit"
                         onClick={onSubmitLogin}
-                        className="bg-primary hover:bg-primary/90 text-white py-3 rounded-md font-semibold"
+                        className="bg-primary hover:bg-primary/90 text-white py-3 rounded-md font-semibold transition-colors"
                     >
                         Login
                     </button>
+                    <button
+                        type="button"
+                        onClick={() => setMode('reset')}
+                        className="text-sm text-gray-500 hover:text-secondary hover:underline"
+                    >
+                        Forgot password?
+                    </button>
                 </form>
                 <p className="text-center text-sm text-gray-500 mt-4">
-                    Don't have an account? <span onClick={() => setLogin(false)} className="text-secondary cursor-pointer hover:underline">Register</span>
+                    Don't have an account?{' '}
+                    <button
+                        onClick={() => setMode('register')}
+                        className="text-secondary hover:underline focus:outline-none"
+                    >
+                        Register
+                    </button>
                 </p>
             </div>
 
             {/* Register Form */}
-            <div className={`z-20 w-[90%] max-w-sm bg-white/80 p-8 rounded-sm shadow-xl border-2 border-l-secondary border-t-secondary border-r-primary border-b-primary transition-all duration-400 ${!login ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10 pointer-events-none absolute'}`}>
+            <div className={`${formContainerClasses} border-2 border-l-secondary border-t-secondary border-r-primary border-b-primary ${mode === 'register' ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10 pointer-events-none absolute'
+                }`}>
                 <div className="w-full flex justify-center items-center">
-                    <img src="/clarion-logo.png" className="w-[180px] place-items-center" alt="clarion log" />
+                    <Image
+                        src="/clarion-logo.png"
+                        width={180}
+                        height={80}
+                        alt="Clarion logo"
+                        priority
+                    />
                 </div>
                 <h2 className="text-2xl font-bold text-slate-900 mb-6 text-center">Register New Account</h2>
                 <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
-                    {/* 📸 Profile Image Upload */}
                     <div className="flex flex-col gap-2">
                         <label htmlFor="profileImage" className="text-sm text-slate-700 font-medium">
                             Profile Picture
@@ -168,94 +280,161 @@ const LoginRegUser = () => {
                             name="profile"
                             accept="image/*"
                             className="p-2 rounded-sm border border-gray-300/70 text-slate-800 focus:outline-none focus:ring-1 focus:ring-secondary bg-white/20"
-                            onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                    const imageUrl = URL.createObjectURL(file);
-                                    setPreviewImage(imageUrl);
-                                }
-                                registerOnchange(e); // ✅ Call the function
-                            }}
-
+                            onChange={registerOnchange}
                         />
                         {previewImage && (
                             <div className="flex justify-center">
-                                <img
+                                <Image
                                     src={previewImage}
                                     alt="Preview"
+                                    width={80}
+                                    height={80}
                                     className="mt-2 w-20 h-20 rounded-full object-cover border-2 border-secondary shadow-sm"
                                 />
-
                             </div>
                         )}
                     </div>
 
-                    {/* 📨 Email Field */}
-                    <input
-                        type="text"
-                        placeholder="Name"
-                        name="name"
-                        onChange={registerOnchange}
-                        value={registerInputs.name}
-                        className="p-3 rounded-sm border text-black border-gray-300 focus:outline-none focus:ring-1 focus:ring-secondary"
-                    />
-                    {inputErrs?.name && <p className="text-sm text-red-500">{inputErrs.name}</p>}
-                    <input
-                        type="number"
-                        placeholder="Phone"
-                        name="phone"
-                        onChange={registerOnchange}
-                        value={registerInputs?.phone || ''}
-                        className="p-3 rounded-sm border text-black border-gray-300 focus:outline-none focus:ring-1 focus:ring-secondary"
-                    />
-                    {inputErrs?.phone && <p className="text-sm text-red-500">{inputErrs.phone}</p>}
-                    <input
-                        type="email"
-                        placeholder="Email Address"
-                        name="email"
-                        onChange={registerOnchange}
-                        value={registerInputs.email}
-                        className="p-3 rounded-sm border text-black border-gray-300 focus:outline-none focus:ring-1 focus:ring-secondary"
-                    />
-                    {inputErrs?.email && <p className="text-sm text-red-500">{inputErrs.email}</p>}
-                    <input
-                        type="text"
-                        placeholder="City"
-                        name="city"
-                        onChange={registerOnchange}
-                        value={registerInputs.city}
-                        className="p-3 rounded-sm border text-black border-gray-300 focus:outline-none focus:ring-1 focus:ring-secondary"
-                    />
-                    {inputErrs?.city && <p className="text-sm text-red-500">{inputErrs.city}</p>}
-                    {/* 🔐 Password Field */}
+                    {['name', 'phone', 'email', 'city'].map((field) => (
+                        <div key={field}>
+                            <input
+                                type={field === 'phone' ? 'number' : 'text'}
+                                placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                                name={field}
+                                onChange={registerOnchange}
+                                value={registerInputs[field as keyof typeof registerInputs] || ''}
+                                className="w-full p-3 rounded-sm border text-black border-gray-300 focus:outline-none focus:ring-1 focus:ring-secondary"
+                            />
+                            {inputErrs?.[field as keyof typeof inputErrs] && (
+                                <p className="text-sm text-red-500">{inputErrs[field as keyof typeof inputErrs]}</p>
+                            )}
+                        </div>
+                    ))}
+
                     <div className="w-full flex relative">
                         <input
-                            type={`${viewPassword ? 'text' : 'password'}`}
+                            type={viewPassword ? 'text' : 'password'}
                             placeholder="Password"
                             name="password"
                             onChange={registerOnchange}
                             value={registerInputs.password}
                             className="w-full p-3 rounded-sm border border-gray-300 focus:outline-none focus:ring-1 focus:ring-secondary"
                         />
-                        <span className="absolute right-2 top-4" onClick={() => setViewPassword(!viewPassword)}>{!viewPassword ? <IoEyeOff className="text-lg cursor-pointer" /> : <IoEye className="text-lg cursor-pointer" />}</span>
+                        <button
+                            type="button"
+                            className="absolute right-2 top-4"
+                            onClick={() => setViewPassword(!viewPassword)}
+                        >
+                            {viewPassword ? <IoEye className="text-lg" /> : <IoEyeOff className="text-lg" />}
+                        </button>
                     </div>
                     {inputErrs?.password && <p className="text-sm text-red-500">{inputErrs.password}</p>}
 
-                    {!isFormSubmitting ? <button
-                        type="submit"
+                    <button
                         onClick={() => handleRegisterFormSubmit(registerForm)}
-                        className="bg-primary hover:bg-primary/90 text-white py-3 rounded-md font-semibold"
+                        disabled={isFormSubmitting}
+                        className="bg-primary hover:bg-primary/90 text-white py-3 rounded-md font-semibold transition-colors disabled:opacity-70"
                     >
-                        Register
-                    </button> :
-                        <div className="bg-primary hover:bg-primary/90 text-white py-2 rounded-md font-semibold">
-                            <Loader type="bars" color="white" />
-                        </div>
-                    }
+                        {isFormSubmitting ? <Loader type="bars" color="white" /> : 'Register'}
+                    </button>
                 </form>
 
                 <p className="text-center text-sm text-gray-500 mt-4">
-                    Already have an account? <span onClick={() => setLogin(true)} className="text-secondary cursor-pointer hover:underline">Login</span>
+                    Already have an account?{' '}
+                    <button
+                        onClick={() => setMode('login')}
+                        className="text-secondary hover:underline focus:outline-none"
+                    >
+                        Login
+                    </button>
+                </p>
+            </div>
+
+            {/* Reset Password Form */}
+            <div className={`${formContainerClasses} border-2 border-l-yellow-400 border-t-yellow-400 border-r-yellow-500 border-b-yellow-500 ${mode === 'reset' ? 'opacity-100 translate-x-0' : 'opacity-0 pointer-events-none absolute'
+                }`}>
+                <div className="w-full flex justify-center items-center">
+                    <Image
+                        src="/clarion-logo.png"
+                        width={180}
+                        height={80}
+                        alt="Clarion logo"
+                        priority
+                    />
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900 mb-6 text-center">Reset Password</h2>
+                <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
+                    {resetStage === 'codesend' && (
+                        <input
+                            type="email"
+                            value={resetEmail}
+                            onChange={(e) => setResetEmail(e.target.value)}
+                            placeholder="Enter your registered email"
+                            className="p-3 rounded-sm border text-black border-gray-300 focus:outline-none focus:ring-1 focus:ring-secondary"
+                        />
+                    )}
+
+                    {resetStage === 'codevalid' && (
+                        <>
+                            <input
+                                type="number"
+                                value={resetCode || ''}
+                                onChange={(e) => setResetCode(Number(e.target.value))}
+                                placeholder="Enter Reset Code"
+                                className="p-3 rounded-sm border text-black border-gray-300 focus:outline-none focus:ring-1 focus:ring-secondary"
+                            />
+                            <div className="flex items-center gap-4">
+                                <button
+                                    type="button"
+                                    onClick={sendResetCode}
+                                    className={`text-sm font-medium text-blue-600 disabled:text-gray-400`}
+                                    disabled={resendTimer > 0}
+                                >
+                                    Resend Code {resendTimer > 0 && `(${resendTimer}s)`}
+                                </button>
+                            </div>
+                        </>
+                    )}
+
+                    {resetStage === 'resetpassword' && (
+                        <>
+                            <input
+                                type="password"
+                                value={newPass}
+                                onChange={(e) => setNewPass(e.target.value)}
+                                placeholder="Enter New Password"
+                                className="p-3 rounded-sm border text-black border-gray-300 focus:outline-none focus:ring-1 focus:ring-secondary"
+                            />
+                            <input
+                                type="password"
+                                value={confirmPass}
+                                onChange={(e) => setConfirmPass(e.target.value)}
+                                placeholder="Confirm Password"
+                                className="p-3 rounded-sm border text-black border-gray-300 focus:outline-none focus:ring-1 focus:ring-secondary"
+                            />
+                        </>
+                    )}
+
+                    <button
+                        type="button"
+                        onClick={handleResetPassword}
+                        className="bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-md font-semibold transition-colors"
+                    >
+                        {resetStage === 'codesend'
+                            ? 'Send Reset Code'
+                            : resetStage === 'codevalid'
+                                ? 'Verify Code'
+                                : 'Reset Password'}
+                    </button>
+                </form>
+                <p className="text-center text-sm text-gray-500 mt-4">
+                    Remember your password?{' '}
+                    <button
+                        onClick={() => setMode('login')}
+                        className="text-secondary hover:underline focus:outline-none"
+                    >
+                        Back to Login
+                    </button>
                 </p>
             </div>
         </div>

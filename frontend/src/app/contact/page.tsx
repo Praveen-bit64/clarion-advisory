@@ -4,17 +4,45 @@ import { FaClock, FaEnvelope } from "react-icons/fa6";
 import { IoIosSend } from "react-icons/io";
 import { LuLink2 } from "react-icons/lu";
 import { useContactForm } from "../hooks/useContactForm";
+import { toast } from "react-toastify";
+import { useSiteInfo } from "../context/SiteInfoContext";
+import { useContact } from "../context/ContactContext";
+import Loader from "../components/Loader";
 
 const Contact = () => {
     const { inputValues, inputErrs, isContactFormSubmitting, contactOnChange, validateContactForm, submitContactForm } = useContactForm()
     console.log(inputValues, inputErrs, 'contactinputvalues');
+    const { contactInfo } = useContact()
+    const { siteInfo } = useSiteInfo()
+    const formSubmit = async (vals: typeof inputValues) => {
+        const res = await fetch('/api/contactenquiry', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ to: contactInfo?.email, Data: vals })
+        })
+        const data = await res.json()
 
+        if (!data.error) {
+            toast.success("Form Submitted, We'll Cantact you soon")
+
+        } else {
+            toast.error(data?.message || "There was an Error")
+        }
+    }
     return (
         <div className="w-full min-h-screen flex justify-center items-center flex-col gap-3.5">
             <div className="w-full min-h-[900px] relative ">
                 <div className="w-full lg:h-[500px] h-[300px]">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d459243.1337149965!2d50.257917463188384!3d25.940576940591203!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e48524e6a47a211%3A0x2e9450e2dbda1046!2sBahrain!5e0!3m2!1sen!2sin!4v1751089714849!5m2!1sen!2sin" width="100%" height="100%" allowFullScreen={true} loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+                    <iframe
+                        src={`https://www.google.com/maps?q=${encodeURIComponent(`${contactInfo?.address}`)}&output=embed`}
+                        width="100%"
+                        height="100%"
+                        allowFullScreen={true}
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                    ></iframe>
                 </div>
+
                 <div className="lg:absolute lg:w-[40%] w-full  min-h-[700px] pt-10 flex flex-wrap justify-start items-start gap-3.5 p-4 rounded-lg bg-gradient-to-r from-primary/80 to-secondary/80 top-28 left-28 border-2 border-slate-100">
                     <h1 className="w-full text-2xl text-white font-semibold">Have questions? Get in touch!</h1>
                     <div className="lg:w-[48%] w-[98%] flex flex-col justify-start items-start gap-1.5">
@@ -48,7 +76,7 @@ const Contact = () => {
                         {inputErrs.message && <span className="text-sm text-red-500">{inputErrs.message}</span>}
                     </div>
                     <div className="w-full flex justify-center items-center mt-3.5">
-                        <button onClick={() => validateContactForm(inputValues)} className="p-2 rounded-sm bg-white/90 text-black font-semibold px-10">Submit <IoIosSend className="inline text-2xl" /></button>
+                        {!isContactFormSubmitting ? <button onClick={() => submitContactForm(formSubmit)} className="p-2 rounded-sm bg-white/90 text-black font-semibold px-10">Submit <IoIosSend className="inline text-2xl" /></button> : <button className="p-2 rounded-sm bg-white/90 text-black font-semibold px-10"><Loader type="rings" /></button>}
                     </div>
                 </div>
                 <div className="lg:absolute lg:w-[50%] right-5 pl-10 top-[60%] p-5 flex flex-col justify-center items-start mt-5 gap-4.5">
@@ -78,9 +106,8 @@ const Contact = () => {
                         <div className="flex items-start gap-4">
                             <FaMapMarkerAlt className="text-xl text-secondary mt-1" />
                             <div>
-                                <h3 className="text-lg font-semibold text-slate-800">Clarion Advisory WLL</h3>
-                                <p className="text-slate-600">Building 123, Road 4567, Block 789</p>
-                                <p className="text-slate-600">Manama, Kingdom of Bahrain</p>
+                                <h3 className="text-lg font-semibold text-slate-800">{siteInfo?.siteName}</h3>
+                                <p className="text-slate-600 lg:w-1/4 w-full">{contactInfo?.address}</p>
                             </div>
                         </div>
 
@@ -88,7 +115,7 @@ const Contact = () => {
                         <div className="flex items-start gap-4">
                             <FaPhoneAlt className="text-xl text-secondary mt-1" />
                             <p className="text-slate-700">
-                                <span className="font-semibold">Phone:</span> +973 1234 5678
+                                <span className="font-semibold">Phone:</span> {contactInfo?.phone}
                             </p>
                         </div>
 
@@ -96,7 +123,7 @@ const Contact = () => {
                         <div className="flex items-start gap-4">
                             <FaEnvelope className="text-xl text-secondary mt-1" />
                             <p className="text-slate-700">
-                                <span className="font-semibold">Email:</span> contact@clarionadvisory.com
+                                <span className="font-semibold">Email:</span> {contactInfo?.email}
                             </p>
                         </div>
 

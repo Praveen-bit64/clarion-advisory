@@ -35,11 +35,11 @@ const page = () => {
             {/**Content Area */}
             <div className="w-full min-h-screen pl-10 pb-10">
                 <div className="w-full flex flex-col justify-center items-start gap-1 pt-10">
-                    <h2 className="text-3xl text-slate-800 font-semibold capitalize">Welcome back, Praveen!</h2>
+                    <h2 className="text-3xl text-slate-800 font-semibold capitalize">Welcome back!</h2>
                     <p className="text-md text-slate-800">Happy to See you Again</p>
                 </div>
                 {/**Overview Area */}
-                {view === 'overview' && <OverView />}
+                {view === 'overview' && <OverView getViewCallback={getViewCallback} />}
 
                 {/**Add property */}
                 {view === 'newproperty' && <AddNewProperty getViewCallback={getViewCallback} />}

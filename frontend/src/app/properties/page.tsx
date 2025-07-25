@@ -398,7 +398,7 @@ const Page = () => {
                     </div>
                     <div className="w-full flex justify-center items-center gap-4 flex-wrap mt-16">
                         {filteredProperties.length > 0 ?
-                            filteredProperties.map(renderPropertyCard) :
+                            filteredProperties?.filter(item => item.propertyStatus.toLowerCase() === 'publish')?.map(renderPropertyCard) :
                             <NoResults />
                         }
                     </div>

@@ -9,6 +9,7 @@ import { useAddNewProperty } from "../hooks/useAddNewProperty";
 import { usePropertySchema } from "@/app/context/PropertySchema";
 import { toast } from "react-toastify";
 import Loader from "@/app/components/Loader";
+import { useListedProperties } from "@/app/context/ListedProperties";
 
 type PropertyDetail = {
     property: string;
@@ -18,7 +19,7 @@ type modalContent = 'addproperty' | 'addamenity' | ''
 
 const AddNewProperty = (props: { getViewCallback: (value: string) => void }) => {
     const { getViewCallback } = props
-    const [formNav, setFormNav] = useState(3)
+    const [formNav, setFormNav] = useState(0)
     const [slugInput, setSlugInput] = useState('');
     const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
     const [isOpen, setIsOpen] = useState(false)
@@ -43,6 +44,7 @@ const AddNewProperty = (props: { getViewCallback: (value: string) => void }) => 
     } = useAddNewProperty({ isBetroom: isEnabled, amenitiesSelected: amenitiesAvail })
 
     console.log(addNewPropertyErrs, newPropertyValues, 2343424);
+    const { fetchListedProperties } = useListedProperties()
 
     const { propertySchema } = usePropertySchema()
     const handleNavigation = () => {
@@ -199,6 +201,7 @@ const AddNewProperty = (props: { getViewCallback: (value: string) => void }) => 
 
             if (!data.error) {
                 toast.success(data?.message || 'Property Added Successfully');
+                fetchListedProperties()
                 setNewPropertyValues(ResetValues)
                 setIsListed(true)
             } else {

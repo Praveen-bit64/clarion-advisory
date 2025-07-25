@@ -25,6 +25,7 @@ import { useSearchParams } from "next/navigation";
 import { useEnquiryForm } from "@/app/hooks/useEnquiryForm";
 import { toast } from "react-toastify";
 import { useLikes } from "@/app/context/LikeContext";
+import Loader from "@/app/components/Loader";
 
 const page = () => {
     const searchParams = useSearchParams();
@@ -376,7 +377,7 @@ const page = () => {
                                             className="w-full h-full outline-none border-none p-2 min-h-[100px]"
                                             placeholder="Message" />
                                     </div>
-                                    <button onClick={() => onEnquirySubmit(submitEnquiry)} className="w-full p-2 bg-primary rounded-lg text-md text-white font-semibold flex justify-center items-center gap-2 cursor-pointer hover:bg-primary/80 duration-200">Submit a Request <FiExternalLink className="inline-block text-xl" /></button>
+                                    {!isEnquirySubmitting ? <button onClick={() => onEnquirySubmit(submitEnquiry)} className="w-full p-2 bg-primary rounded-lg text-md text-white font-semibold flex justify-center items-center gap-2 cursor-pointer hover:bg-primary/80 duration-200">Submit a Request <FiExternalLink className="inline-block text-xl" /></button> : <Loader type="rings" color="white" className="w-full p-2 bg-primary rounded-lg text-md text-white font-semibold flex justify-center items-center gap-2 cursor-pointer hover:bg-primary/80 duration-200" />}
                                 </form>
                             </div>
                             {/**similar properties */}

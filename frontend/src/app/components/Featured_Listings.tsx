@@ -61,7 +61,7 @@ const Featured_Listings = () => {
                         </div>
                     </div>
                     <ul className="w-full flex justify-center items-center gap-10 flex-wrap mt-5">
-                        {featuredProperties?.map((item, ndx) => {
+                        {featuredProperties?.filter(item => item.propertyStatus.toLowerCase() === 'publish')?.map((item, ndx) => {
                             return (
                                 <li key={ndx} className="group lg:w-[30%] w-full lg:h-[480px] h-[420px] bg-white shadow-lg border-1 border-secondary/40 rounded-md hover:shadow-xl relative">
                                     <div className="w-full flex justify-start items-center gap-2 absolute z-99 top-3 left-2 group-hover:top-6 group-hover:opacity-0 duration-300">

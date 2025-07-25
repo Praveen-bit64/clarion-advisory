@@ -1,6 +1,6 @@
-// pages/api/send-enquiry.ts
 import { NextApiRequest, NextApiResponse } from 'next';
 import { Resend } from 'resend';
+import { db } from '@/app/lib/db'; // adjust path if needed
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -10,12 +10,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { name, email, phone, message, propertyTitle, propertyId, company, to } = req.body;
+    const {
+      name,
+      email,
+      phone,
+      message,
+      propertyTitle,
+      propertyId,
+      company,
+      to
+    } = req.body;
 
     if (!to) {
       return res.status(400).json({ error: 'Recipient email missing' });
     }
 
+    // 1. Send email
     const data = await resend.emails.send({
       from: 'Acme <onboarding@resend.dev>',
       to: [to],
@@ -31,9 +41,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       `,
     });
 
+    // 2. Store in DB
+    await db.query(
+      `INSERT INTO propertyenquiries (name, email, phone, message, company, property_id, property_title, sent_to)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [name, email, phone, message, company || '', propertyId, propertyTitle, to]
+    );
+
     return res.status(200).json({ success: true, data });
   } catch (err) {
-    console.error('Send email failed:', err);
-    return res.status(500).json({ error: 'Email send failed' });
+    console.error('Send email or DB insert failed:', err);
+    return res.status(500).json({ error: 'Email send or DB insert failed' });
   }
 }

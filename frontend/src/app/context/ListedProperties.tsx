@@ -39,32 +39,33 @@ interface Property {
 interface PropertyContextType {
     properties: Property[]
     setProperties: React.Dispatch<React.SetStateAction<Property[]>>
+    fetchListedProperties: () => void
 }
 
-// ✅ Provide default value as undefined to enforce useContext check
+//  Provide default value as undefined to enforce useContext check
 export const ListedPropertyContext = createContext<PropertyContextType | undefined>(undefined)
 
 export const ListedPropertyProvider = ({ children }: { children: React.ReactNode }) => {
     const [properties, setProperties] = useState<Property[]>([])
-
-    useEffect(() => {
-        const fetchListedProperties = async () => {
-            try {
-                const res = await fetch('/api/properties/getproperty')
-                const data = await res.json()
-                if (!data.error) {
-                    setProperties(data.properties)
-                }
-            } catch (err) {
-                console.error("Failed to fetch properties", err)
+    const fetchListedProperties = async () => {
+        try {
+            const res = await fetch('/api/properties/getproperty')
+            const data = await res.json()
+            if (!data.error) {
+                setProperties(data.properties)
             }
+        } catch (err) {
+            console.error("Failed to fetch properties", err)
         }
+    }
+    useEffect(() => {
+
 
         fetchListedProperties()
     }, [])
 
     return (
-        <ListedPropertyContext.Provider value={{ properties, setProperties }}>
+        <ListedPropertyContext.Provider value={{ properties, setProperties, fetchListedProperties }}>
             {children}
         </ListedPropertyContext.Provider>
     )

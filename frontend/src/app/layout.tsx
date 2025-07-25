@@ -17,6 +17,7 @@ import { UserDetailsProvider } from "./context/UserDetails";
 import { ListedPropertyContext, ListedPropertyProvider } from "./context/ListedProperties";
 import { LikeContextProvider } from "./context/LikeContext";
 import { HomeComponentProvider } from "./context/HomeComponentDetails";
+import VisitorTracker from "./components/VisitorTracker";
 
 
 const geistSans = Geist({
@@ -53,6 +54,7 @@ export default function RootLayout({
                       <LikeContextProvider>
                         <PropertySchemaProvider>
                           <HomeComponentProvider>
+                            <VisitorTracker />
                             <Header />
                             <ToastContainer position="top-right" autoClose={3000} />
                             <TopLoader />
