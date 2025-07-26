@@ -242,7 +242,7 @@ const Header = () => {
 
                             </Link>
                         </div>
-                            : <div ref={dropdownRef} className="w-auto flex justify-center items-center gap-1 relative z-999">
+                            : <div className="w-auto flex justify-center items-center gap-1 relative z-999">
                                 {userDetails.role === 'admin' && <EditModeToggle toggle={toggle} isEditMode={isEditMode} />}
                                 {/**Action area */}
                                 <div className={`absolute bg-slate-200 w-auto h-[150px]  z-999 ${actionArea ? `top-14  ${userDetails.role === 'admin' ? 'right-2' : ''} opacity-100` : `top-12 ${userDetails.role === 'admin' ? 'right-2' : ''} opacity-0`} duration-200`}>

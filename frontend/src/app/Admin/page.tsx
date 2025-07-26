@@ -14,15 +14,26 @@ import { toast } from "react-toastify";
 import AdminEnquiryDashboard from "./adminComponents/AdminEnquiryDashboard";
 import { TbMessage2Bolt } from "react-icons/tb";
 import { useScreenSize } from "../context/ScreenSizeContext";
+import { useRouter } from "next/navigation";
+import { useUserDetails } from "../context/UserDetails";
 
 const page = () => {
+    const router = useRouter()
     const [sidebar, setSidebar] = useState(true)
     const [view, setView] = useState('overview')
+    const { userDetails } = useUserDetails()
     const { isMobile, isTablet, isDesktop, screenSize } = useScreenSize();
     const [allusers, setAllusers] = useState([])
     const getViewCallback = (view: string) => {
         setView(view)
     }
+    useEffect(() => {
+        if (userDetails) {
+            if (!userDetails.userId || userDetails.role !== "admin") {
+                router.push("/");
+            }
+        }
+    }, [userDetails]);
     useEffect(() => {
         const fetchUsers = async () => {
             try {
