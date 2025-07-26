@@ -89,27 +89,27 @@ const OverView = (props: { getViewCallback: (value: string) => void }) => {
     return (
         <div className="w-full">
             {/**Counter Area */}
-            <div className="w-full flex justify-start items-center gap-4 mt-4 pr-2">
+            <div className="w-full flex justify-start items-center gap-4 mt-4 pr-2 overflow-x-auto ">
                 <div className="w-full rounded-2xl flex justify-center items-center bg-slate-50 py-4 px-2 border border-slate-200">
                     <div className="w-1/2">
-                        <h4 className="text-sm text-slate-500">All Properties</h4>
-                        <h2 className="text-5xl text-slate-800 font-semibold font-mono">{dashboardData?.totalProperties}</h2>
+                        <h4 className="lg:text-sm text-xs text-slate-500">All Properties</h4>
+                        <h2 className="lg:text-5xl text-2xl text-slate-800 font-semibold font-mono">{dashboardData?.totalProperties}</h2>
                     </div>
-                    <span className="w-[80px] h-[80px] rounded-full bg-primary/30 justify-center items-center inline-flex"><TbHomeStar className="text-4xl" /></span>
+                    <span className="lg:w-[80px] lg:h-[80px] w-[40px] h-[40px] rounded-full bg-primary/30 justify-center items-center inline-flex"><TbHomeStar className="lg:text-4xl text-2xl" /></span>
                 </div>
                 <div className="w-full rounded-2xl flex justify-center items-center bg-slate-50 py-4 px-2 border border-slate-200">
                     <div className="w-1/2">
-                        <h4 className="text-sm text-slate-500">Total Visitor</h4>
-                        <h2 className="text-5xl text-slate-800 font-semibold font-mono">{dashboardData.totalVisitors}</h2>
+                        <h4 className="lg:text-sm text-xs text-slate-500">Total Visitor</h4>
+                        <h2 className="lg:text-5xl text-2xl text-slate-800 font-semibold font-mono">{dashboardData.totalVisitors}</h2>
                     </div>
-                    <span className="w-[80px] h-[80px] rounded-full bg-primary/30 justify-center items-center inline-flex"><LuChartNoAxesCombined className="text-4xl" /></span>
+                    <span className="lg:w-[80px] lg:h-[80px] w-[40px] h-[40px] rounded-full bg-primary/30 justify-center items-center inline-flex"><LuChartNoAxesCombined className="lg:text-4xl text-2xl" /></span>
                 </div>
                 <div className="w-full rounded-2xl flex justify-center items-center bg-slate-50 py-4 px-2 border border-slate-200">
                     <div className="w-1/2">
-                        <h4 className="text-sm text-slate-500">Total Enquiries</h4>
-                        <h2 className="text-5xl text-slate-800 font-semibold font-mono">{dashboardData.totalEnquiries}</h2>
+                        <h4 className="lg:text-sm text-xs text-slate-500">Total Enquiries</h4>
+                        <h2 className="lg:text-5xl text-2xl text-slate-800 font-semibold font-mono">{dashboardData.totalEnquiries}</h2>
                     </div>
-                    <span className="w-[80px] h-[80px] rounded-full bg-primary/30 justify-center items-center inline-flex"><MdOutlineAddToHomeScreen className="text-4xl" /></span>
+                    <span className="lg:w-[80px] lg:h-[80px] w-[40px] h-[40px] rounded-full bg-primary/30 justify-center items-center inline-flex"><MdOutlineAddToHomeScreen className="lg:text-4xl text-2xl" /></span>
                 </div>
 
 
@@ -117,12 +117,12 @@ const OverView = (props: { getViewCallback: (value: string) => void }) => {
             </div>
 
             {/** Chart area */}
-            <div className="w-full flex justify-start items-start py-8">
+            <div className="w-full flex justify-start items-start py-8 overflow-x-auto lg:flex-row flex-col">
                 <div className="w-full md:w-3/4 bg-white p-6 rounded-xl shadow">
                     <h2 className="text-xl font-semibold mb-4">Visitors Overview</h2>
                     <Bar data={chartData} options={options} />
                 </div>
-                <div className="w-[25%] bg-slate-100 flex justify-start items-start flex-col m-2 mt-0 p-2 rounded-lg">
+                <div className="lg:w-[25%] w-full lg:gap-0 gap-1.5 bg-slate-100 flex justify-start items-start flex-col m-2 mt-0 p-2 rounded-lg">
                     <h2 className="w-full text-xl text-slate-800 text-center font-semibold">Previous Listings</h2>
                     <ul className="w-full flex justify-start items-center flex-col">
                         {[...properties].reverse().slice(0, 4)?.map((item, ndx) => (

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import GlobalModal from "../GlobalModal";
-import { MdOutlineAdd } from "react-icons/md";
+import { MdDeleteOutline, MdOutlineAdd } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
 import { toast } from "react-toastify";
 import { useHomeComponentDetails } from "@/app/context/HomeComponentDetails";
@@ -25,17 +25,47 @@ const FooterEdit = ({
     onRemoveSearch: (search: string) => void;
     onAddLocation: (location: string) => void;
     onRemoveLocation: (location: string) => void;
-    activeTab: 'searches' | 'locations';
-    setActiveTab: (tab: 'searches' | 'locations') => void;
+    activeTab: 'searches' | 'locations' | 'testimonial';
+    setActiveTab: (tab: any) => void;
 }) => {
     const [inputValue, setInputValue] = useState('');
     const { footer } = useHomeComponentDetails()
+    const [testimonails, setTestimonails] = useState([{ name: '', id: '' }])
     console.log(footer, 785374953);
 
     const [copyright, setCopyright] = useState(footer?.copyright || '')
     useEffect(() => {
         setCopyright(footer.copyright)
     }, [footer])
+
+    const fetchTestimonails = async () => {
+        const res = await fetch('/api/fetchtestimonails', { method: 'GET' });
+        const data = await res.json();
+
+        if (!data.error) {
+            setTestimonails(data.testimonails);
+        }
+    };
+    const handleDeleteUser = async (id: string) => {
+        const res = await fetch('api/deletetestimonail', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id })
+        })
+        const data = await res.json()
+
+        if (!data.error) {
+            toast.success("Review Deleted!")
+            fetchTestimonails()
+        } else {
+            toast.error(data?.message || 'Try after sometimes')
+        }
+    }
+
+    useEffect(() => {
+        fetchTestimonails();
+    }, []);
+
     const handleAdd = () => {
         if (activeTab === 'searches') {
             onAddSearch(inputValue);
@@ -80,6 +110,12 @@ const FooterEdit = ({
                             >
                                 Discover Locations
                             </button>
+                            <button
+                                className={`py-2 px-4 font-medium ${activeTab === 'testimonial' ? 'text-secondary border-b-2 border-secondary' : 'text-gray-500'}`}
+                                onClick={() => setActiveTab('testimonial')}
+                            >
+                                Testimonials
+                            </button>
                         </div>
 
                         {/* Content based on active tab */}
@@ -111,35 +147,47 @@ const FooterEdit = ({
                                     </div>
                                 ))}
                             </>
-                        ) : (
-                            <>
-                                {discoverLocations.length < 7 && <div className="w-full px-2 border-2 border-slate-50 bg-primary/20 flex justify-center items-center gap-3 my-1">
-                                    <input
-                                        type="text"
-                                        name="newlocation"
-                                        placeholder="Add New Location"
-                                        onChange={(e) => setInputValue(e.target.value)}
-                                        value={inputValue}
-                                        className="w-full p-2 outline-none"
-                                        onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-                                    />
-                                    <MdOutlineAdd
-                                        onClick={handleAdd}
-                                        className="text-3xl h-full font-semibold bg-green-100 p-1 text-secondary cursor-pointer hover:rounded-full hover:bg-green-50 duration-200"
-                                    />
-                                </div>}
+                        ) : activeTab === 'testimonial' ? (
+                            <div className="w-full">
+                                <ul className="w-full flex justify-start items-start flex-col gap-1  h-[350px] overflow-y-auto custom-scroll">
+                                    {testimonails.map((item, ndx) => {
+                                        return (
+                                            <li key={ndx} className="w-full flex justify-between items-start  p-1 bg-secondary/10 border border-white">{item?.name} <MdDeleteOutline onClick={() => handleDeleteUser(item?.id)} color="red" /></li>
+                                        )
+                                    })}
+                                </ul>
+                            </div>
+                        ) :
 
-                                {discoverLocations.map((item, ndx) => (
-                                    <div key={ndx} className="w-full p-2 bg-primary/10 flex justify-start items-start gap-3 my-1">
-                                        <IoClose
-                                            onClick={() => onRemoveLocation(item)}
-                                            className="text-3xl p-1 text-red-400 cursor-pointer hover:bg-red-200 rounded-full duration-200"
+                            (
+                                <>
+                                    {discoverLocations.length < 7 && <div className="w-full px-2 border-2 border-slate-50 bg-primary/20 flex justify-center items-center gap-3 my-1">
+                                        <input
+                                            type="text"
+                                            name="newlocation"
+                                            placeholder="Add New Location"
+                                            onChange={(e) => setInputValue(e.target.value)}
+                                            value={inputValue}
+                                            className="w-full p-2 outline-none"
+                                            onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
                                         />
-                                        {item}
-                                    </div>
-                                ))}
-                            </>
-                        )}
+                                        <MdOutlineAdd
+                                            onClick={handleAdd}
+                                            className="text-3xl h-full font-semibold bg-green-100 p-1 text-secondary cursor-pointer hover:rounded-full hover:bg-green-50 duration-200"
+                                        />
+                                    </div>}
+
+                                    {discoverLocations.map((item, ndx) => (
+                                        <div key={ndx} className="w-full p-2 bg-primary/10 flex justify-start items-start gap-3 my-1">
+                                            <IoClose
+                                                onClick={() => onRemoveLocation(item)}
+                                                className="text-3xl p-1 text-red-400 cursor-pointer hover:bg-red-200 rounded-full duration-200"
+                                            />
+                                            {item}
+                                        </div>
+                                    ))}
+                                </>
+                            )}
                     </div>
                 </div>
                 <div className="w-full p-3">

@@ -14,6 +14,7 @@ import { useHomeComponentDetails } from "../context/HomeComponentDetails";
 import { useUserDetails } from "../context/UserDetails";
 import HeroBannerEdit from "./EditHomeComponents/HeroBannerEdit";
 import { usePropertySchema } from "../context/PropertySchema";
+import { useRouter } from "next/navigation";
 
 interface editHomeComp {
     title: string,
@@ -22,6 +23,7 @@ interface editHomeComp {
     galleryImg: any
 }
 const HeroBanner = () => {
+    const router = useRouter()
     const { isEditMode } = useEditMode();
     const [locations, setLocations] = useState([{ name: '', type: '' }])
     const [suggestLocation, setSuggestLocation] = useState(locations)
@@ -32,7 +34,7 @@ const HeroBanner = () => {
     const [isAdavancedFilter, setIsAdvancedFilter] = useState(true)
     const [localSearch, setLocalSearch] = useState<string[]>([]);
     const [isOpen, setIsOpen] = useState(false);
-    const { heroBanner, featured_listings } = useHomeComponentDetails()
+    const { heroBanner, featured_listings, footer } = useHomeComponentDetails()
     const { properties, setProperties } = useListedProperties()
     const { userDetails } = useUserDetails()
     const [input, setInput] = useState('')
@@ -200,6 +202,11 @@ const HeroBanner = () => {
     const getIsAdvandedFilterCb = (value: boolean) => {
         setIsAdvancedFilter(value)
     }
+    const handleNavigate = (value: string) => {
+        const queryParams = new URLSearchParams();
+        queryParams.append('search', value);
+        router.push(`/property?${queryParams.toString()}`);
+    }
     return (
         <>
             <GlobalModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
@@ -251,7 +258,7 @@ const HeroBanner = () => {
                                             {selectedLocation.map((loc, ndx) => {
                                                 return (
 
-                                                    <span key={ndx} onClick={() => handleRemoveSelected(loc)} className="w-[120px] p-1 bg-secondary/60 h-[35px] text-slate-800 m-1 rounded-md flex justify-between items-center">{loc.slice(0, 25)}<GrClose className="text-red-400 cursor-pointer" /></span>
+                                                    <span key={ndx} onClick={() => handleRemoveSelected(loc)} className="w-[120px] p-1 bg-secondary/60 min-h-[35px] text-slate-800 m-1 rounded-md flex justify-between items-center">{loc.slice(0, 25)}<GrClose className="text-red-400 cursor-pointer" /></span>
                                                 )
                                             })}
                                         </div>
@@ -274,10 +281,11 @@ const HeroBanner = () => {
                                         <div className="w-full lg:h-[70px] h-auto">
                                             <h2 className="text-md text-slate-950 font-semibold">Discover</h2>
                                             <ul className="w-full flex justify-start items-center gap-2 flex-wrap">
-                                                <li className="w-[100px] p-1 bg-slate-100 border-2 border-slate-300 rounded-md">Bahrain</li>
-                                                <li className="w-[100px] p-1 bg-slate-100 border-2 border-slate-300 rounded-md">Adliya</li>
-                                                <li className="w-[100px] p-1 bg-slate-100 border-2 border-slate-300 rounded-md">Barbar</li>
-                                                <li className="w-[100px] p-1 bg-slate-100 border-2 border-slate-300 rounded-md">Janabia</li>
+                                                {footer.discover.map((loc, ndx) => {
+                                                    return (
+                                                        <li onClick={() => handleNavigate(loc)} key={ndx} className="w-[100px] p-1 bg-slate-100 border-2 border-slate-300 rounded-md">{loc}</li>
+                                                    )
+                                                })}
                                             </ul>
                                         </div>
                                     </div>

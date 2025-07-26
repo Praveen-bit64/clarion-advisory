@@ -9,7 +9,7 @@ import { useUserDetails } from "./context/UserDetails";
 
 const page = () => {
   const { userDetails } = useUserDetails()
-  const { heroBanner, featured_listings } = useHomeComponentDetails()
+  const { heroBanner, featured_listings, counter, recentlyadded, testimonials } = useHomeComponentDetails()
   console.log(userDetails, heroBanner, 'hokmepagedatas');
 
   return (
@@ -17,9 +17,12 @@ const page = () => {
       <div className="w-full min-h-screen flex flex-col items-center">
         {(userDetails.role === 'admin' || heroBanner.isvisible === 'true') && <HeroBanner />}
         {(userDetails.role === 'admin' || featured_listings.isvisible === 'true') && <Featured_Listings />}
-        <Counter />
-        <RecentlyAdded />
-        <Testimonials />
+        {(userDetails.role === 'admin' || counter.isvisible === 'true') && <Counter />}
+        {(userDetails.role === 'admin' || recentlyadded.isvisible === 'true') && <RecentlyAdded />}
+        {(userDetails.role === 'admin' || testimonials.isvisible === 'true') && <Testimonials />}
+
+
+
       </div>
     </>
   );

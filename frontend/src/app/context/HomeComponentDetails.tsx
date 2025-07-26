@@ -26,11 +26,13 @@ interface homeCompData {
     },
     recentlyadded: {
         title: string,
-        description: string
+        description: string,
+        isvisible: any
     },
     testimonials: {
         title: string,
-        description: string
+        description: string,
+        isvisible: any
     },
     reviews: [],
     footer: { copyright: string, popularsearch: string[], discover: string[] }
@@ -47,8 +49,8 @@ export const HomeComponentProvider = ({ children }: { children: React.ReactNode 
         heroBanner: { title: '', description: '', isvisible: false },
         featured_listings: { title: '', description: '', isvisible: false },
         counter: { title: '', description: '', isvisible: false, sec1Count: '', sec1Title: '', sec2Title: '', sec2Count: '', sec3Title: '', sec3Count: '' },
-        recentlyadded: { title: '', description: '' },
-        testimonials: { title: '', description: '' },
+        recentlyadded: { title: '', description: '', isvisible: false },
+        testimonials: { title: '', description: '', isvisible: false },
         reviews: [],
         footer: { copyright: '', popularsearch: [], discover: [] }
     });

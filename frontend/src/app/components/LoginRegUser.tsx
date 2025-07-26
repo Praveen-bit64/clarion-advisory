@@ -125,12 +125,40 @@ const LoginRegUser = () => {
         return () => clearTimeout(timer);
     }, [resendTimer]);
 
+    const sendCodeToMail = async (code: number) => {
+        const res = await fetch('/api/authentication/sendresetcode', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: code, to: resetEmail })
+        })
+        const data = await res.json()
+        if (!data.error) {
+            toast.success(`Reset code sent to your email`);
+            setResetStage('codevalid');
+            setResendTimer(60); // lock resend for 60 seconds
+        } else {
+            toast.error(data?.message || 'Try after sometime')
+        }
+    }
+
+    const resetpassword = async () => {
+        const res = await fetch('/api/authentication/resetpassoword', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ resetEmail, confirmPass })
+        })
+        const data = await res.json()
+        if (!data.error) {
+            toast.success("Password reset successful")
+        } else {
+            toast.error(data?.message || 'Try after sometime')
+        }
+    }
+
     const sendResetCode = () => {
         const randCode = Math.floor(1000 + Math.random() * 9000); // 4-digit
-        setGeneratedCode(randCode);
-        setResetStage('codevalid');
-        setResendTimer(60); // lock resend for 60 seconds
-        toast.success(`Reset code sent to your email: ${randCode}`);
+        setGeneratedCode(randCode)
+        sendCodeToMail(randCode)
     };
 
     const handleResetPassword = useCallback(() => {
@@ -161,7 +189,7 @@ const LoginRegUser = () => {
                 toast.error("Passwords do not match");
                 return;
             }
-            toast.success("Password reset successful (mock)");
+            resetpassword()
             // Optionally reset
             setResetEmail('');
             setResetCode(null);
@@ -169,6 +197,7 @@ const LoginRegUser = () => {
             setNewPass('');
             setConfirmPass('');
             setResetStage('codesend');
+            setMode('login')
         }
 
     }, [resetEmail, resetCode, generatedCode, newPass, confirmPass, resetStage]);

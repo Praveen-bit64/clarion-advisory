@@ -389,7 +389,7 @@ const AddNewProperty = (props: { getViewCallback: (value: string) => void }) => 
     console.log(newPropertyValues.isBedroomAvailable, 5425345);
 
     return (
-        <div className=" w-full flex justify-center items-center flex-col">
+        <div className=" w-full flex justify-center items-center flex-col md:ml-0 ml-[160px]">
             {modalContent === 'addproperty' ? memoAddPropertyModal : modalContent === 'addamenity' ? memoAddAmenityModal : null}
             {/**Navigation */}
             <div className="w-[500px] flex justify-center items-center my-3 mb-10 relative duration-200 transition-all ease-linear">
@@ -404,7 +404,7 @@ const AddNewProperty = (props: { getViewCallback: (value: string) => void }) => 
                 <span className={`w-[30px] h-[30px] p-2 rounded-full ${formNav > 3 ? 'bg-green-600' : 'bg-slate-400'} text-xl text-white flex justify-center items-center font-semibold`}>5</span><span className="absolute top-10 left-[455px] font-mono">Amenities</span>
             </div>
             {/**Form area */}
-            <div className={`${formNav < 5 ? 'bg-white' : ''} rounded-xl  w-[60%] p-5 py-10`}>
+            <div className={`${formNav < 5 ? 'bg-white' : ''} rounded-xl  p-5 py-10  w-[500px]`}>
                 {formNav === 0 ?
                     //1st section 
                     <div className="w-full flex justify-center items-start gap-5 flex-col ">
@@ -792,11 +792,11 @@ const AddNewProperty = (props: { getViewCallback: (value: string) => void }) => 
                                             <h2 className="text-2xl font-bold text-green-800 mb-2">Listing Successful!</h2>
                                             <p className="text-green-700 mb-4 text-base">Your property has been listed and is now live for visitors.</p>
                                             <div className="w-full flex justify-center items-center gap-5">
-                                                <Link href="/admin/listings">
-                                                    <button onClick={() => getViewCallback('managelistings')} className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow transition duration-200">
-                                                        Go to My Listings
-                                                    </button>
-                                                </Link>
+                                                {/* <Link > */}
+                                                <button onClick={() => getViewCallback('managelistings')} className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow transition duration-200">
+                                                    Go to My Listings
+                                                </button>
+                                                {/* </Link> */}
                                                 <button onClick={() => setFormNav(0)} className="px-6 py-3 bg-primary hover:primary/90 text-white font-semibold rounded-lg shadow transition duration-200">
                                                     Add New
                                                 </button>

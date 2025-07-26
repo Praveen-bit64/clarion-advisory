@@ -437,6 +437,7 @@ const FilterPopup = ({ isOpen, onClose, basicFil, locationss, getIsAdvandedFilte
                                         {maxSizeOptions.map((size) => (
                                             <option key={size} value={size}>{size}</option>
                                         ))}
+                                        <option value={''}>{'2000&Above'}</option>
                                     </select>
                                     <span className="ml-1 text-primary font-mono text-xs md:text-sm">Max</span>
                                 </div>

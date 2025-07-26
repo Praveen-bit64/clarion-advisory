@@ -59,39 +59,68 @@ const RecentlyAdded = () => {
                 <ul className="w-full flex justify-center items-center lg:gap-10 gap-1 flex-wrap mt-5">
                     {recentProperties?.filter(item => item.propertyStatus.toLowerCase() === 'publish')?.map((item, ndx) => {
                         return (
-                            <li key={ndx} className="group w-[98%] md:w-[49%] xl:w-[30%] lg:w-[49%] lg:h-[380px] h-[270px] bg-white shadow-lg border-1 border-secondary/40 hover:shadow-xl relative">
-                                <div className="w-full flex flex-col lg:flex-row justify-start items-start gap-2 absolute z-99 top-3 left-2 group-hover:top-6 group-hover:opacity-0 duration-300">
-                                    <button className="lg:w-[130px] w-[100px] p-1 text-[12px] lg:font-semibold bg-secondary text-white flex justify-center items-center"><BsPatchPlus className="text-white mr-1" />Newly Added</button>
-                                    <button className="lg:w-[100px] w-[70px] lg:p-1 p-0 text-[12px] lg:font-semibold bg-slate-950 text-white capitalize">for {item.propertyType}</button>
-                                </div>
-                                <div className="w-full relative overflow-hidden lg:h-[230px] h-[170px]">
+                            <li
+                                key={ndx}
+                                className="group w-full sm:w-[48%] xl:w-[30%] bg-white shadow-md border border-secondary/20 rounded-lg hover:shadow-xl transition duration-300 overflow-hidden"
+                            >
+                                <div className="relative w-full h-[200px] sm:h-[240px] xl:h-[200px]">
                                     <img
                                         src={item?.thumbnailImage || '/fallback.jpg'}
-                                        className="w-full group-hover:scale-110 h-full object-cover transition-all duration-500"
                                         alt="Property"
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                     />
-                                    <div className="absolute w-full z-99 bottom-5 right-5 flex justify-end items-center gap-2 mb-[-20px] opacity-0 group-hover:mb-0 group-hover:opacity-100 duration-300">
-                                        <button onClick={() => toggleLike(String(item.id))} className="p-2 bg-slate-950 cursor-pointer">{isLiked(String(item.id)) ? <FaHeart fill="red" className="text-rose-500  text-xl" /> : <FaRegHeart className="text-white text-xl" />}</button>
-                                        <Link href={item.customSlug ? `/${item.customSlug}?pId=${item?.id}` : `/properties/propertyDetails?pId=${item?.id}`}><button className="p-2 bg-slate-950 cursor-pointer"><IoMdOpen className="text-white text-xl" /></button></Link>
+                                    {/* Overlay Buttons */}
+                                    <div className="absolute top-3 left-3 flex gap-2 z-10">
+                                        <span className="px-2 py-1 text-xs bg-secondary text-white font-medium rounded-md flex items-center">
+                                            <BsPatchPlus className="mr-1" /> New
+                                        </span>
+                                        <span className="px-2 py-1 text-xs bg-slate-800 text-white font-medium rounded-md capitalize">
+                                            For {item.propertyType}
+                                        </span>
+                                    </div>
+                                    <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                        <button onClick={() => toggleLike(String(item.id))} className="p-2 bg-white rounded-full shadow">
+                                            {isLiked(String(item.id)) ? (
+                                                <FaHeart className="text-rose-500 text-lg" />
+                                            ) : (
+                                                <FaRegHeart className="text-slate-600 text-lg" />
+                                            )}
+                                        </button>
+                                        <Link
+                                            href={item.customSlug ? `/${item.customSlug}?pId=${item?.id}` : `/properties/propertyDetails?pId=${item?.id}`}
+                                        >
+                                            <button className="p-2 bg-white rounded-full shadow">
+                                                <IoMdOpen className="text-slate-600 text-lg" />
+                                            </button>
+                                        </Link>
                                     </div>
                                 </div>
 
-                                <div className=" w-full lg:h-[150px] h-[100px] bg-white flex justify-center items-start flex-col lg:gap-2 gap-0 lg:px-5 px-1">
-                                    <Link href={item.customSlug ? `/${item.customSlug}?pId=${item?.id}` : `/properties/propertyDetails?pId=${item?.id}`}><h2 className="xl:text-lg lg:text-md text-sm xl:h-[50px] lg:h-[40px] h-[50px] font-semibold text-slate-700 cursor-pointer hover:underline overflow-hidden">{item?.title}</h2></Link>
-                                    <h4 className="lg:text-sm text-[10px]  text-slate-400 overflow-hidden"><IoLocationOutline className="inline text-xl" />{item?.propertyCity}</h4>
-                                    <div className="w-full flex justify-between items-center gap-1.5">
-                                        <div className="lg:text-sm text-[10px]">   {item.isBedroomAvailable === '1' && (
-                                            <>
-                                                <span className="mr-1"><IoBed className="inline mr-1" />{item?.bedrooms}</span>
-                                                <span className="mr-1"><FaBath className="inline mr-1" />{item?.bathrooms}</span>
-                                            </>
-                                        )}
-                                            <span><TbRulerMeasure className="inline mr-1" />{item?.propertySize} sqms</span></div>
-                                        <span className="lg:w-[150px] w-[100px] lg:h-[40px] h-[25px]  border-1 lg:border-2 border-slate-800 group-hover:bg-secondary group-hover:text-white group-hover:border-secondary duration-500 flex justify-center items-center xl:text-md lg:text-sm text-xs font-semibold"><span className="text-xs mr-1 font-thin">BHD</span>{` ${item?.propertyPrice} ${item?.propertyType == 'rent' ? '/Mon' : ''}`}</span>
+                                {/* Content Section */}
+                                <div className="p-4 space-y-2">
+                                    <Link href={item.customSlug ? `/${item.customSlug}?pId=${item?.id}` : `/properties/propertyDetails?pId=${item?.id}`}>
+                                        <h2 className="text-md font-semibold text-slate-800 line-clamp-2 hover:underline">{item.title}</h2>
+                                    </Link>
+                                    <p className="text-xs text-slate-500 flex items-center">
+                                        <IoLocationOutline className="mr-1" /> {item.propertyCity}
+                                    </p>
+                                    <div className="flex justify-between items-center text-xs text-slate-600">
+                                        <div className="flex gap-2 flex-wrap items-center">
+                                            {item.isBedroomAvailable === '1' && (
+                                                <>
+                                                    <span><IoBed className="inline mr-1" />{item.bedrooms}</span>
+                                                    <span><FaBath className="inline mr-1" />{item.bathrooms}</span>
+                                                </>
+                                            )}
+                                            <span><TbRulerMeasure className="inline mr-1" />{item.propertySize} sqm</span>
+                                        </div>
+                                        <span className="bg-secondary text-white text-xs px-3 py-1 rounded-sm font-semibold whitespace-nowrap">
+                                            BHD {item.propertyPrice} {item.propertyType === 'rent' ? '/Mon' : ''}
+                                        </span>
                                     </div>
                                 </div>
-
                             </li>
+
                         )
                     })}
                 </ul>
