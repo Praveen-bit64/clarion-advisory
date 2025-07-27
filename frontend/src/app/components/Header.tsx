@@ -8,7 +8,7 @@ import { MdCancel, MdEditNote, MdManageAccounts, MdOutlineEditOff } from "react-
 import { useSiteInfo } from "../context/SiteInfoContext";
 import { useUserDetails } from "../context/UserDetails";
 import { LuLogOut, LuOctagon } from "react-icons/lu";
-import { BiCategoryAlt, BiHeart, BiLocationPlus } from "react-icons/bi";
+import { BiCategoryAlt, BiHeart, BiHeartCircle, BiLocationPlus } from "react-icons/bi";
 import { toast } from "react-toastify";
 import { FiLogOut } from "react-icons/fi";
 import { CiLocationOn } from "react-icons/ci";
@@ -169,9 +169,9 @@ const Header = () => {
                             <li><Link href={'/contact'}>contact</Link></li>
                         </ul>
 
-
                         {
-                            !userDetails.userId ? <div className="w-[60%] flex justify-center items-end">
+                            !userDetails.userId ? <div className="w-[60%] flex justify-center items-end gap-1.5">
+                                <BiHeartCircle onClick={() => setFavView(!favView)} className="text-[44px] cursor-pointer" color="lightgoldenrodyellow" />
                                 <Link href="/Login">
                                     <button className="w-[120px] p-2 text-md font-mono font-semibold bg-secondary/20 border border-slate-50 text-white cursor-pointer hover:shadow-md duration-200 shadow-white/50">Login</button>
 

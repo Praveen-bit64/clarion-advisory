@@ -30,6 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Extract fields safely
     const title = Array.isArray(fields.title) ? fields.title[0] : fields.title;
     const description = Array.isArray(fields.description) ? fields.description[0] : fields.description;
+    const isvisible = Array.isArray(fields.isvisible) ? fields.isvisible[0] : fields.isvisible;
     const name = Array.isArray(fields.name) ? fields.name[0] : fields.name;
     const location = Array.isArray(fields.location) ? fields.location[0] : fields.location;
     const comment = Array.isArray(fields.comment) ? fields.comment[0] : fields.comment;
@@ -37,9 +38,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const profileFile = Array.isArray(files.profile) ? files.profile[0] : files.profile;
 
     // Validate required fields
-    if (!title || !description || !name || !comment || !rating) {
+    if (!title || !description) {
       return res.status(400).json({ error: true, message: "Required fields missing" });
     }
+
+    const isNewTestimonail = name || comment || rating
 
     // Upload profile image to Cloudinary
     let profileUrl = "";
@@ -54,6 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const testimonialHeader = {
       title,
       description,
+      isvisible
     };
 
     await db.execute(
@@ -61,11 +65,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       [JSON.stringify(testimonialHeader)]
     );
 
-    // Step 2: Insert individual review into reviews table
+    if(isNewTestimonail){
+        // Step 2: Insert individual review into reviews table
     await db.execute(
       "INSERT INTO reviews (name, location, comment, rating, profile) VALUES (?, ?, ?, ?, ?)",
       [name, location, comment, rating, profileUrl]
     );
+    }
+  
 
     return res.status(200).json({ error: false, message: "Testimonial submitted successfully" });
   } catch (err) {

@@ -29,6 +29,7 @@ const Page = () => {
     });
     const dropdownRef = useRef<HTMLDivElement>(null);
     const { properties } = useListedProperties();
+    const [sortOption, setSortOption] = useState<'none' | 'lowToHigh' | 'highToLow'>('none')
     const [isAdavancedFilter, setIsAdvancedFilter] = useState(false)
     const [filteredProperties, setFilteredProperties] = useState(properties);
     const { isLiked, toggleLike } = useLikes();
@@ -49,6 +50,7 @@ const Page = () => {
         minBudget: Number(searchParams?.get('mnbug')) || 0,
         maxBudget: Number(searchParams?.get('mxbug')) || 0,
     }), [searchParams]);
+
 
     useEffect(() => {
         if (searchFilters.propertyType) {

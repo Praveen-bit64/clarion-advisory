@@ -16,7 +16,7 @@ interface homeCompData {
     counter: {
         title: string,
         description: string,
-        isvisible: any,
+        isVisible: any,
         sec1Title: string,
         sec1Count: string,
         sec2Title: string,
@@ -48,7 +48,7 @@ export const HomeComponentProvider = ({ children }: { children: React.ReactNode 
     const [homeComponents, setHomeComponents] = useState<homeCompData>({
         heroBanner: { title: '', description: '', isvisible: false },
         featured_listings: { title: '', description: '', isvisible: false },
-        counter: { title: '', description: '', isvisible: false, sec1Count: '', sec1Title: '', sec2Title: '', sec2Count: '', sec3Title: '', sec3Count: '' },
+        counter: { title: '', description: '', isVisible: false, sec1Count: '', sec1Title: '', sec2Title: '', sec2Count: '', sec3Title: '', sec3Count: '' },
         recentlyadded: { title: '', description: '', isvisible: false },
         testimonials: { title: '', description: '', isvisible: false },
         reviews: [],

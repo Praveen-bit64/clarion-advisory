@@ -26,7 +26,7 @@ export default function SliderCenterMode(props: slider) {
         slidesToShow: itemPerView,
         dots,
         speed,
-        // autoplay,
+        autoplay,
         responsive: [
             {
                 breakpoint: 1024, // <1024px
